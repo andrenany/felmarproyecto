@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes | Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Header Navigation */
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--nav-secondary-color);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--nav-transition);
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--nav-primary-color);
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 16px;
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            padding: 2rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Filtros */
+        .filtros-section {
+            background: var(--nav-white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .filtros-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Card y Tabla */
+        .card {
+            background: var(--nav-white);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead th {
+            background: var(--light-bg);
+            border: none;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table tbody td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+            color: var(--nav-secondary-color);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Estados */
+        .estado-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .estado-pendiente {
+            background: var(--warning-color);
+            color: #000;
+        }
+
+        .estado-cotizada {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .estado-programada {
+            background: var(--purple-color);
+            color: white;
+        }
+
+        .estado-completada {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .estado-cancelada {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Urgencia */
+        .urgencia-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .urgencia-baja {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .urgencia-media {
+            background: var(--warning-color);
+            color: #000;
+        }
+
+        .urgencia-alta {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        /* Botones */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-group {
+            gap: 0.5rem;
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Modal */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .table thead th,
+            .table tbody td {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="container-fluid px-4">
+            <div class="nav-container">
+                <a href="/" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+
+                <nav>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/admin/clientes" class="nav-link">
+                                <i class="fas fa-building"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/Cotizaciones" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Cotizaciones</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/Certificados" class="nav-link">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Certificados</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/visitas" class="nav-link">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Visitas</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/solicitud" class="nav-link active">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Solicitudes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/residuos" class="nav-link">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Residuos y precios</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/dashboard" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title">Gestión de Solicitudes</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
+                        <li class="breadcrumb-item active">Solicitudes</li>
+                    </ol>
+                </nav>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrear">
+                <i class="fas fa-plus me-2"></i>Nueva Solicitud
+            </button>
+        </div>
+
+        <!-- Sección de Filtros -->
+        <div class="filtros-section">
+            <h5 class="filtros-title">
+                <i class="fas fa-filter me-2"></i>Filtros
+            </h5>
+            <form action="/admin/solicitud" method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Cliente</label>
+                    <select name="cliente" class="form-control">
+                        <option value="">Todos los clientes</option>
+                        <% clientes.forEach(function(cliente) { %>
+                            <option value="<%= cliente.rut %>" <%= clienteSeleccionado === cliente.rut ? 'selected' : '' %>>
+                                <%= cliente.nombreEmpresa %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Fecha</label>
+                    <input type="date" name="fecha" class="form-control" value="<%= fechaSeleccionada %>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Urgencia</label>
+                    <select name="urgencia" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="baja" <%= urgenciaSeleccionada === 'baja' ? 'selected' : '' %>>Baja</option>
+                        <option value="media" <%= urgenciaSeleccionada === 'media' ? 'selected' : '' %>>Media</option>
+                        <option value="alta" <%= urgenciaSeleccionada === 'alta' ? 'selected' : '' %>>Alta</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabla de Solicitudes -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Urgencia</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% solicitudes.forEach(function(solicitud) { %>
+                                <tr>
+                                    <td><strong><%= solicitud.numero_solicitud %></strong></td>
+                                    <td><%= solicitud.Cliente.nombreEmpresa %></td>
+                                    <td><%= new Date(solicitud.fecha_preferida).toLocaleDateString() %></td>
+                                    <td>
+                                        <span class="urgencia-badge urgencia-<%= solicitud.urgencia %>">
+                                            <%= solicitud.urgencia.charAt(0).toUpperCase() + solicitud.urgencia.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="estado-badge estado-<%= solicitud.estado %>">
+                                            <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalles<%= solicitud.id %>" title="Ver Detalles">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEstado<%= solicitud.id %>" title="Cambiar Estado">
+                                                <i class="fas fa-exchange-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles -->
+    <% solicitudes.forEach(function(solicitud) { %>
+        <div class="modal fade" id="modalDetalles<%= solicitud.id %>" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Detalles de Solicitud #<%= solicitud.numero_solicitud %>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-3">Información General</h6>
+                                <p><strong>Cliente:</strong> <%= solicitud.Cliente.nombreEmpresa %></p>
+                                <p><strong>Fecha Preferida:</strong> <%= new Date(solicitud.fecha_preferida).toLocaleDateString() %></p>
+                                <p><strong>Urgencia:</strong> 
+                                    <span class="urgencia-badge urgencia-<%= solicitud.urgencia %>">
+                                        <%= solicitud.urgencia.charAt(0).toUpperCase() + solicitud.urgencia.slice(1) %>
+                                    </span>
+                                </p>
+                                <p><strong>Estado:</strong>
+                                    <span class="estado-badge estado-<%= solicitud.estado %>">
+                                        <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="mb-3">Detalles de Contacto</h6>
+                                <p><strong>Contacto:</strong> <%= solicitud.contacto_nombre %></p>
+                                <p><strong>Teléfono:</strong> <%= solicitud.contacto_telefono %></p>
+                                <p><strong>Ubicación:</strong> <%= solicitud.ubicacion %></p>
+                                <p><strong>Dirección:</strong> <%= solicitud.direccion_especifica %></p>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="mb-3">Residuos</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Cantidad</th>
+                                                <th>Unidad</th>
+                                                <th>Observaciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% solicitud.DetalleResiduos.forEach(function(detalle) { %>
+                                                <tr>
+                                                    <td><%= detalle.Residuo.descripcion %></td>
+                                                    <td><%= detalle.cantidad %></td>
+                                                    <td><%= detalle.Residuo.unidad %></td>
+                                                    <td><%= detalle.observaciones || '-' %></td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <% if (solicitud.observaciones) { %>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h6 class="mb-2">Observaciones Generales</h6>
+                                    <p class="text-muted"><%= solicitud.observaciones %></p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+
+    <!-- Modal Cambiar Estado -->
+    <% solicitudes.forEach(function(solicitud) { %>
+        <div class="modal fade" id="modalEstado<%= solicitud.id %>" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/admin/solicitud/cambiar-estado/<%= solicitud.id %>" method="POST">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-exchange-alt me-2"></i>
+                                Cambiar Estado - Solicitud #<%= solicitud.numero_solicitud %>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Nuevo Estado</label>
+                                <select name="estado" class="form-control" required>
+                                    <option value="pendiente" <%= solicitud.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                    <option value="cotizada" <%= solicitud.estado === 'cotizada' ? 'selected' : '' %>>Cotizada</option>
+                                    <option value="programada" <%= solicitud.estado === 'programada' ? 'selected' : '' %>>Programada</option>
+                                    <option value="completada" <%= solicitud.estado === 'completada' ? 'selected' : '' %>>Completada</option>
+                                    <option value="cancelada" <%= solicitud.estado === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
