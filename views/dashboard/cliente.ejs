@@ -616,27 +616,27 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/dashboard/cliente">
-                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        <a class="nav-link active" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Inicio
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/solicitudes">
+                        <a class="nav-link" href="/clientes/solicitudes">
                             <i class="fas fa-file-alt me-2"></i>Mis Solicitudes
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/cotizaciones">
+                        <a class="nav-link" href="/clientes/cotizaciones">
                             <i class="fas fa-calculator me-2"></i>Cotizaciones
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/visitas/calendario">
+                        <a class="nav-link" href="/clientes/calendario">
                             <i class="fas fa-calendar-alt me-2"></i>Calendario
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/certificados">
+                        <a class="nav-link" href="/clientes/certificados">
                             <i class="fas fa-certificate me-2"></i>Certificados
                         </a>
                     </li>
@@ -665,15 +665,21 @@
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="/perfil">
+                            <a class="dropdown-item" href="/clientes/perfil/miperfil">
                                 <i class="fas fa-user me-2 text-primary"></i>
                                 Mi Perfil
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="/perfil/cambiar-password">
+                            <a class="dropdown-item" href="/clientes/perfil/cambiar-password">
                                 <i class="fas fa-key me-2 text-warning"></i>
                                 Cambiar Contraseña
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/clientes/ayuda-soporte">
+                                <i class="fas fa-question-circle me-2 text-info"></i>
+                                Ayuda y Soporte
                             </a>
                         </li>
                         <li><hr class="dropdown-divider"></li>
@@ -757,23 +763,23 @@
             
             <div class="row">
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <a href="/solicitudes/crear" class="action-btn primary">
+                    <a href="clientes/solicitudes/nueva" class="action-btn primary">
                         <i class="fas fa-plus-circle"></i>
                         <span>Nueva Solicitud de Retiro</span>
                     </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <a href="/visitas/calendario" class="action-btn info">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Ver Calendario</span>
+                    <a href="/clientes/calendario/agendar-visita" class="action-btn info">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Agendar Visita</span>
                     </a>
                 </div>
                 
                 <div class="col-lg-4 col-md-6 mb-3">
-                    <a href="/certificados" class="action-btn success">
-                        <i class="fas fa-certificate"></i>
-                        <span>Mis Certificados</span>
+                    <a href="/clientes/calendario" class="action-btn success">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Mis Visitas</span>
                     </a>
                 </div>
             </div>
@@ -786,7 +792,7 @@
                     <i class="fas fa-history me-2"></i>
                     Mis Solicitudes Recientes
                 </h5>
-                <a href="/solicitudes" class="btn-outline-custom">
+                <a href="/clientes/solicitudes" class="btn-outline-custom">
                     <i class="fas fa-eye me-2"></i>
                     Ver todas
                 </a>
@@ -817,7 +823,7 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a href="/solicitudes/detalles/<%= solicitud.id %>" class="btn-action">
+                                            <a href="/clisolicitudes/detalles/<%= solicitud.id %>" class="btn-action">
                                                 <i class="fas fa-eye"></i>Ver Detalles
                                             </a>
                                         </td>
@@ -830,14 +836,9 @@
                     <div class="empty-state">
                         <i class="fas fa-file-alt"></i>
                         <h5>No tienes solicitudes recientes</h5>
-                        <p class="mb-3">Crea tu primera solicitud de retiro para comenzar</p>
-                        <a href="/solicitudes/crear" class="btn">
-                            <i class="fas fa-plus me-2"></i>
-                            Crear Solicitud
-                        </a>
+                        <p class="mb-3">Aún no has realizado ninguna solicitud de retiro</p>
                     </div>
                 <% } %>
-            </div>
         </div>
     </div>
 
@@ -958,6 +959,73 @@
 
         // Example usage of notification system
         // showNotification('¡Bienvenido a tu panel de control!', 'success');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarEstadisticas();
+        });
+
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch('/api/estadisticas', {
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    
+                    // Actualizar estadísticas en la UI con verificaciones
+                    const statCard1 = document.querySelector('.stats-card:nth-child(1) h2');
+                    const statCard2 = document.querySelector('.stats-card:nth-child(2) h2');
+                    const statCard3 = document.querySelector('.stats-card:nth-child(3) h2');
+                    
+                    if (statCard1) {
+                        statCard1.textContent = stats.solicitudes?.total || 0;
+                    }
+                    if (statCard2) {
+                        statCard2.textContent = stats.solicitudes?.pendientes || 0;
+                    }
+                    if (statCard3) {
+                        statCard3.textContent = stats.visitas?.proximas || 0;
+                    }
+                } else {
+                    throw new Error(data.message || 'Error al cargar las estadísticas');
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+                // Mostrar mensaje de error al usuario
+                const dashboardContainer = document.querySelector('.dashboard-container');
+                if (dashboardContainer) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <strong>Error:</strong> ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    dashboardContainer.prepend(alertDiv);
+
+                    // Auto-ocultar el mensaje después de 5 segundos
+                    setTimeout(() => {
+                        alertDiv.classList.remove('show');
+                        setTimeout(() => alertDiv.remove(), 150);
+                    }, 5000);
+                }
+            }
+        }
     </script>
 </body>
 </html>

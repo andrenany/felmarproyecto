@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Solicitudes de Retiro - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #00616e;
+            --primary-dark: #004d57;
+            --primary-light: #00818f;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Navigation Styles */
+        .navbar-custom {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            background: rgba(0, 97, 110, 0.05);
+        }
+
+        .user-dropdown {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            border: none;
+            font-weight: 500;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 0.5rem;
+            min-width: 250px;
+            margin-top: 0.5rem;
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin: 0.25rem 0;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 97, 110, 0.05);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        /* MAIN CONTENT */
+        .main-container {
+            padding: 40px 0 32px 0;
+            background: var(--light-bg);
+            min-height: calc(100vh - 80px);
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            margin-bottom: 0;
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 3rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stats-card.warning::before {
+            background: linear-gradient(90deg, var(--warning-color), #ffcd3c);
+        }
+
+        .stats-card.info::before {
+            background: linear-gradient(90deg, var(--info-color), #20c997);
+        }
+
+        .stats-card.success::before {
+            background: linear-gradient(90deg, var(--success-color), #34ce57);
+        }
+
+        .stats-card.danger::before {
+            background: linear-gradient(90deg, var(--danger-color), #e55a5a);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .card-icon.warning {
+            background: linear-gradient(135deg, var(--warning-color), #ffcd3c);
+        }
+
+        .card-icon.info {
+            background: linear-gradient(135deg, var(--info-color), #20c997);
+        }
+
+        .card-icon.success {
+            background: linear-gradient(135deg, var(--success-color), #34ce57);
+        }
+
+        .card-icon.danger {
+            background: linear-gradient(135deg, var(--danger-color), #e55a5a);
+        }
+
+        .card-info h6 {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-info h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .card-info h2.warning { color: var(--warning-color); }
+        .card-info h2.info { color: var(--info-color); }
+        .card-info h2.success { color: var(--success-color); }
+        .card-info h2.danger { color: var(--danger-color); }
+
+        /* TABLE SECTION */
+        .table-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-new-request {
+            background: white;
+            color: var(--primary-color);
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-new-request:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            color: var(--primary-color);
+        }
+
+        /* MODERN TABLE */
+        .table-container {
+            padding: 0;
+            overflow-x: auto;
+        }
+
+        .table-modern {
+            width: 100%;
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-modern thead th {
+            background: #f8f9fa;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1.2rem 1rem;
+            border-bottom: 3px solid var(--primary-color);
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .table-modern tbody td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            background: white;
+            vertical-align: middle;
+        }
+
+        .table-modern tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table-modern tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.1);
+        }
+
+        /* STATUS BADGES MODERNOS */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .status-badge.pendiente {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .status-badge.confirmada {
+            background: linear-gradient(135deg, #d1ecf1, #a8dadc);
+            color: #0c5460;
+            border: 2px solid #17a2b8;
+        }
+
+        .status-badge.completada {
+            background: linear-gradient(135deg, #d4edda, #95d5b2);
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .status-badge.cancelada {
+            background: linear-gradient(135deg, #f8d7da, #ffb3ba);
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        /* SOLICITUD NUMBER STYLING */
+        .solicitud-number {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .solicitud-number:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* ACTION BUTTONS */
+        .btn-action {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
+        }
+
+        .btn-action:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 97, 110, 0.4);
+        }
+
+        /* ALERT BAR */
+        .alert-bar {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 1px solid #ffc107;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .alert-bar i {
+            color: #856404;
+            font-size: 1.5rem;
+        }
+
+        .alert-bar-text {
+            flex: 1;
+            color: #856404;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* MODAL MEJORADO */
+        .modal-content {
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-bottom: none;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            opacity: 1;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        /* DETAIL SECTIONS */
+        .detail-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+        }
+
+        /* INFO GRID */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--secondary-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: rgba(0, 97, 110, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h5 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* ANIMATIONS */
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                padding: 0 16px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .table-actions {
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                Felmart
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/clientes/solicitudes">
+                            <i class="fas fa-file-alt me-2"></i>Mis Solicitudes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes/cotizaciones">
+                            <i class="fas fa-calculator me-2"></i>Cotizaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes/calendario">
+                            <i class="fas fa-calendar-alt me-2"></i>Calendario
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clientes/certificados">
+                            <i class="fas fa-certificate me-2"></i>Certificados
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="dropdown">
+                    <button class="btn user-dropdown dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user me-2"></i>
+                        Cliente
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <li class="dropdown-header">
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-2">
+                                    <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div>
+                                    <small style="color: rgba(255,255,255,0.8);">Bienvenido</small><br>
+                                    <strong style="color: white;">Cliente</strong>
+                                </div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/clientes/perfil/miperfil">
+                                <i class="fas fa-user me-2 text-primary"></i>
+                                Mi Perfil
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/clientes/perfil/cambiar-password">
+                                <i class="fas fa-key me-2 text-warning"></i>
+                                Cambiar Contraseña
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/clientes/ayuda-soporte">
+                                <i class="fas fa-question-circle me-2 text-info"></i>
+                                Ayuda y Soporte
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="/">
+                                <i class="fas fa-home me-2 text-secondary"></i>
+                                Volver al Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="/logout">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+        <div class="content-wrapper">
+            <!-- Alert Container -->
+            <div id="alertBarContainer"></div>
+
+            <!-- Page Header -->
+            <div class="page-header fade-in-up">
+                <h1 class="page-title">
+                    <i class="fas fa-recycle"></i>
+                    Mis Solicitudes de Retiro
+                </h1>
+                <p class="page-subtitle">Gestione y monitoree todas sus solicitudes de retiro de residuos</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stats-card warning fade-in-up stagger-1">
+                    <div class="card-content">
+                        <div class="card-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-info">
+                            <h6>Pendientes</h6>
+                            <h2 class="warning" id="pendientesCount">2</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card info fade-in-up stagger-2">
+                    <div class="card-content">
+                        <div class="card-icon info">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="card-info">
+                            <h6>Confirmadas</h6>
+                            <h2 class="info" id="confirmadasCount">1</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card success fade-in-up stagger-3">
+                    <div class="card-content">
+                        <div class="card-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h6>Completadas</h6>
+                            <h2 class="success" id="completadasCount">1</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card danger fade-in-up stagger-4">
+                    <div class="card-content">
+                        <div class="card-icon danger">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h6>Canceladas</h6>
+                            <h2 class="danger" id="canceladasCount">1</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section fade-in-up">
+                <div class="table-header">
+                    <h5 class="table-title">
+                        <i class="fas fa-list"></i>
+                        Lista de Solicitudes
+                    </h5>
+                    <div class="table-actions">
+                        <button class="btn-refresh" onclick="cargarSolicitudes()">
+                            <i class="fas fa-sync-alt"></i>
+                            Actualizar
+                        </button>
+                        <a href="/clientes/solicitudes/nueva" class="btn-new-request">
+                            <i class="fas fa-plus-circle"></i>
+                            Nueva Solicitud
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table-modern" id="solicitudesTable">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Tipo de Residuo</th>
+                                <th>Cantidad</th>
+                                <th>Dirección</th>
+                                <th style="text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solicitudesTableBody">
+                            <tr>
+                                <td><a href="#" class="solicitud-number">SR-1001</a></td>
+                                <td>01/06/2024</td>
+                                <td><span class="status-badge pendiente"><i class="fas fa-clock"></i>Pendiente</span></td>
+                                <td>Cartón</td>
+                                <td>15 kg</td>
+                                <td>Av. Principal 1234, Santiago</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action" onclick="verDetalles(1)" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" class="solicitud-number">SR-1002</a></td>
+                                <td>28/05/2024</td>
+                                <td><span class="status-badge confirmada"><i class="fas fa-check-circle"></i>Confirmada</span></td>
+                                <td>Plástico</td>
+                                <td>8 kg</td>
+                                <td>Calle Secundaria 567, Maipú</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action" onclick="verDetalles(2)" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" class="solicitud-number">SR-1003</a></td>
+                                <td>20/05/2024</td>
+                                <td><span class="status-badge completada"><i class="fas fa-check-double"></i>Completada</span></td>
+                                <td>Vidrio</td>
+                                <td>20 kg</td>
+                                <td>Pasaje Verde 89, Ñuñoa</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action" onclick="verDetalles(3)" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" class="solicitud-number">SR-1004</a></td>
+                                <td>10/05/2024</td>
+                                <td><span class="status-badge cancelada"><i class="fas fa-times-circle"></i>Cancelada</span></td>
+                                <td>Electrónicos</td>
+                                <td>3 unidades</td>
+                                <td>Av. Los Pinos 222, La Florida</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action" onclick="verDetalles(4)" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a href="#" class="solicitud-number">SR-1005</a></td>
+                                <td>02/06/2024</td>
+                                <td><span class="status-badge pendiente"><i class="fas fa-clock"></i>Pendiente</span></td>
+                                <td>Papel</td>
+                                <td>12 kg</td>
+                                <td>Camino del Sol 333, Providencia</td>
+                                <td style="text-align: center;">
+                                    <button class="btn-action" onclick="verDetalles(5)" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State (hidden by default) -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <h5>No hay solicitudes</h5>
+                    <p>Aún no tienes solicitudes registradas. ¡Crea tu primera solicitud!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MEJORADO -->
+    <div class="modal fade" id="detallesModal" tabindex="-1" aria-labelledby="detallesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detallesModalLabel">
+                        <i class="fas fa-eye"></i>
+                        Detalles de la Solicitud
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="detallesModalBody">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // VARIABLES GLOBALES
+        let solicitudesData = [
+            {
+                id: 1,
+                numero_solicitud: 'SR-1001',
+                fecha_solicitud: '2024-06-01T10:00:00Z',
+                estado: 'pendiente',
+                tipo_residuo: 'Cartón',
+                cantidad: '15 kg',
+                direccion_retiro: 'Av. Principal 1234, Santiago',
+                descripcion: 'Cartón de embalajes de productos electrónicos',
+                observaciones: 'Retiro programado según disponibilidad. Contactar antes de llegar.',
+                contacto_nombre: 'Juan Pérez',
+                contacto_telefono: '+56912345678',
+                fecha_preferida: '2024-06-10'
+            },
+            {
+                id: 2,
+                numero_solicitud: 'SR-1002',
+                fecha_solicitud: '2024-05-28T15:30:00Z',
+                estado: 'confirmada',
+                tipo_residuo: 'Plástico',
+                cantidad: '8 kg',
+                direccion_retiro: 'Calle Secundaria 567, Maipú',
+                descripcion: 'Botellas plásticas y envases diversos',
+                observaciones: 'Disponible toda la semana en horario de oficina',
+                contacto_nombre: 'María González',
+                contacto_telefono: '+56987654321',
+                fecha_preferida: '2024-06-05'
+            },
+            {
+                id: 3,
+                numero_solicitud: 'SR-1003',
+                fecha_solicitud: '2024-05-20T09:15:00Z',
+                estado: 'completada',
+                tipo_residuo: 'Vidrio',
+                cantidad: '20 kg',
+                direccion_retiro: 'Pasaje Verde 89, Ñuñoa',
+                descripcion: 'Botellas de vidrio y frascos diversos',
+                observaciones: 'Retiro completado exitosamente el 25/05/2024',
+                contacto_nombre: 'Carlos López',
+                contacto_telefono: '+56911223344',
+                fecha_preferida: '2024-05-25'
+            },
+            {
+                id: 4,
+                numero_solicitud: 'SR-1004',
+                fecha_solicitud: '2024-05-10T13:45:00Z',
+                estado: 'cancelada',
+                tipo_residuo: 'Electrónicos',
+                cantidad: '3 unidades',
+                direccion_retiro: 'Av. Los Pinos 222, La Florida',
+                descripcion: 'Equipos electrónicos obsoletos',
+                observaciones: 'Solicitud cancelada por el cliente',
+                contacto_nombre: 'Ana Martínez',
+                contacto_telefono: '+56955667788',
+                fecha_preferida: '2024-05-15'
+            },
+            {
+                id: 5,
+                numero_solicitud: 'SR-1005',
+                fecha_solicitud: '2024-06-02T11:20:00Z',
+                estado: 'pendiente',
+                tipo_residuo: 'Papel',
+                cantidad: '12 kg',
+                direccion_retiro: 'Camino del Sol 333, Providencia',
+                descripcion: 'Documentos y papel de oficina',
+                observaciones: 'Preferible retiro en horario de mañana',
+                contacto_nombre: 'Luis Rodríguez',
+                contacto_telefono: '+56933445566',
+                fecha_preferida: '2024-06-08'
+            }
+        ];
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🟢 Inicializando sistema Felmart...');
+            actualizarEstadisticas();
+            console.log('✅ Sistema inicializado correctamente');
+        });
+
+        // CARGAR SOLICITUDES
+        function cargarSolicitudes() {
+            showAlertBar('Actualizando solicitudes...', 'fa-sync-alt', '#17a2b8', 2000);
+            // Simular carga
+            setTimeout(() => {
+                console.log('📋 Solicitudes actualizadas');
+                hideAlertBar();
+            }, 2000);
+        }
+
+        // VER DETALLES
+        function verDetalles(id) {
+            console.log(`🔍 Cargando detalles de la solicitud ${id}...`);
+            
+            const solicitud = solicitudesData.find(s => s.id === id);
+            if (!solicitud) {
+                showAlertBar('No se encontraron los detalles de esta solicitud', 'fa-exclamation-triangle', '#dc3545', 3000);
+                return;
+            }
+
+            const modalBody = document.getElementById('detallesModalBody');
+            modalBody.innerHTML = generarDetallesHTML(solicitud);
+            
+            const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
+            modal.show();
+        }
+
+        // GENERAR HTML DETALLES
+        function generarDetallesHTML(solicitud) {
+            return `
+                <!-- Información Principal -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información General
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Número de Solicitud</div>
+                                    <div class="info-value">${solicitud.numero_solicitud}</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Fecha de Solicitud</div>
+                                    <div class="info-value">${formatearFecha(solicitud.fecha_solicitud)}</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-flag"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Estado</div>
+                                    <div class="info-value">
+                                        <span class="status-badge ${solicitud.estado}">
+                                            <i class="fas ${getEstadoIcon(solicitud.estado)}"></i>
+                                            ${getEstadoText(solicitud.estado)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles del Residuo -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <i class="fas fa-recycle"></i>
+                        Detalles del Residuo
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Tipo de Residuo</div>
+                                    <div class="info-value">${solicitud.tipo_residuo}</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-weight"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Cantidad</div>
+                                    <div class="info-value">${solicitud.cantidad}</div>
+                                </div>
+                            </div>
+                        </div>
+                        ${solicitud.descripcion ? `
+                            <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                                <div class="info-label">Descripción</div>
+                                <div class="info-value">${solicitud.descripcion}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Información de Retiro -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Información de Retiro
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-location-arrow"></i>
+                                </div>
+                                <div class="info-text">
+                                    <div class="info-label">Dirección</div>
+                                    <div class="info-value">${solicitud.direccion_retiro}</div>
+                                </div>
+                            </div>
+                            ${solicitud.fecha_preferida ? `
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="info-text">
+                                        <div class="info-label">Fecha Preferida</div>
+                                        <div class="info-value">${formatearFecha(solicitud.fecha_preferida)}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Contacto -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <i class="fas fa-address-book"></i>
+                        Información de Contacto
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            ${solicitud.contacto_nombre ? `
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="info-text">
+                                        <div class="info-label">Contacto</div>
+                                        <div class="info-value">${solicitud.contacto_nombre}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${solicitud.contacto_telefono ? `
+                                <div class="info-item">
+                                    <div class="info-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="info-text">
+                                        <div class="info-label">Teléfono</div>
+                                        <div class="info-value">${solicitud.contacto_telefono}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                ${solicitud.observaciones ? `
+                    <!-- Observaciones -->
+                    <div class="detail-section">
+                        <div class="section-title">
+                            <i class="fas fa-comment-alt"></i>
+                            Observaciones
+                        </div>
+                        <div class="section-content">
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #fff3e0, #fce4ec); border-radius: 8px; border-left: 4px solid #ff9800;">
+                                <div class="info-value" style="color: #5d4037;">${solicitud.observaciones}</div>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // FUNCIONES UTILIDAD
+        function getEstadoIcon(estado) {
+            const iconos = {
+                'pendiente': 'fa-clock',
+                'confirmada': 'fa-check-circle',
+                'completada': 'fa-check-double',
+                'cancelada': 'fa-times-circle'
+            };
+            return iconos[estado] || 'fa-question-circle';
+        }
+
+        function getEstadoText(estado) {
+            const textos = {
+                'pendiente': 'Pendiente',
+                'confirmada': 'Confirmada',
+                'completada': 'Completada',
+                'cancelada': 'Cancelada'
+            };
+            return textos[estado] || estado;
+        }
+
+        function formatearFecha(fecha) {
+            return new Date(fecha).toLocaleDateString('es-CL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // SISTEMA DE ALERTAS
+        function showAlertBar(message, icon = 'fa-info-circle', color = '#17a2b8', duration = 0) {
+            const alertBarContainer = document.getElementById('alertBarContainer');
+            const alertId = 'alertBar_' + Date.now();
+            
+            alertBarContainer.innerHTML = `
+                <div class="alert-bar" id="${alertId}">
+                    <i class="fas ${icon}" style="color: ${color};"></i>
+                    <span class="alert-bar-text">${message}</span>
+                </div>
+            `;
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    hideAlertBar();
+                }, duration);
+            }
+        }
+
+        function hideAlertBar() {
+            const alertBarContainer = document.getElementById('alertBarContainer');
+            const alertBar = alertBarContainer.querySelector('.alert-bar');
+            if (alertBar) {
+                alertBar.style.opacity = '0';
+                alertBar.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    alertBarContainer.innerHTML = '';
+                }, 300);
+            }
+        }
+
+        // ACTUALIZAR ESTADÍSTICAS
+        function actualizarEstadisticas() {
+            const stats = solicitudesData.reduce((acc, sol) => {
+                switch (sol.estado) {
+                    case 'pendiente': acc.pendientes++; break;
+                    case 'confirmada': acc.confirmadas++; break;
+                    case 'completada': acc.completadas++; break;
+                    case 'cancelada': acc.canceladas++; break;
+                }
+                return acc;
+            }, {
+                pendientes: 0,
+                confirmadas: 0,
+                completadas: 0,
+                canceladas: 0
+            });
+
+            document.getElementById('pendientesCount').textContent = stats.pendientes;
+            document.getElementById('confirmadasCount').textContent = stats.confirmadas;
+            document.getElementById('completadasCount').textContent = stats.completadas;
+            document.getElementById('canceladasCount').textContent = stats.canceladas;
+        }
+
+        // LOGS SISTEMA
+        console.log('🟢 Sistema Felmart - Panel de Cliente');
+        console.log('📋 Módulo: Gestión de Solicitudes de Retiro');
+        console.log('🔧 Versión: 3.0.0 - Diseño Mejorado');
+        console.log('📅 Inicializado:', new Date().toLocaleString('es-CL'));
+        console.log('✅ Todas las funcionalidades cargadas correctamente');
+    </script>
+</body>
+</html>
