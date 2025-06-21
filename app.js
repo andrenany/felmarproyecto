@@ -8,10 +8,26 @@ const helmet          = require('helmet');
 const cors            = require('cors');
 const expressLayouts  = require('express-ejs-layouts');
 const sequelize       = require('./config/database');
+
+// Cargar modelos y asociaciones
+require('./models');
+
+// Importar todas las rutas necesarias
 const apiRoutes       = require('./routes/api');
 const contactoRoutes = require('./routes/contactoRoutes');
 const precioresiduosRoutes = require('./routes/precioresiduosRoutes');
 const solicitudRoutes = require('./routes/solicitudRoutes');
+const clienteRoutes = require('./routes/clienteRoutes');
+const cotizacionRoutes = require('./routes/cotizacionRoutes');
+const certificadoRoutes = require('./routes/certificadoRoutes');
+const notificacionesRoutes = require('./routes/notificacionesRoutes');
+const perfilRoutes = require('./routes/perfilRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const visitaRoutes = require('./routes/visitaRoutes');
+const residuoRoutes = require('./routes/residuoRoutes');
+const regionRoutes = require('./routes/regionRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
+const calendarioRoutes = require('./routes/calendarioRoutes');
 
 const app = express();
 
@@ -66,7 +82,9 @@ app.use(express.urlencoded({ extended: true }));
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Layouts EJS
+// Configuración de Vistas y Layouts EJS (ORDEN CRÍTICO)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
@@ -139,77 +157,78 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.currentPath = req.path;
+  res.locals.currentPage = '';
   next();
 });
-
-// Configuración de vistas
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
 // Importar controladores
 const clienteController = require('./controllers/clienteController');
 
-// === RUTAS ESPECÍFICAS PARA LA PÁGINA DE CLIENTES ===
-// Ruta para renderizar la página de gestión de clientes
-app.get('/admin/clientes', (req, res) => {
-  // Verificar autenticación y permisos
-  if (!req.session.usuario) {
-    return res.redirect('/login');
-  }
-  
-  if (req.session.usuario.rol !== 'administrador') {
-    req.flash('error_msg', 'No tienes permisos para acceder a esta página');
-    return res.redirect('/dashboard');
-  }
-  
-  // Usar el controlador en lugar de renderizar directamente
-  clienteController.mostrarDashboard(req, res);
-});
+// === RUTAS DE CLIENTES (COMPLETAS) - PRIORIDAD ALTA ===
+// Rutas para las vistas de clientes (dashboard, solicitudes, cotizaciones, etc.)
+app.use('/clientes', clienteRoutes);
+console.log('✅ Rutas de clientes cargadas en /clientes');
 
-// === RUTAS PARA COTIZACIONES (ADMIN) ===
-// Ruta para renderizar la página de gestión de cotizaciones (para admin)
-app.get('/admin/cotizaciones', (req, res) => {
-  // Verificar autenticación y permisos
-  if (!req.session.usuario) {
-    return res.redirect('/login');
-  }
-  
-  if (req.session.usuario.rol !== 'administrador') {
-    req.flash('error_msg', 'No tienes permisos para acceder a esta página');
-    return res.redirect('/dashboard');
-  }
-  
-  // Renderizar la página de gestión de cotizaciones
-  res.render('admin/cotizaciones', {
-    titulo: 'Gestión de Cotizaciones',
-    usuario: req.session.usuario
-  });
-});
+// === RUTAS API ===
+app.use('/api', apiRoutes);
+console.log('✅ Rutas API cargadas en /api');
 
-// Importar rutas
+// === USAR RUTAS PRINCIPALES ===
 const routes = require('./routes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const notificacionesRoutes = require('./routes/notificacionesRoutes');
-const cotizacionRoutes = require('./routes/cotizacionRoutes');
-const certificadoRoutes = require('./routes/certificadoRoutes');
-
-// === USAR RUTAS PRINCIPALES ===
 app.use('/', routes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/admin', adminRoutes);
-app.use('/', certificadoRoutes);
-app.use('/notificaciones', notificacionesRoutes);
-app.use('/solicitudes', solicitudRoutes);
 
-// === RUTAS DE COTIZACIONES (INCLUYE RUTAS PÚBLICAS) ===
+// === RUTAS DE COTIZACIONES ===
 app.use('/cotizaciones', cotizacionRoutes);
 console.log('✅ Rutas de cotizaciones cargadas en /cotizaciones');
 
-// === RUTAS DE RESIDUOS Y COTIZACIONES ===
+// === RUTAS DE CERTIFICADOS ===
+app.use('/', certificadoRoutes);
+console.log('✅ Rutas de certificados cargadas');
+
+// === RUTAS DE NOTIFICACIONES ===
+app.use('/notificaciones', notificacionesRoutes);
+console.log('✅ Rutas de notificaciones cargadas en /notificaciones');
+
+// === RUTAS DE SOLICITUDES ===
+app.use('/solicitudes', solicitudRoutes);
+console.log('✅ Rutas de solicitudes cargadas en /solicitudes');
+
+// === RUTAS DE PERFIL ===
+app.use('/perfil', perfilRoutes);
+console.log('✅ Rutas de perfil cargadas en /perfil');
+
+// === RUTAS DE USUARIOS ===
+app.use('/usuarios', usuarioRoutes);
+console.log('✅ Rutas de usuarios cargadas en /usuarios');
+
+// === RUTAS DE VISITAS ===
+app.use('/visitas', visitaRoutes);
+console.log('✅ Rutas de visitas cargadas en /visitas');
+
+// === RUTAS DE RESIDUOS ===
+app.use('/residuos', residuoRoutes);
+console.log('✅ Rutas de residuos cargadas en /residuos');
+
+// === RUTAS DE REGIONES ===
+app.use('/regiones', regionRoutes);
+console.log('✅ Rutas de regiones cargadas en /regiones');
+
+// === RUTAS DE REPORTES ===
+app.use('/reportes', reporteRoutes);
+console.log('✅ Rutas de reportes cargadas en /reportes');
+
+// === RUTAS DE CALENDARIO ===
+app.use('/calendario', calendarioRoutes);
+console.log('✅ Rutas de calendario cargadas en /calendario');
+
+// === RUTAS DE RESIDUOS Y PRECIOS ===
 // Rutas para gestión de residuos y cotizaciones públicas
 app.use('/residuos', precioresiduosRoutes);
-console.log('✅ Rutas de residuos cargadas en /residuos');
+console.log('✅ Rutas de precios de residuos cargadas en /residuos');
 
 // Rutas administrativas de residuos
 app.use('/admin/residuos', precioresiduosRoutes);
@@ -219,10 +238,11 @@ console.log('✅ Rutas administrativas de residuos cargadas en /admin/residuos')
 // Rutas API - IMPORTANTE: cargar las rutas de clientes
 const clientesApiRoutes = require('./routes/api');
 app.use('/api', clientesApiRoutes);
+app.use('/clisolicitudes/api', clientesApiRoutes);
+console.log('✅ Rutas API de clientes cargadas en /api y /clisolicitudes/api');
 
 // Otras rutas API
 app.use('/api/cmf', require('./routes/api/cmfBancos.routes'));
-app.use('/api', apiRoutes);
 
 // Rutas de contacto
 app.use('/contacto', contactoRoutes);
@@ -244,8 +264,14 @@ app.use((err, req, res, next) => {
 if (require.main === module) {
   sequelize.sync()
       .then(() => {
-          app.listen(3000, () => {
-              console.log('Servidor iniciado en puerto 3000');
+          const PORT = process.env.PORT || 3000;
+          app.listen(PORT, () => {
+              console.log(`🚀 Servidor iniciado en puerto ${PORT}`);
+              console.log(`🌐 Accede a: http://localhost:${PORT}`);
+              console.log(`📊 Clientes: http://localhost:${PORT}/dashboard/clientes`);
+              console.log(`📝 Cotizaciones: http://localhost:${PORT}/admin/cotizaciones`);
+              console.log(`💰 Cotizar: http://localhost:${PORT}/cotizaciones/cotizar`);
+              console.log(`👥 Portal Cliente: http://localhost:${PORT}/clientes`);
           });
       })
       .catch(err => {

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= titulo %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/img/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -38,6 +39,7 @@
             line-height: 1.6;
         }
 
+        /* Header Navigation - Exacto como el segundo código */
         .header-nav {
             background: var(--nav-white);
             box-shadow: var(--nav-shadow);
@@ -109,6 +111,10 @@
         .nav-link.active {
             color: var(--nav-primary-color);
             background: rgba(0, 97, 110, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 16px;
         }
 
         .user-dropdown {
@@ -186,6 +192,11 @@
             color: var(--danger-color) !important;
         }
 
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
         .content-wrapper {
             padding: 2rem 1.5rem;
             max-width: 1400px;
@@ -213,6 +224,25 @@
             padding: 0;
             margin: 0;
             font-size: 0.875rem;
+        }
+
+        .breadcrumb-item {
+            color: var(--nav-secondary-color);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--nav-secondary-color);
+            opacity: 0.7;
+        }
+
+        .breadcrumb-item a {
+            color: var(--nav-primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--nav-primary-dark);
         }
 
         .btn-primary {
@@ -288,190 +318,7 @@
             font-weight: 500;
         }
 
-        .calendar-section {
-            background: var(--nav-white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-        }
-
-        .calendar-header {
-            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .calendar-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .calendar-nav button {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .calendar-nav button:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .calendar-grid {
-            padding: 2rem;
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-weekday {
-            text-align: center;
-            padding: 1rem 0.5rem;
-            font-weight: 600;
-            color: var(--nav-primary-color);
-            background-color: var(--light-bg);
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--nav-white);
-            display: flex;
-            flex-direction: column;
-            padding: 0.5rem;
-            min-height: 60px;
-        }
-
-        .calendar-day:hover {
-            background-color: var(--light-bg);
-            border-color: var(--nav-primary-light);
-        }
-
-        .calendar-day.other-month {
-            color: #ccc;
-            background-color: #f8f9fa;
-        }
-
-        .calendar-day.today {
-            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
-            color: white;
-            font-weight: bold;
-            border-color: var(--nav-primary-color);
-        }
-
-        .calendar-day.has-visits {
-            border-color: var(--nav-primary-light);
-            background-color: rgba(0, 97, 110, 0.05);
-        }
-
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            font-size: 0.875rem;
-        }
-
-        .visit-dots {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-        }
-
-        .visit-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .visit-dot.pendiente { background-color: var(--warning-color); }
-        .visit-dot.confirmada { background-color: var(--success-color); }
-        .visit-dot.completada { background-color: var(--nav-primary-color); }
-        .visit-dot.cancelada { background-color: var(--danger-color); }
-
-        .filter-section {
-            background: var(--nav-white);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid #e2e8f0;
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 1rem;
-            align-items: end;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--nav-primary-color);
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .form-control, .form-select {
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            background: var(--nav-white);
-            font-weight: 500;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--nav-primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 97, 110, 0.1);
-            outline: none;
-        }
-
-        .btn-outline-primary {
-            background: transparent;
-            border: 1px solid var(--nav-primary-color);
-            color: var(--nav-primary-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-
-        .btn-outline-primary:hover {
-            background: var(--nav-primary-color);
-            border-color: var(--nav-primary-color);
-            color: white;
-        }
-
+        /* Mejoras para las visitas programadas */
         .visits-list {
             background: var(--nav-white);
             border-radius: var(--border-radius);
@@ -485,87 +332,190 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
         }
 
         .visits-title {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--nav-primary-color);
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .visits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
         }
 
         .visit-item {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid #f1f3f4;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
 
         .visit-item:hover {
-            background-color: var(--light-bg);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 97, 110, 0.15);
+            border-color: var(--nav-primary-light);
         }
 
-        .visit-item:last-child {
-            border-bottom: none;
+        .visit-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
         }
 
-        .visit-info {
+        .visit-header h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.1rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
-        .visit-details h6 {
-            margin: 0 0 0.5rem 0;
-            color: var(--nav-primary-color);
-            font-weight: 600;
-            font-size: 1rem;
+        .visit-content {
+            padding: 1.5rem;
         }
 
         .visit-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
             color: var(--nav-secondary-color);
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 500;
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .meta-item i {
+            margin-right: 0.75rem;
+            width: 18px;
+            color: var(--nav-primary-color);
+            font-size: 1rem;
+        }
+
+        .visit-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-pendiente {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border: 1px solid #f6d55c;
+        }
+
+        .status-confirmada {
+            background: linear-gradient(135deg, #d4edda, #a8e6cf);
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+
+        .status-evaluacion {
+            background: linear-gradient(135deg, #cce5ff, #b3d9ff);
+            color: #004085;
+            border: 1px solid #17a2b8;
+        }
+
+        .status-retiro {
+            background: linear-gradient(135deg, #e2e3e5, #ced4da);
+            color: #383d41;
+            border: 1px solid #6c757d;
+        }
+
+        .status-cancelada {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #dc3545;
         }
 
         .visit-actions {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .visit-status {
-            padding: 0.375rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
+        .visit-actions button {
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            border: 2px solid transparent;
+            flex: 1;
+            max-width: 120px;
         }
 
-        .status-pendiente {
-            background-color: rgba(255, 193, 7, 0.15);
-            color: #b45309;
+        .visit-actions .btn-outline-primary {
+            color: var(--nav-primary-color);
+            border-color: var(--nav-primary-color);
+            background: white;
         }
 
-        .status-confirmada {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #166534;
+        .visit-actions .btn-outline-primary:hover {
+            background: var(--nav-primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.3);
         }
 
-        .status-completada {
-            background-color: rgba(0, 97, 110, 0.15);
-            color: var(--nav-primary-dark);
+        .visit-actions .btn-outline-warning {
+            color: #f39c12;
+            border-color: #f39c12;
+            background: white;
         }
 
-        .status-cancelada {
-            background-color: rgba(220, 53, 69, 0.15);
-            color: #991b1b;
+        .visit-actions .btn-outline-warning:hover {
+            background: #f39c12;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
         }
 
+        .visit-actions .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            background: white;
+        }
+
+        .visit-actions .btn-outline-danger:hover {
+            background: var(--danger-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Modal Mejorado */
         .modal-content {
-            border-radius: 16px;
             border: none;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
 
@@ -573,191 +523,223 @@
             background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
             color: white;
             border-bottom: none;
-            padding: 1.5rem 2rem;
+            padding: 2rem;
         }
 
         .modal-title {
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-close {
             filter: invert(1);
             opacity: 0.8;
+            font-size: 1.5rem;
         }
 
         .btn-close:hover {
             opacity: 1;
+            transform: scale(1.1);
         }
 
         .modal-body {
-            padding: 2rem;
+            padding: 2.5rem;
             background: #fafbfc;
         }
 
         .modal-footer {
-            background: var(--nav-white);
+            background: white;
             border-top: 1px solid #e2e8f0;
-            padding: 1.5rem 2rem;
+            padding: 2rem;
             gap: 1rem;
         }
 
-        .btn-secondary {
-            background: var(--nav-secondary-color);
+        /* Form Controls Mejorados */
+        .form-label {
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: var(--nav-primary-light);
+            font-size: 1rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--nav-primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 97, 110, 0.1);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        /* Detalles Modal Mejorado */
+        .detail-group {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-value {
+            color: var(--nav-secondary-color);
+            margin: 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Botones Personalizados */
+        .btn-custom-primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
             border: none;
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
             font-weight: 600;
-            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 97, 110, 0.2);
+        }
+
+        .btn-custom-primary:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 97, 110, 0.3);
+            color: white;
+        }
+
+        .btn-custom-secondary {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            color: var(--nav-secondary-color);
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom-secondary:hover {
+            background: #e9ecef;
+            border-color: #ced4da;
+            transform: translateY(-2px);
+            color: var(--nav-secondary-color);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
             background: #5a6268;
             color: white;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
 
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.8rem;
-            border-radius: 6px;
-        }
-
-        @media (max-width: 768px) {
-            .filter-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .stats-cards .row > div {
-                margin-bottom: 15px;
-            }
-        }
-
-        /* Notificaciones (copiado de clientes.ejs) */
-        .notification-bell {
-            position: relative;
-            background: transparent;
-            border: 1px solid rgba(0, 97, 110, 0.2);
-            color: var(--nav-secondary-color);
-            padding: 0.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--nav-transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-        }
-        .notification-bell:hover {
-            color: var(--nav-primary-color);
-            border-color: var(--nav-primary-color);
-            background: rgba(0, 97, 110, 0.05);
-        }
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger-color);
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #c82333);
+            border: none;
             color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            border: 2px solid var(--nav-white);
-        }
-        .notification-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            background: var(--nav-white);
+            padding: 0.875rem 2rem;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            width: 300px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
-            z-index: 1001;
-            border: 1px solid #e2e8f0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .notification-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .notification-header {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: var(--light-bg);
-            border-radius: 12px 12px 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        .notification-title {
             font-weight: 600;
-            color: var(--nav-primary-color);
-            margin: 0;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
         }
-        .notification-item {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid #f1f3f4;
-            transition: all 0.2s ease;
-            cursor: pointer;
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #a71e2a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+            color: white;
         }
-        .notification-item:hover {
-            background: var(--light-bg);
-        }
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-        .notification-item.unread {
-            background: rgba(0, 97, 110, 0.02);
-            border-left: 3px solid var(--nav-primary-color);
-        }
-        .notification-text {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--nav-primary-color);
-            margin: 0 0 0.25rem 0;
-        }
-        .notification-desc {
-            font-size: 0.75rem;
-            color: var(--nav-secondary-color);
-            margin: 0 0 0.5rem 0;
-            line-height: 1.4;
-        }
-        .notification-time {
-            font-size: 0.7rem;
-            color: var(--nav-secondary-color);
-            font-style: italic;
-        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .notification-dropdown {
-                width: 280px;
-                right: -50px;
+            .nav-menu {
+                display: none;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .visits-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .visit-actions {
+                flex-direction: column;
+            }
+
+            .visit-actions button {
+                max-width: none;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+            }
+
+            .modal-footer {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header Navigation -->
+    <!-- Header Navigation - Actualizado para coincidir con el segundo código -->
     <header class="header-nav">
         <div class="container-fluid px-4">
             <div class="nav-container">
@@ -767,6 +749,7 @@
                     </div>
                     <span class="logo-text">Felmart</span>
                 </a>
+
                 <nav>
                     <ul class="nav-menu">
                         <li class="nav-item">
@@ -788,7 +771,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/visitas" class="nav-link">
+                            <a href="/admin/visitas" class="nav-link active">
                                 <i class="fas fa-calendar-check"></i>
                                 <span>Visitas</span>
                             </a>
@@ -800,7 +783,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/residuos" class="nav-link active">
+                            <a href="/admin/residuos" class="nav-link">
                                 <i class="fas fa-chart-bar"></i>
                                 <span>Residuos y precios</span>
                             </a>
@@ -813,346 +796,392 @@
                         </li>
                     </ul>
                 </nav>
-                <div class="user-area" style="display: flex; align-items: center; gap: 0.75rem;">
-                    <!-- Notificaciones -->
-                    <button class="notification-bell" id="notificationBell" type="button" aria-label="Notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notificationBadge" style="display:none;">0</span>
+
+                <div class="user-dropdown">
+                    <button class="user-btn" id="adminDropdownBtn" type="button" onclick="toggleDropdown()">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="notification-header">
-                            <span class="notification-title"><i class="fas fa-bell"></i> Notificaciones</span>
-                        </div>
-                        <div id="notificationList">
-                            <div class="text-center p-3 text-muted">Cargando notificaciones...</div>
-                        </div>
-                    </div>
-                    <!-- Usuario -->
-                    <div class="user-dropdown">
-                        <button class="user-btn" id="adminDropdownBtn" type="button">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Administrador</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu" id="adminDropdownMenu">
-                            <a href="/admin/perfil" class="dropdown-item">
-                                <i class="fas fa-user"></i> Mi Perfil
-                            </a>
-                            <a href="/admin/notificaciones" class="dropdown-item">
-                                <i class="fas fa-bell"></i> Notificaciones
-                            </a>
-                            <a href="/admin/auditoria" class="dropdown-item">
-                                <i class="fas fa-shield-alt"></i> Registro de Actividad
-                            </a>
-                            <a href="/admin/backups" class="dropdown-item">
-                                <i class="fas fa-database"></i> Respaldo de Datos
-                            </a>
-                            <a href="/admin/ayuda" class="dropdown-item">
-                                <i class="fas fa-question-circle"></i> Ayuda y Soporte
-                            </a>
-                            <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
-                            <a href="/" class="dropdown-item">
-                                <i class="fas fa-home"></i> Volver al Inicio
-                            </a>
-                            <a href="/logout" class="dropdown-item text-danger">
-                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                            </a>
-                        </div>
+                    <div class="dropdown-menu" id="adminDropdownMenu">
+                        <a href="/admin/perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="/admin/notificaciones" class="dropdown-item">
+                            <i class="fas fa-bell"></i> Notificaciones
+                        </a>
+                        <a href="/admin/auditoria" class="dropdown-item">
+                            <i class="fas fa-shield-alt"></i> Registro de Actividad
+                        </a>
+                        <a href="/admin/backups" class="dropdown-item">
+                            <i class="fas fa-database"></i> Respaldo de Datos
+                        </a>
+                        <a href="/admin/ayuda" class="dropdown-item">
+                            <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                        </a>
+                        <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                        <a href="/" class="dropdown-item">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <a href="/logout" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Content -->
     <div class="content-wrapper">
-        <div class="page-header d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="page-title">Gestión de Visitas</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
-                        <li class="breadcrumb-item active">Visitas</li>
-                    </ol>
-                </nav>
-            </div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevaVisitaModal">
-                <i class="fas fa-plus me-2"></i> Nueva Visita
-            </button>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="stats-cards">
-            <div class="row">
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div class="stat-icon pendientes">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-number" id="pendientesCount">0</div>
-                        </div>
-                        <div class="stat-label">Visitas Pendientes</div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div class="stat-icon confirmadas">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-number" id="confirmadasCount">0</div>
-                        </div>
-                        <div class="stat-label">Visitas Confirmadas</div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div class="stat-icon completadas">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-number" id="completadasCount">0</div>
-                        </div>
-                        <div class="stat-label">Visitas Completadas</div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div class="stat-icon canceladas">
-                                <i class="fas fa-times-circle"></i>
-                            </div>
-                            <div class="stat-number" id="canceladasCount">0</div>
-                        </div>
-                        <div class="stat-label">Visitas Canceladas</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filters -->
-        <div class="filter-section">
-            <div class="filter-row">
-                <div class="flex-grow-1">
-                    <label class="form-label">Buscar cliente</label>
-                    <input type="text" class="form-control" id="buscarCliente" placeholder="Nombre del cliente...">
-                </div>
+        <!-- Header -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <label class="form-label">Estado</label>
-                    <select class="form-select" id="filtroEstado">
-                        <option value="">Todos los estados</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="confirmada">Confirmada</option>
-                        <option value="completada">Completada</option>
-                        <option value="cancelada">Cancelada</option>
-                    </select>
+                    <h1 class="page-title">Gestión de Visitas</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Visitas</li>
+                        </ol>
+                    </nav>
                 </div>
-                <div>
-                    <label class="form-label">Mes</label>
-                    <select class="form-select" id="filtroMes">
-                        <option value="">Todos los meses</option>
-                        <option value="0">Enero</option>
-                        <option value="1">Febrero</option>
-                        <option value="2">Marzo</option>
-                        <option value="3">Abril</option>
-                        <option value="4">Mayo</option>
-                        <option value="5">Junio</option>
-                        <option value="6">Julio</option>
-                        <option value="7">Agosto</option>
-                        <option value="8">Septiembre</option>
-                        <option value="9">Octubre</option>
-                        <option value="10">Noviembre</option>
-                        <option value="11">Diciembre</option>
-                    </select>
-                </div>
-                <div>
-                    <button class="btn btn-outline-primary" onclick="aplicarFiltros()">
-                        <i class="fas fa-filter me-2"></i> Filtrar
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Calendar -->
-            <div class="col-lg-8">
-                <div class="calendar-section">
-                    <div class="calendar-header">
-                        <h3 class="calendar-title" id="currentMonth">Junio 2025</h3>
-                        <div class="calendar-nav">
-                            <button onclick="previousMonth()">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button onclick="todayMonth()">Hoy</button>
-                            <button onclick="nextMonth()">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="calendar-grid">
-                        <div class="calendar-weekdays">
-                            <div class="calendar-weekday">Dom</div>
-                            <div class="calendar-weekday">Lun</div>
-                            <div class="calendar-weekday">Mar</div>
-                            <div class="calendar-weekday">Mié</div>
-                            <div class="calendar-weekday">Jue</div>
-                            <div class="calendar-weekday">Vie</div>
-                            <div class="calendar-weekday">Sáb</div>
-                        </div>
-                        <div class="calendar-days" id="calendarDays">
-                            <!-- Calendar days will be generated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Today's Visits -->
-            <div class="col-lg-4">
-                <div class="visits-list">
-                    <div class="visits-header">
-                        <h4 class="visits-title">Visitas de Hoy</h4>
-                        <button class="btn btn-sm btn-primary" onclick="verTodasLasVisitas()">
-                            Ver Todas
-                        </button>
-                    </div>
-                    <div id="todayVisits">
-                        <div class="text-center p-4">
-                            <div class="spinner-border text-primary mb-3" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
-                            <p class="text-muted">Cargando visitas...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- All Visits List -->
-        <div class="visits-list mt-4" id="allVisitsList" style="display: none;">
-            <div class="visits-header">
-                <h4 class="visits-title">Todas las Visitas</h4>
-                <button class="btn btn-sm btn-outline-primary" onclick="ocultarTodasLasVisitas()">
-                    Ocultar
+                <button class="btn btn-primary" onclick="mostrarModalNuevaVisita()">
+                    <i class="fas fa-plus me-2"></i>Nueva Visita
                 </button>
             </div>
-            <div id="allVisits">
-                <!-- All visits will be loaded here -->
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="row stats-cards mb-4 g-4" id="stats-container">
+            <!-- Las tarjetas de estadísticas se generarán dinámicamente -->
+        </div>
+
+        <!-- Lista de Visitas -->
+        <div class="visits-list">
+            <div class="visits-header">
+                <h2 class="visits-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Visitas Programadas
+                </h2>
+            </div>
+            <div id="visitasContainer" class="visits-grid">
+                <!-- Las visitas se cargarán dinámicamente -->
             </div>
         </div>
     </div>
 
-    <!-- Modal Nueva/Editar Visita -->
-    <div class="modal fade" id="nuevaVisitaModal" tabindex="-1" aria-labelledby="nuevaVisitaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="nuevaVisitaModalLabel">Nueva Visita</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="visitaForm">
-                        <input type="hidden" id="visitaId" name="id">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="clienteId" class="form-label">Cliente *</label>
-                                <select class="form-select" id="clienteId" name="clienteId" required>
-                                    <option value="">Seleccione un cliente</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="tipoVisita" class="form-label">Tipo de Visita *</label>
-                                <select class="form-select" id="tipoVisita" name="tipoVisita" required>
-                                    <option value="">Seleccione tipo</option>
-                                    <option value="evaluacion">Evaluación</option>
-                                    <option value="recoleccion">Recolección</option>
-                                    <option value="seguimiento">Seguimiento</option>
-                                    <option value="inspeccion">Inspección</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <select class="form-select" id="estado" name="estado">
-                                    <option value="pendiente">Pendiente</option>
-                                    <option value="confirmada">Confirmada</option>
-                                    <option value="en_proceso">En Proceso</option>
-                                    <option value="completada">Completada</option>
-                                    <option value="cancelada">Cancelada</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="fechaVisita" class="form-label">Fecha *</label>
-                                <input type="date" class="form-control" id="fechaVisita" name="fechaVisita" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="horaVisita" class="form-label">Hora *</label>
-                                <input type="time" class="form-control" id="horaVisita" name="horaVisita" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="duracionEstimada" class="form-label">Duración Estimada (minutos)</label>
-                                <input type="number" class="form-control" id="duracionEstimada" name="duracionEstimada" value="60" min="15" step="15">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="direccionVisita" class="form-label">Dirección</label>
-                                <input type="text" class="form-control" id="direccionVisita" name="direccionVisita">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="observaciones" class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="observaciones" name="observaciones" rows="2"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" onclick="guardarVisita()">
-                                <i class="fas fa-save me-2"></i> Guardar Visita
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Ver Detalles -->
-    <div class="modal fade" id="detallesVisitaModal" tabindex="-1">
+    <!-- Modal Nueva Visita -->
+    <div class="modal fade" id="nuevaVisitaModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="fas fa-eye me-2"></i> Detalles de la Visita
+                        <i class="fas fa-calendar-plus"></i>
+                        Nueva Visita
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="detallesVisitaContent">
-                    <!-- Content will be loaded here -->
+                <div class="modal-body">
+                    <form id="nuevaVisitaForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-building"></i>
+                                    Cliente *
+                                </label>
+                                <select class="form-select" name="clienteId" id="clienteSelect" required>
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-tag"></i>
+                                    Tipo de Visita *
+                                </label>
+                                <select class="form-select" name="tipoVisita" required>
+                                    <option value="">Seleccione tipo</option>
+                                    <option value="evaluacion">Evaluación</option>
+                                    <option value="retiro">Retiro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Fecha *
+                                </label>
+                                <input type="date" class="form-control" name="fecha" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-clock"></i>
+                                    Hora *
+                                </label>
+                                <input type="time" class="form-control" name="hora" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-file-invoice"></i>
+                                    Cotización (Opcional)
+                                </label>
+                                <select class="form-select" name="cotizacionId" id="cotizacionSelect">
+                                    <option value="">Seleccione una cotización</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Solicitud de Retiro (Opcional)
+                                </label>
+                                <select class="form-select" name="solicitudId" id="solicitudSelect">
+                                    <option value="">Seleccione una solicitud</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-comment"></i>
+                                Observaciones *
+                            </label>
+                            <textarea class="form-control" name="observaciones" rows="3" required placeholder="Ingrese observaciones para la visita..."></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="editarVisitaDesdeDetalles()">
-                        <i class="fas fa-edit me-2"></i> Editar
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-custom-primary" onclick="guardarVisita()">
+                        <i class="fas fa-save me-2"></i>Guardar Visita
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Detalles Visita -->
+    <div class="modal fade" id="detallesVisitaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Detalles de la Visita
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-building"></i>
+                                    Cliente
+                                </div>
+                                <p class="detail-value" id="detallesCliente">-</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-tag"></i>
+                                    Tipo de Visita
+                                </div>
+                                <p class="detail-value" id="detallesTipo">-</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Fecha
+                                </div>
+                                <p class="detail-value" id="detallesFecha">-</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-clock"></i>
+                                    Hora
+                                </div>
+                                <p class="detail-value" id="detallesHora">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <div class="detail-label">
+                            <i class="fas fa-info-circle"></i>
+                            Estado
+                        </div>
+                        <p class="detail-value" id="detallesEstado">-</p>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <div class="detail-label">
+                            <i class="fas fa-comment"></i>
+                            Observaciones
+                        </div>
+                        <p class="detail-value" id="detallesObservaciones">-</p>
+                    </div>
+                    
+                    <!-- Contenedor para la respuesta del cliente -->
+                    <div id="detallesRespuestaClienteContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Visita -->
+    <div class="modal fade" id="editarVisitaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit"></i>
+                        Editar Visita
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarVisitaForm">
+                        <input type="hidden" name="visitaId" id="editVisitaId">
+                        <input type="hidden" name="clienteId" id="editClienteId">
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-tag"></i>
+                                        Tipo de Visita
+                                    </label>
+                                    <select class="form-select" name="tipoVisita" id="editTipoVisita" required>
+                                        <option value="">Seleccione tipo</option>
+                                        <option value="evaluacion">Evaluación</option>
+                                        <option value="retiro">Retiro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-info-circle"></i>
+                                        Estado
+                                    </label>
+                                    <select class="form-select" name="estado" id="editEstado" required>
+                                        <option value="">Seleccione estado</option>
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="confirmada">Confirmada</option>
+                                        <option value="evaluacion">Evaluación</option>
+                                        <option value="retiro">Retiro</option>
+                                        <option value="cancelada">Cancelada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-calendar"></i>
+                                        Fecha
+                                    </label>
+                                    <input type="date" class="form-control" name="fecha" id="editFecha" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-clock"></i>
+                                        Hora
+                                    </label>
+                                    <input type="time" class="form-control" name="hora" id="editHora" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-comment"></i>
+                                Observaciones
+                            </label>
+                            <textarea class="form-control" name="observaciones" id="editObservaciones" rows="4" placeholder="Ingrese observaciones para la visita..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-custom-primary" onclick="guardarEdicionVisita()">
+                        <i class="fas fa-save me-2"></i>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Eliminar -->
+    <div class="modal fade" id="confirmarEliminarModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--danger-color), #c82333);">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-3">
+                        <div class="mb-4">
+                            <i class="fas fa-trash-alt text-danger" style="font-size: 4rem; opacity: 0.7;"></i>
+                        </div>
+                        <h6 class="mb-3" style="color: var(--nav-primary-color); font-weight: 600;">
+                            ¿Está seguro de que desea eliminar esta visita?
+                        </h6>
+                        <p class="text-danger mb-0">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            <strong>Esta acción no se puede deshacer.</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="fas fa-trash-alt me-2"></i>
+                        Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         // Variables globales
-        let currentDate = new Date();
-        let currentVisits = [];
+        let visitaModal;
         let allClients = [];
-        let allEmployees = [];
-        let editingVisitId = null;
-        let visitasData = [];
-        let currentPage = 1;
-        let totalPages = 1;
-        let isLoading = false;
+        let allCotizaciones = [];
+        let allSolicitudes = [];
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -1164,12 +1193,11 @@
             try {
                 console.log('Cargando datos iniciales...');
                 await loadClients();
+                await loadCotizaciones();
+                await loadSolicitudes();
                 await loadVisits();
                 await loadStatistics();
-                generateCalendar();
-                loadTodayVisits();
                 initializeEventListeners();
-                inicializarNotificaciones();
                 console.log('Aplicación inicializada correctamente');
             } catch (error) {
                 console.error('Error al cargar la aplicación:', error);
@@ -1180,7 +1208,7 @@
         // Event Listeners
         function initializeEventListeners() {
             // Dropdown toggles
-            document.getElementById('adminDropdownBtn').addEventListener('click', function() {
+            document.getElementById('adminDropdownBtn')?.addEventListener('click', function() {
                 const dropdown = document.getElementById('adminDropdownMenu');
                 dropdown.classList.toggle('show');
             });
@@ -1190,15 +1218,29 @@
                 const userDropdown = document.getElementById('adminDropdownMenu');
                 
                 if (!event.target.closest('.user-dropdown')) {
-                    userDropdown.classList.remove('show');
+                    userDropdown?.classList.remove('show');
                 }
             });
 
             // Set minimum date to today
-            const fechaInput = document.getElementById('fechaVisita');
+            const fechaInput = document.querySelector('input[name="fecha"]');
             if (fechaInput) {
                 fechaInput.min = new Date().toISOString().split('T')[0];
             }
+
+            // Cliente change event
+            document.getElementById('clienteSelect')?.addEventListener('change', function() {
+                const clienteId = this.value;
+                if (clienteId) {
+                    loadCotizacionesByCliente(clienteId);
+                    loadSolicitudesByCliente(clienteId);
+                }
+            });
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('adminDropdownMenu');
+            dropdown.classList.toggle('show');
         }
 
         // API Functions
@@ -1210,15 +1252,15 @@
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 const data = await response.json();
-                allClients = Array.isArray(data) ? data : [];
+                allClients = data.success ? data.data : [];
                 
                 console.log(`${allClients.length} clientes cargados`);
                 
-                const select = document.getElementById('clienteId');
+                const select = document.getElementById('clienteSelect');
                 if (select) {
                     select.innerHTML = '<option value="">Seleccionar cliente...</option>';
                     allClients.forEach(client => {
-                        select.innerHTML += `<option value="${client.id}">${client.nombre_empresa}</option>`;
+                        select.innerHTML += `<option value="${client.rut}">${client.nombre_empresa}</option>`;
                     });
                 }
             } catch (error) {
@@ -1228,10 +1270,125 @@
             }
         }
 
+        async function loadCotizaciones() {
+            try {
+                const response = await fetch('/cotizaciones/api/listar');
+                if (response.ok) {
+                    const data = await response.json();
+                    allCotizaciones = data.success ? data.cotizaciones || [] : [];
+                    console.log('Cotizaciones cargadas:', allCotizaciones.length);
+                    console.log('Estructura de cotizaciones:', allCotizaciones[0]); // Para debug
+                }
+            } catch (error) {
+                console.error('Error loading cotizaciones:', error);
+                allCotizaciones = [];
+            }
+        }
+
+        async function loadSolicitudes() {
+            try {
+                const response = await fetch('/api/solicitudes/listar');
+                if (response.ok) {
+                    const data = await response.json();
+                    allSolicitudes = data.data || [];
+                    console.log('Solicitudes cargadas:', allSolicitudes.length);
+                }
+            } catch (error) {
+                console.error('Error loading solicitudes:', error);
+            }
+        }
+
+        async function loadCotizacionesByCliente(clienteId) {
+            try {
+                console.log('Filtrando cotizaciones para cliente RUT:', clienteId);
+                console.log('Total cotizaciones disponibles:', allCotizaciones.length);
+                
+                // Filtrar cotizaciones donde el cliente coincida con el RUT seleccionado
+                const cotizacionesCliente = allCotizaciones.filter(cotizacion => {
+                    // Buscar en detallesJson
+                    if (cotizacion.detallesJson) {
+                        try {
+                            const detalles = typeof cotizacion.detallesJson === 'string' 
+                                ? JSON.parse(cotizacion.detallesJson) 
+                                : cotizacion.detallesJson;
+                            
+                            const datosContacto = detalles.datosContacto || detalles.cliente;
+                            
+                            if (datosContacto && datosContacto.rut === clienteId) {
+                                console.log('✅ Cotización encontrada para cliente:', cotizacion.numeroCotizacion);
+                                return true;
+                            }
+                        } catch (e) {
+                            console.log('Error parsing detallesJson:', e);
+                        }
+                    }
+                    
+                    // Buscar en detalles (campo alternativo)
+                    if (cotizacion.detalles) {
+                        try {
+                            const detalles = typeof cotizacion.detalles === 'string' 
+                                ? JSON.parse(cotizacion.detalles) 
+                                : cotizacion.detalles;
+                            
+                            const datosContacto = detalles.datosContacto || detalles.cliente;
+                            
+                            if (datosContacto && datosContacto.rut === clienteId) {
+                                console.log('✅ Cotización encontrada para cliente (detalles):', cotizacion.numeroCotizacion);
+                                return true;
+                            }
+                        } catch (e) {
+                            console.log('Error parsing detalles:', e);
+                        }
+                    }
+                    
+                    // Buscar en campos directos (si existen)
+                    if (cotizacion.rut === clienteId) {
+                        console.log('✅ Cotización encontrada para cliente (RUT directo):', cotizacion.numeroCotizacion);
+                        return true;
+                    }
+                    
+                    return false;
+                });
+                
+                console.log(`📋 Cotizaciones filtradas para cliente ${clienteId}:`, cotizacionesCliente.length);
+                
+                const select = document.getElementById('cotizacionSelect');
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccione una cotización</option>';
+                    
+                    if (cotizacionesCliente.length === 0) {
+                        select.innerHTML += '<option value="" disabled>No hay cotizaciones para este cliente</option>';
+                    } else {
+                        cotizacionesCliente.forEach(cotizacion => {
+                            const numeroCotizacion = cotizacion.numeroCotizacion || cotizacion.numero_cotizacion;
+                            select.innerHTML += `<option value="${numeroCotizacion}">Cotización #${numeroCotizacion}</option>`;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading cotizaciones by cliente:', error);
+            }
+        }
+
+        async function loadSolicitudesByCliente(clienteId) {
+            try {
+                const solicitudesCliente = allSolicitudes.filter(s => s.clienteRut == clienteId);
+                const select = document.getElementById('solicitudSelect');
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccione una solicitud</option>';
+                    solicitudesCliente.forEach(solicitud => {
+                        select.innerHTML += `<option value="${solicitud.id}">Solicitud #${solicitud.numero_solicitud}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading solicitudes by cliente:', error);
+            }
+        }
+
         async function loadVisits() {
             try {
                 console.log('Cargando visitas...');
-                const response = await fetch('/api/visitas');
+                const response = await fetch('/visitas/api/visitas');
                 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -1239,276 +1396,209 @@
                 }
                 
                 const data = await response.json();
+                console.log('Datos de visitas recibidos:', data);
+                
                 if (!data.success) {
                     throw new Error(data.message || 'Error al cargar las visitas');
                 }
                 
-                console.log(`${data.visitas.length} visitas cargadas`);
+                // Verificar que data.data existe y es un array
+                const visitas = data.data || [];
+                console.log(`${visitas.length} visitas cargadas`);
                 
-                // Guardar las visitas actuales
-                currentVisits = data.visitas;
-                
-                // Actualizar la tabla de visitas
-                updateVisitsTable(data.visitas);
-                
-                // Actualizar el calendario
-                generateCalendar();
-                
-                // Actualizar visitas de hoy
-                loadTodayVisits();
+                // Actualizar la lista de visitas
+                updateVisitsList(visitas);
                 
             } catch (error) {
                 console.error('Error al cargar visitas:', error);
                 showAlert('Error al cargar las visitas: ' + error.message, 'error');
-                currentVisits = [];
             }
         }
 
         async function loadStatistics() {
             try {
-                console.log('Cargando estadísticas...');
-                const response = await fetch('/api/visitas/estadisticas');
+                const response = await fetch('/visitas/api/visitas/estadisticas');
+                if (!response.ok) throw new Error('No se pudieron cargar las estadísticas.');
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const stats = await response.json();
-                console.log('Estadísticas recibidas:', stats);
-                
-                // Actualizar contadores
-                document.getElementById('pendientesCount').textContent = stats.pendientes || 0;
-                document.getElementById('confirmadasCount').textContent = stats.confirmadas || 0;
-                document.getElementById('completadasCount').textContent = stats.completadas || 0;
-                document.getElementById('canceladasCount').textContent = stats.canceladas || 0;
-                
-                // Actualizar clases de las tarjetas según el estado
-                updateStatCardClass('pendientesCount', stats.pendientes);
-                updateStatCardClass('confirmadasCount', stats.confirmadas);
-                updateStatCardClass('completadasCount', stats.completadas);
-                updateStatCardClass('canceladasCount', stats.canceladas);
-                
-            } catch (error) {
-                console.error('Error al cargar estadísticas:', error);
-                showAlert('Error al cargar las estadísticas: ' + error.message, 'error');
-                
-                // Establecer valores por defecto
-                document.getElementById('pendientesCount').textContent = '0';
-                document.getElementById('confirmadasCount').textContent = '0';
-                document.getElementById('completadasCount').textContent = '0';
-                document.getElementById('canceladasCount').textContent = '0';
-            }
-        }
+                const result = await response.json();
+                if (!result.success) throw new Error(result.message || 'Error en la respuesta de la API.');
 
-        function updateStatCardClass(elementId, value) {
-            const element = document.getElementById(elementId);
-            const card = element.closest('.stat-card');
-            if (card) {
-                if (value > 0) {
-                    card.classList.add('has-data');
-                } else {
-                    card.classList.remove('has-data');
-                }
-            }
-        }
+                const stats = result.data;
+                const container = document.getElementById('stats-container');
+                container.innerHTML = '';
 
-        // Calendar Functions
-        function generateCalendar() {
-            if (!currentVisits) return;
-            
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            
-            // Get visits for this month
-            const monthVisits = currentVisits.filter(visit => {
-                const visitDate = new Date(visit.fecha_visita);
-                return visitDate.getMonth() === month && visitDate.getFullYear() === year;
-            });
-            
-            // Update month title
-            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                               'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
-            
-            // Get first day and number of days
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            // Generate calendar HTML
-            let calendarHTML = '';
-            let day = 1;
-            
-            for (let week = 0; week < 6; week++) {
-                for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
-                    if (week === 0 && dayOfWeek < firstDay) {
-                        // Previous month days
-                        const prevMonth = month === 0 ? 11 : month - 1;
-                        const prevYear = month === 0 ? year - 1 : year;
-                        const prevMonthDays = new Date(prevYear, prevMonth + 1, 0).getDate();
-                        const prevDay = prevMonthDays - firstDay + dayOfWeek + 1;
-                        calendarHTML += `<div class="calendar-day other-month"><span class="day-number">${prevDay}</span></div>`;
-                    } else if (day > daysInMonth) {
-                        // Next month days
-                        const nextDay = day - daysInMonth;
-                        calendarHTML += `<div class="calendar-day other-month"><span class="day-number">${nextDay}</span></div>`;
-                        day++;
-                    } else {
-                        // Current month days
-                        const today = new Date();
-                        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                        
-                        // Get visits for this day
-                        const dayVisits = monthVisits.filter(visit => {
-                            const visitDate = new Date(visit.fecha_visita);
-                            return visitDate.getDate() === day;
-                        });
-                        
-                        const hasVisits = dayVisits.length > 0;
-                        const todayClass = isToday ? 'today' : '';
-                        const visitsClass = hasVisits ? 'has-visits' : '';
-                        
-                        // Generate visit dots
-                        const visitDots = dayVisits.map(visit => 
-                            `<span class="visit-dot ${visit.estado}"></span>`
-                        ).join('');
-                        
-                        calendarHTML += `
-                            <div class="calendar-day ${todayClass} ${visitsClass}" onclick="showDayVisits(${year}, ${month}, ${day})">
-                                <span class="day-number">${day}</span>
-                                <div class="visit-dots">${visitDots}</div>
+                const statConfig = {
+                    pendienteDeRespuesta: { label: 'Pendiente de Respuesta', icon: 'fa-clock', color: '#ffc107' },
+                    confirmada: { label: 'Confirmadas', icon: 'fa-check-circle', color: '#28a745' },
+                    evaluacion: { label: 'En Evaluación', icon: 'fa-search', color: '#17a2b8' },
+                    retiro: { label: 'Retiros', icon: 'fa-truck', color: '#00616e' },
+                    cancelada: { label: 'Canceladas', icon: 'fa-times-circle', color: '#dc3545' },
+                };
+
+                for (const key in statConfig) {
+                    if (Object.hasOwnProperty.call(statConfig, key)) {
+                        const config = statConfig[key];
+                        const count = stats[key] || 0;
+                        const cardHTML = `
+                            <div class="col">
+                                <div class="stat-card">
+                                    <div class="stat-content">
+                                        <div class="stat-icon" style="background-color: ${config.color};">
+                                            <i class="fas ${config.icon}"></i>
+                                        </div>
+                                        <div>
+                                            <div class="stat-number">${count}</div>
+                                            <div class="stat-label">${config.label}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         `;
-                        day++;
+                        container.innerHTML += cardHTML;
                     }
                 }
-                if (day > daysInMonth) break;
-            }
-            
-            document.getElementById('calendarDays').innerHTML = calendarHTML;
-        }
 
-        function previousMonth() {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            generateCalendar();
-        }
-
-        function nextMonth() {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            generateCalendar();
-        }
-
-        function todayMonth() {
-            currentDate = new Date();
-            generateCalendar();
-        }
-
-        function showDayVisits(year, month, day) {
-            const selectedDate = new Date(year, month, day);
-            const dayVisits = currentVisits.filter(visit => {
-                const visitDate = new Date(visit.fecha_visita);
-                return visitDate.toDateString() === selectedDate.toDateString();
-            });
-            
-            if (dayVisits.length > 0) {
-                const visitsList = dayVisits.map(visit => createVisitItemHTML(visit)).join('');
-                const modalContent = `
-                    <h6>Visitas del ${day}/${month + 1}/${year}</h6>
-                    <div class="mt-3">${visitsList}</div>
-                `;
-                document.getElementById('detallesVisitaContent').innerHTML = modalContent;
-                new bootstrap.Modal(document.getElementById('detallesVisitaModal')).show();
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+                const container = document.getElementById('stats-container');
+                container.innerHTML = '<p class="text-danger">No se pudieron cargar las estadísticas.</p>';
             }
         }
 
-        // Visits Functions
-        function loadTodayVisits() {
-            if (!currentVisits) return;
+        function updateVisitsList(visitas) {
+            const container = document.getElementById('visitasContainer');
             
-            const today = new Date();
-            const todayVisits = currentVisits.filter(visit => {
-                const visitDate = new Date(visit.fecha_visita);
-                return visitDate.toDateString() === today.toDateString();
-            });
-            
-            const container = document.getElementById('todayVisits');
-            
-            if (todayVisits.length === 0) {
+            if (visitas.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center p-4">
-                        <i class="fas fa-calendar-check text-muted mb-3" style="font-size: 3rem;"></i>
-                        <p class="text-muted">No hay visitas programadas para hoy</p>
+                    <div class="text-center p-5">
+                        <div class="mb-4">
+                            <i class="fas fa-calendar-times text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
+                        </div>
+                        <h6 class="text-muted mb-3" style="font-weight: 600;">No hay visitas programadas</h6>
+                        <p class="text-muted mb-4">Crea tu primera visita para comenzar</p>
+                        <button class="btn btn-primary" onclick="mostrarModalNuevaVisita()">
+                            <i class="fas fa-plus me-2"></i> Nueva Visita
+                        </button>
                     </div>
                 `;
-            } else {
-                container.innerHTML = todayVisits.map(visit => createVisitItemHTML(visit)).join('');
+                return;
             }
+            
+            // Ordenar visitas por fecha y hora más recientes primero
+            const visitasOrdenadas = visitas.sort((a, b) => {
+                const fechaA = new Date(a.fecha + 'T' + a.hora);
+                const fechaB = new Date(b.fecha + 'T' + b.hora);
+                return fechaB - fechaA; // Más recientes primero
+            });
+            
+            container.innerHTML = visitasOrdenadas.map(visita => createVisitItemHTML(visita)).join('');
         }
 
-        function createVisitItemHTML(visit) {
-            const statusClass = `status-${visit.estado}`;
-            const cliente = allClients.find(c => c.id === visit.cliente_id) || { nombre_empresa: visit.cliente_nombre || 'Cliente no encontrado' };
+        function createVisitItemHTML(visita) {
+            const statusConfig = {
+                pendiente: { label: 'Pendiente de Respuesta', class: 'status-pendiente', icon: 'fa-clock' },
+                confirmada: { label: 'Confirmada', class: 'status-confirmada', icon: 'fa-check-circle' },
+                evaluacion: { label: 'Evaluación', class: 'status-evaluacion', icon: 'fa-search' },
+                retiro: { label: 'Retiro', class: 'status-retiro', icon: 'fa-truck' },
+                cancelada: { label: 'Cancelada', class: 'status-cancelada', icon: 'fa-times-circle' }
+            };
+
+            let finalStatus;
             
+            if (visita.respuestaCliente === 'aceptada') {
+                finalStatus = statusConfig.confirmada;
+                finalStatus.label = 'Aceptada por Cliente';
+            } else if (visita.respuestaCliente === 'rechazada') {
+                finalStatus = statusConfig.cancelada;
+                finalStatus.label = 'Rechazada por Cliente';
+            } else {
+                finalStatus = statusConfig[visita.estado] || { label: visita.estado, class: 'status-pendiente', icon: 'fa-question-circle' };
+                // Si está pendiente y sin respuesta, lo especificamos
+                if (visita.estado === 'pendiente') {
+                    finalStatus.label = 'Pendiente de Respuesta';
+                }
+            }
+            
+            const cliente = allClients.find(c => c.rut === visita.clienteId) || { nombre_empresa: visita.cliente_nombre || 'Cliente no encontrado' };
+
             return `
                 <div class="visit-item">
-                    <div class="visit-info">
-                        <div class="visit-details">
-                            <h6>${cliente.nombre_empresa}</h6>
-                            <div class="visit-meta">
-                                <i class="fas fa-clock me-1"></i> ${visit.hora_visita}
-                                <span class="mx-2">•</span>
-                                <i class="fas fa-map-marker-alt me-1"></i> ${visit.tipo_visita}
+                    <div class="visit-header">
+                        <h6>
+                            <i class="fas fa-building me-2"></i>
+                            ${cliente.nombre_empresa}
+                        </h6>
+                    </div>
+                    <div class="visit-content">
+                        <div class="visit-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i> 
+                                ${formatearFecha(visita.fecha)}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i> 
+                                ${visita.hora}
                             </div>
                         </div>
-                        <div class="visit-actions">
-                            <span class="visit-status ${statusClass}">${visit.estado}</span>
-                            <button class="btn btn-sm btn-outline-primary ms-2" onclick="verDetallesVisita(${visit.id})">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary ms-1" onclick="editarVisita(${visit.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
+                        <div class="meta-item mb-3" style="grid-column: span 2;">
+                            <i class="fas fa-tag"></i> 
+                            ${visita.tipo_visita.charAt(0).toUpperCase() + visita.tipo_visita.slice(1)}
                         </div>
+                        
+                        <div class="text-center">
+                            <span class="visit-status ${finalStatus.class}">
+                                <i class="fas ${finalStatus.icon} me-1"></i>
+                                ${finalStatus.label}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="visit-actions">
+                        <button class="btn btn-outline-primary" onclick="verDetallesVisita(${visita.id})" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="editarVisita(${visita.id})" title="Editar visita">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="confirmarEliminarVisita(${visita.id})" title="Eliminar visita">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
                 </div>
             `;
         }
 
         async function guardarVisita() {
-            const form = document.getElementById('visitaForm');
+            const form = document.getElementById('nuevaVisitaForm');
             const formData = new FormData(form);
             
             // Validar campos requeridos
             const clienteId = formData.get('clienteId');
             const tipoVisita = formData.get('tipoVisita');
-            const fechaVisita = formData.get('fechaVisita');
-            const horaVisita = formData.get('horaVisita');
+            const fecha = formData.get('fecha');
+            const hora = formData.get('hora');
+            const observaciones = formData.get('observaciones');
             
-            if (!clienteId || !tipoVisita || !fechaVisita || !horaVisita) {
+            if (!clienteId || !tipoVisita || !fecha || !hora || !observaciones) {
                 showAlert('Por favor complete todos los campos requeridos', 'warning');
                 return;
             }
             
             const visitaData = {
-                cliente_id: clienteId,
-                empleado_id: formData.get('empleadoId') || null,
-                tipo_visita: tipoVisita,
-                fecha_visita: fechaVisita,
-                hora_visita: horaVisita,
-                duracion_estimada: formData.get('duracionEstimada') || 60,
-                estado: formData.get('estado') || 'pendiente',
-                direccion_visita: formData.get('direccionVisita') || null,
-                observaciones: formData.get('observaciones') || null,
-                notas_tecnico: formData.get('notasTecnico') || null
+                clienteId: clienteId,
+                tipoVisita: tipoVisita,
+                fecha: fecha,
+                hora: hora,
+                cotizacionId: formData.get('cotizacionId') || null,
+                solicitudId: formData.get('solicitudId') || null,
+                observaciones: observaciones,
+                estado: 'pendiente'
             };
             
             try {
                 console.log('Enviando datos:', visitaData);
                 
-                const url = editingVisitId ? `/api/visitas/${editingVisitId}` : '/api/visitas';
-                const method = editingVisitId ? 'PUT' : 'POST';
-                
-                const response = await fetch(url, {
-                    method: method,
+                const response = await fetch('/visitas/api/visitas', {
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -1523,10 +1613,7 @@
                 const result = await response.json();
                 console.log('Visita guardada:', result);
                 
-                showAlert(
-                    editingVisitId ? 'Visita actualizada correctamente' : 'Visita creada correctamente',
-                    'success'
-                );
+                showAlert('Visita creada correctamente y correo enviado al cliente', 'success');
                 
                 // Cerrar modal y recargar datos
                 const modal = bootstrap.Modal.getInstance(document.getElementById('nuevaVisitaModal'));
@@ -1536,7 +1623,6 @@
                 
                 await loadVisits();
                 await loadStatistics();
-                editingVisitId = null;
                 form.reset();
                 
             } catch (error) {
@@ -1545,197 +1631,39 @@
             }
         }
 
-        async function eliminarVisita(id) {
-            if (!confirm('¿Está seguro de que desea eliminar esta visita?')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/visitas/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                showAlert('Visita eliminada correctamente', 'success');
-                await loadVisits();
-                await loadStatistics();
-                
-            } catch (error) {
-                console.error('Error al eliminar visita:', error);
-                showAlert('Error al eliminar la visita: ' + error.message, 'error');
-            }
+        function mostrarModalNuevaVisita() {
+            const modal = new bootstrap.Modal(document.getElementById('nuevaVisitaModal'));
+            modal.show();
         }
 
-        function editarVisita(visitId) {
-            try {
-                const visit = currentVisits.find(v => v.id === visitId);
-                if (!visit) {
-                    showAlert('Visita no encontrada', 'error');
-                    return;
-                }
-                
-                editingVisitId = visitId;
-                
-                // Actualizar título del modal
-                document.getElementById('nuevaVisitaModalLabel').textContent = 'Editar Visita';
-                
-                // Llenar el formulario
-                document.getElementById('clienteId').value = visit.cliente_id || '';
-                document.getElementById('empleadoId').value = visit.empleado_id || '';
-                document.getElementById('tipoVisita').value = visit.tipo_visita || '';
-                document.getElementById('estado').value = visit.estado || 'pendiente';
-                document.getElementById('fechaVisita').value = visit.fecha_visita_formatted || '';
-                document.getElementById('horaVisita').value = visit.hora_visita_formatted || '';
-                document.getElementById('duracionEstimada').value = visit.duracion_estimada || 60;
-                document.getElementById('direccionVisita').value = visit.direccion_visita || '';
-                document.getElementById('observaciones').value = visit.observaciones || '';
-                document.getElementById('notasTecnico').value = visit.notas_tecnico || '';
-                
-                // Mostrar el modal
-                const modal = new bootstrap.Modal(document.getElementById('nuevaVisitaModal'));
-                modal.show();
-                
-            } catch (error) {
-                console.error('Error al editar visita:', error);
-                showAlert('Error al cargar los datos de la visita', 'error');
-            }
-        }
-
-        function verDetallesVisita(visitId) {
-            const visit = currentVisits.find(v => v.id === visitId);
-            if (!visit) {
-                showAlert('Visita no encontrada', 'error');
-                return;
-            }
-            
-            const cliente = allClients.find(c => c.id === visit.cliente_id) || { nombre_empresa: visit.cliente_nombre || 'No encontrado' };
-            const empleado = allEmployees.find(e => e.id === visit.empleado_id);
-            
-            const content = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Información General</h6>
-                        <p><strong>Número:</strong> ${visit.numero_visita || `VIS-${visit.id}`}</p>
-                        <p><strong>Cliente:</strong> ${cliente.nombre_empresa}</p>
-                        <p><strong>Tipo:</strong> ${visit.tipo_visita}</p>
-                        <p><strong>Estado:</strong> <span class="visit-status status-${visit.estado}">${visit.estado}</span></p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Programación</h6>
-                        <p><strong>Fecha:</strong> ${new Date(visit.fecha_visita).toLocaleDateString()}</p>
-                        <p><strong>Hora:</strong> ${visit.hora_visita}</p>
-                        <p><strong>Duración:</strong> ${visit.duracion_estimada} minutos</p>
-                        <p><strong>Empleado:</strong> ${visit.empleado_nombre || 'Sin asignar'}</p>
-                    </div>
-                </div>
-                ${visit.direccion_visita ? `<div class="mt-3"><h6>Dirección</h6><p>${visit.direccion_visita}</p></div>` : ''}
-                ${visit.observaciones ? `<div class="mt-3"><h6>Observaciones</h6><p>${visit.observaciones}</p></div>` : ''}
-                ${visit.notas_tecnico ? `<div class="mt-3"><h6>Notas del Técnico</h6><p>${visit.notas_tecnico}</p></div>` : ''}
-            `;
-            
-            document.getElementById('detallesVisitaContent').innerHTML = content;
-            editingVisitId = visitId;
-            new bootstrap.Modal(document.getElementById('detallesVisitaModal')).show();
-        }
-
-        function editarVisitaDesdeDetalles() {
-            bootstrap.Modal.getInstance(document.getElementById('detallesVisitaModal')).hide();
-            setTimeout(() => editarVisita(editingVisitId), 300);
-        }
-
-        // Filter Functions
-        function aplicarFiltros() {
-            const clienteFilter = document.getElementById('buscarCliente').value.toLowerCase();
-            const estadoFilter = document.getElementById('filtroEstado').value;
-            const mesFilter = document.getElementById('filtroMes').value;
-            
-            let filteredVisits = currentVisits;
-            
-            // Filter by client
-            if (clienteFilter) {
-                filteredVisits = filteredVisits.filter(visit => {
-                    const cliente = allClients.find(c => c.id === visit.cliente_id);
-                    const clienteNombre = cliente ? cliente.nombre_empresa : visit.cliente_nombre || '';
-                    return clienteNombre.toLowerCase().includes(clienteFilter);
-                });
-            }
-            
-            // Filter by status
-            if (estadoFilter) {
-                filteredVisits = filteredVisits.filter(visit => visit.estado === estadoFilter);
-            }
-            
-            // Filter by month
-            if (mesFilter !== '') {
-                filteredVisits = filteredVisits.filter(visit => {
-                    const visitDate = new Date(visit.fecha_visita);
-                    return visitDate.getMonth() === parseInt(mesFilter);
-                });
-            }
-            
-            // Update calendar with filtered visits
-            const originalVisits = currentVisits;
-            currentVisits = filteredVisits;
-            generateCalendar();
-            loadTodayVisits();
-            currentVisits = originalVisits; // Restore original for next filter
-        }
-
-        function verTodasLasVisitas() {
-            const allVisitsList = document.getElementById('allVisitsList');
-            const allVisitsContainer = document.getElementById('allVisits');
-            
-            if (currentVisits.length === 0) {
-                allVisitsContainer.innerHTML = `
-                    <div class="text-center p-4">
-                        <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
-                        <p class="text-muted">No hay visitas programadas</p>
-                    </div>
-                `;
-            } else {
-                allVisitsContainer.innerHTML = currentVisits.map(visit => createVisitItemHTML(visit)).join('');
-            }
-            
-            allVisitsList.style.display = 'block';
-        }
-
-        function ocultarTodasLasVisitas() {
-            document.getElementById('allVisitsList').style.display = 'none';
-        }
-
-        // Utility Functions
-        function validateForm() {
-            const requiredFields = ['clienteId', 'tipoVisita', 'fechaVisita', 'horaVisita'];
-            let isValid = true;
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field && !field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                } else if (field) {
-                    field.classList.remove('is-invalid');
-                }
-            });
-            
-            return isValid;
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No especificada';
+            return new Date(fecha).toLocaleDateString('es-ES');
         }
 
         function showAlert(message, type = 'info') {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
             alertDiv.role = 'alert';
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                border: none;
+            `;
             alertDiv.innerHTML = `
-                ${message}
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    <div>${message}</div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
             
-            const container = document.querySelector('.content-wrapper');
-            container.insertBefore(alertDiv, container.firstChild);
+            document.body.appendChild(alertDiv);
             
             // Auto cerrar después de 5 segundos
             setTimeout(() => {
@@ -1744,382 +1672,213 @@
             }, 5000);
         }
 
-        // Función para limpiar el formulario cuando se cierra el modal
-        function limpiarFormulario() {
-            try {
-                document.getElementById('nuevaVisitaModalLabel').textContent = 'Nueva Visita';
-                document.getElementById('visitaForm').reset();
-                editingVisitId = null;
-            } catch (error) {
-                console.error('Error al limpiar formulario:', error);
-            }
-        }
-
-        // Agregar evento para limpiar el formulario cuando se cierra el modal
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('nuevaVisitaModal');
-            if (modal) {
-                modal.addEventListener('hidden.bs.modal', limpiarFormulario);
-            }
-        });
-
-        function updateVisitsTable(visitas) {
-            const tbody = document.querySelector('#visitsTable tbody');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
+        // Función para ver detalles de una visita
+        async function verDetallesVisita(id) {
+            const modal = new bootstrap.Modal(document.getElementById('detallesVisitaModal'));
             
-            visitas.forEach(visita => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${visita.numero_visita || ''}</td>
-                    <td>${visita.cliente_nombre || ''}</td>
-                    <td>${visita.fecha_visita_formatted || ''}</td>
-                    <td>${visita.hora_visita_formatted || ''}</td>
-                    <td>${visita.tipo_visita || ''}</td>
-                    <td>${visita.cantidad || ''} ${visita.unidad || ''}</td>
-                    <td>
-                        <span class="badge bg-${getEstadoBadgeClass(visita.estado)}">
-                            ${visita.estado || ''}
-                        </span>
-                    </td>
-                    <td>${visita.empleado_nombre || 'No asignado'}</td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-info" onclick="editarVisita(${visita.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="eliminarVisita(${visita.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+            // Limpiar contenido anterior y mostrar spinner
+            document.getElementById('detallesCliente').textContent = 'Cargando...';
+            document.getElementById('detallesTipo').textContent = '...';
+            document.getElementById('detallesFecha').textContent = '...';
+            document.getElementById('detallesHora').textContent = '...';
+            document.getElementById('detallesEstado').textContent = '...';
+            document.getElementById('detallesObservaciones').textContent = '...';
+            document.getElementById('detallesRespuestaClienteContainer').innerHTML = '';
 
-        function getEstadoBadgeClass(estado) {
-            switch (estado) {
-                case 'pendiente':
-                    return 'warning';
-                case 'confirmada':
-                    return 'info';
-                case 'en_proceso':
-                    return 'primary';
-                case 'completada':
-                    return 'success';
-                case 'cancelada':
-                    return 'danger';
-                default:
-                    return 'secondary';
-            }
-        }
-
-        // Función para cargar visitas
-        async function cargarVisitas(page = 1) {
-            if (isLoading) return;
-            isLoading = true;
+            modal.show();
 
             try {
-                const response = await fetch(`/api/visitas?page=${page}&limit=50`);
-                if (!response.ok) {
-                    throw new Error('Error al cargar las visitas');
-                }
-
-                const data = await response.json();
-                if (!data.success) {
-                    throw new Error(data.message || 'Error al cargar las visitas');
-                }
-
-                visitasData = data.visitas;
-                currentPage = data.paginacion.pagina;
-                totalPages = data.paginacion.totalPaginas;
+                const response = await fetch(`/visitas/api/visitas/${id}`);
                 
-                renderizarVisitas();
-                actualizarPaginacion();
-                actualizarEstadisticas();
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarError('Error al cargar las visitas: ' + error.message);
-            } finally {
-                isLoading = false;
-            }
-        }
-
-        // Función para renderizar visitas
-        function renderizarVisitas() {
-            const tbody = document.getElementById('visitasList');
-            if (!tbody) return;
-
-            tbody.innerHTML = '';
-
-            if (visitasData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center py-4">
-                            <div class="text-muted">
-                                <i class="fas fa-calendar-check fa-3x mb-3"></i>
-                                <p>No hay visitas programadas</p>
-                                <button class="btn btn-primary" onclick="mostrarModalNuevaVisita()">
-                                    <i class="fas fa-plus"></i> Nueva Visita
-                                </button>
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                const visita = result.data;
+                
+                // Actualizar contenido del modal
+                document.getElementById('detallesCliente').textContent = visita.cliente?.nombre_empresa || 'Cliente no encontrado';
+                document.getElementById('detallesTipo').textContent = visita.tipo_visita || visita.tipoVisita || 'No especificado';
+                document.getElementById('detallesFecha').textContent = formatearFecha(visita.fecha);
+                document.getElementById('detallesHora').textContent = visita.hora;
+                document.getElementById('detallesEstado').textContent = visita.estado;
+                document.getElementById('detallesObservaciones').textContent = visita.observaciones || 'Sin observaciones';
+                
+                const respuestaContainer = document.getElementById('detallesRespuestaClienteContainer');
+                
+                let respuestaClienteHTML = '';
+                if (visita.respuestaCliente && visita.respuestaCliente !== 'pendiente') {
+                    const respuestaLabels = {
+                        'aceptada': 'Aceptada por Cliente',
+                        'rechazada': 'Rechazada por Cliente'
+                    };
+                    const respuestaColors = {
+                        'aceptada': 'success',
+                        'rechazada': 'danger'
+                    };
+                    const label = respuestaLabels[visita.respuestaCliente];
+                    const color = respuestaColors[visita.respuestaCliente];
+                    
+                    if (label) {
+                        respuestaClienteHTML += `
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-user-check"></i>
+                                    Respuesta del Cliente
+                                </div>
+                                <p class="detail-value">
+                                    <span class="badge bg-${color} px-3 py-2" style="font-size: 0.9rem; border-radius: 25px;">
+                                        <i class="fas fa-${color === 'success' ? 'check' : 'times'} me-1"></i>
+                                        ${label}
+                                    </span>
+                                </p>
                             </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            visitasData.forEach(visita => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${visita.numero_visita}</td>
-                    <td>${visita.cliente_nombre}</td>
-                    <td>${formatearFecha(visita.fecha_visita)}</td>
-                    <td>${formatearHora(visita.hora_visita)}</td>
-                    <td>${visita.tipo_visita}</td>
-                    <td>${visita.cantidad} ${visita.unidad}</td>
-                    <td>
-                        <span class="badge ${getEstadoClass(visita.estado)}">
-                            ${visita.estado}
-                        </span>
-                    </td>
-                    <td>${visita.empleado_nombre || 'No asignado'}</td>
-                    <td>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-info" onclick="editarVisita(${visita.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            ${visita.estado === 'pendiente' ? `
-                                <button class="btn btn-sm btn-danger" onclick="cancelarVisita(${visita.id})">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            ` : ''}
+                        `;
+                    }
+                    if (visita.respuestaCliente === 'rechazada' && visita.motivoRechazo) {
+                        respuestaClienteHTML += `
+                            <div class="detail-group">
+                                <div class="detail-label">
+                                    <i class="fas fa-times-circle"></i>
+                                    Motivo de Rechazo
+                                </div>
+                                <p class="detail-value text-danger" style="font-weight: 600;">${visita.motivoRechazo}</p>
+                            </div>
+                        `;
+                    }
+                }
+                if (visita.fechaRespuestaCliente) {
+                    respuestaClienteHTML += `
+                        <div class="detail-group">
+                            <div class="detail-label">
+                                <i class="fas fa-calendar-check"></i>
+                                Fecha de Respuesta
+                            </div>
+                            <p class="detail-value">${formatearFecha(visita.fechaRespuestaCliente)}</p>
                         </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // Función para actualizar paginación
-        function actualizarPaginacion() {
-            const paginacion = document.getElementById('paginacion');
-            if (!paginacion) return;
-
-            let html = `
-                <nav aria-label="Navegación de páginas">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                            <a class="page-link" href="#" onclick="cambiarPagina(${currentPage - 1})" aria-label="Anterior">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-            `;
-
-            // Mostrar páginas
-            for (let i = 1; i <= totalPages; i++) {
-                if (
-                    i === 1 || // Primera página
-                    i === totalPages || // Última página
-                    (i >= currentPage - 2 && i <= currentPage + 2) // Páginas alrededor de la actual
-                ) {
-                    html += `
-                        <li class="page-item ${i === currentPage ? 'active' : ''}">
-                            <a class="page-link" href="#" onclick="cambiarPagina(${i})">${i}</a>
-                        </li>
-                    `;
-                } else if (
-                    i === currentPage - 3 || // Antes del rango
-                    i === currentPage + 3 // Después del rango
-                ) {
-                    html += `
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">...</a>
-                        </li>
                     `;
                 }
-            }
 
-            html += `
-                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                            <a class="page-link" href="#" onclick="cambiarPagina(${currentPage + 1})" aria-label="Siguiente">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            `;
-
-            paginacion.innerHTML = html;
-        }
-
-        // Función para cambiar de página
-        function cambiarPagina(page) {
-            if (page < 1 || page > totalPages || page === currentPage) return;
-            cargarVisitas(page);
-        }
-
-        // Función para actualizar estadísticas
-        async function actualizarEstadisticas() {
-            try {
-                const response = await fetch('/api/visitas/estadisticas');
-                if (!response.ok) {
-                    throw new Error('Error al cargar estadísticas');
+                if (respuestaClienteHTML) {
+                    respuestaContainer.innerHTML = respuestaClienteHTML;
                 }
-
-                const stats = await response.json();
                 
-                document.getElementById('pendientesCount').textContent = stats.pendientes;
-                document.getElementById('confirmadasCount').textContent = stats.confirmadas;
-                document.getElementById('completadasCount').textContent = stats.completadas;
-                document.getElementById('canceladasCount').textContent = stats.canceladas;
             } catch (error) {
-                console.error('Error:', error);
-                mostrarError('Error al cargar estadísticas: ' + error.message);
+                console.error('Error al obtener detalles de la visita:', error);
+                showAlert('Error al cargar los detalles de la visita: ' + error.message, 'error');
+                document.getElementById('detallesCliente').textContent = 'Error al cargar datos.';
             }
         }
 
-        // Funciones de utilidad
-        function getEstadoClass(estado) {
-            const estados = {
-                'pendiente': 'bg-warning',
-                'confirmada': 'bg-info',
-                'completada': 'bg-success',
-                'cancelada': 'bg-danger'
+        // Función para editar una visita
+        async function editarVisita(id) {
+            try {
+                const response = await fetch(`/visitas/api/visitas/${id}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                const visita = result.data;
+                
+                // Llenar formulario de edición
+                document.getElementById('editVisitaId').value = visita.id;
+                document.getElementById('editClienteId').value = visita.clienteId;
+                document.getElementById('editTipoVisita').value = visita.tipoVisita;
+                document.getElementById('editFecha').value = visita.fecha;
+                document.getElementById('editHora').value = visita.hora;
+                document.getElementById('editObservaciones').value = visita.observaciones || '';
+                document.getElementById('editEstado').value = visita.estado;
+                
+                // Mostrar modal de edición
+                const modal = new bootstrap.Modal(document.getElementById('editarVisitaModal'));
+                modal.show();
+                
+            } catch (error) {
+                console.error('Error al cargar datos para editar:', error);
+                showAlert('Error al cargar los datos de la visita: ' + error.message, 'error');
+            }
+        }
+
+        // Función para guardar cambios de edición
+        async function guardarEdicionVisita() {
+            const form = document.getElementById('editarVisitaForm');
+            const formData = new FormData(form);
+            const visitaId = formData.get('visitaId');
+            
+            const visitaData = {
+                tipoVisita: formData.get('tipoVisita'),
+                fecha: formData.get('fecha'),
+                hora: formData.get('hora'),
+                observaciones: formData.get('observaciones'),
+                estado: formData.get('estado')
             };
-            return estados[estado] || 'bg-secondary';
+            
+            try {
+                const response = await fetch(`/visitas/api/visitas/${visitaId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(visitaData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                showAlert('Visita actualizada correctamente', 'success');
+                
+                // Cerrar modal y recargar datos
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editarVisitaModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                await loadVisits();
+                await loadStatistics();
+                
+            } catch (error) {
+                console.error('Error al actualizar visita:', error);
+                showAlert('Error al actualizar la visita: ' + error.message, 'error');
+            }
         }
 
-        function getEstadoText(estado) {
-            const estados = {
-                'pendiente': 'Pendiente',
-                'confirmada': 'Confirmada',
-                'completada': 'Completada',
-                'cancelada': 'Cancelada'
+        // Función para confirmar la eliminación de una visita
+        function confirmarEliminarVisita(id) {
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            deleteBtn.onclick = () => {
+                eliminarVisita(id);
+                confirmModal.hide();
             };
-            return estados[estado] || estado;
+            confirmModal.show();
         }
 
-        function formatearFecha(fecha) {
-            if (!fecha) return 'No especificada';
-            return new Date(fecha).toLocaleDateString('es-ES');
-        }
-
-        function formatearHora(hora) {
-            if (!hora) return 'No especificada';
-            return hora;
-        }
-
-        function mostrarError(mensaje) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-            alertDiv.innerHTML = `
-                <i class="fas fa-exclamation-circle me-2"></i>
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.querySelector('.content-wrapper').insertBefore(alertDiv, document.querySelector('.page-header'));
-        }
-
-        function mostrarExito(mensaje) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-success alert-dismissible fade show';
-            alertDiv.innerHTML = `
-                <i class="fas fa-check-circle me-2"></i>
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.querySelector('.content-wrapper').insertBefore(alertDiv, document.querySelector('.page-header'));
-        }
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarVisitas();
-            actualizarEstadisticas();
-        });
-
-        // NOTIFICACIONES
-        let notificationInterval;
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... existing code ...
-            inicializarNotificaciones();
-        });
-        function inicializarNotificaciones() {
-            const notificationBell = document.getElementById('notificationBell');
-            const notificationDropdown = document.getElementById('notificationDropdown');
-            const notificationBadge = document.getElementById('notificationBadge');
-            // Mostrar/ocultar dropdown
-            notificationBell.addEventListener('click', function(e) {
-                e.stopPropagation();
-                notificationDropdown.classList.toggle('show');
-                // Cerrar dropdown usuario si está abierto
-                document.getElementById('adminDropdownMenu').classList.remove('show');
-                // Marcar como leídas al abrir
-                if (notificationDropdown.classList.contains('show')) {
-                    marcarNotificacionesComoLeidas();
-                }
-            });
-            // Cerrar dropdowns al hacer clic fuera
-            document.addEventListener('click', function(e) {
-                if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
-                    notificationDropdown.classList.remove('show');
-                }
-            });
-            // Cargar notificaciones reales
-            cargarNotificacionesReales();
-            // Actualizar badge cada 30s
-            notificationInterval = setInterval(verificarNuevasNotificaciones, 30000);
-        }
-        async function cargarNotificacionesReales() {
+        // Función para eliminar una visita
+        async function eliminarVisita(id) {
             try {
-                const response = await fetch('/api/notificaciones');
-                const data = await response.json();
-                const notificationList = document.getElementById('notificationList');
-                if (data.success && Array.isArray(data.notificaciones) && data.notificaciones.length > 0) {
-                    notificationList.innerHTML = data.notificaciones.map(n => `
-                        <div class="notification-item${n.leida ? '' : ' unread'}">
-                            <div class="notification-text">${n.titulo || 'Notificación'}</div>
-                            <div class="notification-desc">${n.descripcion || ''}</div>
-                            <div class="notification-time">${n.fecha ? new Date(n.fecha).toLocaleString('es-CL') : ''}</div>
-                        </div>
-                    `).join('');
-                } else {
-                    notificationList.innerHTML = '<div class="text-center p-3 text-muted">No hay notificaciones</div>';
+                const response = await fetch(`/visitas/api/visitas/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
                 }
-                // Actualizar badge
-                actualizarBadgeNotificaciones();
+
+                showAlert('Visita eliminada correctamente', 'success');
+                
+                await loadVisits();
+                await loadStatistics();
+
             } catch (error) {
-                document.getElementById('notificationList').innerHTML = '<div class="text-center p-3 text-danger">Error al cargar notificaciones</div>';
-            }
-        }
-        async function verificarNuevasNotificaciones() {
-            actualizarBadgeNotificaciones();
-        }
-        async function actualizarBadgeNotificaciones() {
-            try {
-                const response = await fetch('/api/notificaciones/count');
-                const data = await response.json();
-                const badge = document.getElementById('notificationBadge');
-                if (data.success && data.count > 0) {
-                    badge.textContent = data.count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            } catch (error) {
-                document.getElementById('notificationBadge').style.display = 'none';
-            }
-        }
-        async function marcarNotificacionesComoLeidas() {
-            try {
-                await fetch('/api/notificaciones/marcar-leidas', { method: 'POST' });
-                // Quitar clase unread
-                document.querySelectorAll('.notification-item.unread').forEach(item => item.classList.remove('unread'));
-                actualizarBadgeNotificaciones();
-            } catch (error) {
-                // No hacer nada
+                console.error('Error al eliminar visita:', error);
+                showAlert('Error al eliminar la visita: ' + error.message, 'error');
             }
         }
     </script>

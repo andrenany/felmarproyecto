@@ -8,6 +8,36 @@ const auth = require('../middlewares/auth'); // Descomentado para restaurar prot
 router.get('/', auth.isAuthenticated, solicitudController.listar);
 router.get('/detalles/:id', auth.isAuthenticated, solicitudController.detalles);
 
+// Ruta API para listar solicitudes
+router.get('/api/listar', auth.isAuthenticatedApi, async (req, res) => {
+    try {
+        const SolicitudRetiro = require('../models/SolicitudRetiro');
+        const Cliente = require('../models/Cliente');
+        
+        const solicitudes = await SolicitudRetiro.findAll({
+            include: [
+                {
+                    model: Cliente,
+                    as: 'cliente',
+                    attributes: ['rut', 'nombre_empresa']
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.json({
+            success: true,
+            data: solicitudes
+        });
+    } catch (error) {
+        console.error('Error al obtener solicitudes:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al cargar las solicitudes'
+        });
+    }
+});
+
 // Rutas para crear/editar solicitudes
 router.get('/crear', auth.isAuthenticated, solicitudController.mostrarCrear);
 router.post('/crear', auth.isAuthenticated, solicitudController.crear);

@@ -263,7 +263,7 @@ const dashboardController = {
 
             const visitasHoy = await VisitaRetiro.count({
                 where: {
-                    fechaProgramada: {
+                    fecha: {
                         [Op.gte]: hoy,
                         [Op.lt]: manana
                     }
@@ -273,7 +273,7 @@ const dashboardController = {
             // Total de servicios completados
             const serviciosCompletados = await VisitaRetiro.count({
                 where: {
-                    estado: 'completada'
+                    estado: 'retiro'
                 }
             });
 

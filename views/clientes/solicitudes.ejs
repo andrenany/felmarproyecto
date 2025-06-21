@@ -838,7 +838,7 @@
                         </div>
                         <div class="card-info">
                             <h6>Pendientes</h6>
-                            <h2 class="warning" id="pendientesCount">2</h2>
+                            <h2 class="warning" id="pendientesCount"><%= typeof stats !== 'undefined' ? stats.pendientes : 0 %></h2>
                         </div>
                     </div>
                 </div>
@@ -850,7 +850,7 @@
                         </div>
                         <div class="card-info">
                             <h6>Confirmadas</h6>
-                            <h2 class="info" id="confirmadasCount">1</h2>
+                            <h2 class="info" id="confirmadasCount"><%= typeof stats !== 'undefined' ? stats.confirmadas : 0 %></h2>
                         </div>
                     </div>
                 </div>
@@ -862,7 +862,7 @@
                         </div>
                         <div class="card-info">
                             <h6>Completadas</h6>
-                            <h2 class="success" id="completadasCount">1</h2>
+                            <h2 class="success" id="completadasCount"><%= typeof stats !== 'undefined' ? stats.completadas : 0 %></h2>
                         </div>
                     </div>
                 </div>
@@ -874,7 +874,7 @@
                         </div>
                         <div class="card-info">
                             <h6>Canceladas</h6>
-                            <h2 class="danger" id="canceladasCount">1</h2>
+                            <h2 class="danger" id="canceladasCount"><%= typeof stats !== 'undefined' ? stats.canceladas : 0 %></h2>
                         </div>
                     </div>
                 </div>
@@ -900,93 +900,71 @@
                 </div>
 
                 <div class="table-container">
-                    <table class="table-modern" id="solicitudesTable">
-                        <thead>
-                            <tr>
-                                <th>Número</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                                <th>Tipo de Residuo</th>
-                                <th>Cantidad</th>
-                                <th>Dirección</th>
-                                <th style="text-align: center;">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="solicitudesTableBody">
-                            <tr>
-                                <td><a href="#" class="solicitud-number">SR-1001</a></td>
-                                <td>01/06/2024</td>
-                                <td><span class="status-badge pendiente"><i class="fas fa-clock"></i>Pendiente</span></td>
-                                <td>Cartón</td>
-                                <td>15 kg</td>
-                                <td>Av. Principal 1234, Santiago</td>
-                                <td style="text-align: center;">
-                                    <button class="btn-action" onclick="verDetalles(1)" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" class="solicitud-number">SR-1002</a></td>
-                                <td>28/05/2024</td>
-                                <td><span class="status-badge confirmada"><i class="fas fa-check-circle"></i>Confirmada</span></td>
-                                <td>Plástico</td>
-                                <td>8 kg</td>
-                                <td>Calle Secundaria 567, Maipú</td>
-                                <td style="text-align: center;">
-                                    <button class="btn-action" onclick="verDetalles(2)" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" class="solicitud-number">SR-1003</a></td>
-                                <td>20/05/2024</td>
-                                <td><span class="status-badge completada"><i class="fas fa-check-double"></i>Completada</span></td>
-                                <td>Vidrio</td>
-                                <td>20 kg</td>
-                                <td>Pasaje Verde 89, Ñuñoa</td>
-                                <td style="text-align: center;">
-                                    <button class="btn-action" onclick="verDetalles(3)" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" class="solicitud-number">SR-1004</a></td>
-                                <td>10/05/2024</td>
-                                <td><span class="status-badge cancelada"><i class="fas fa-times-circle"></i>Cancelada</span></td>
-                                <td>Electrónicos</td>
-                                <td>3 unidades</td>
-                                <td>Av. Los Pinos 222, La Florida</td>
-                                <td style="text-align: center;">
-                                    <button class="btn-action" onclick="verDetalles(4)" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="#" class="solicitud-number">SR-1005</a></td>
-                                <td>02/06/2024</td>
-                                <td><span class="status-badge pendiente"><i class="fas fa-clock"></i>Pendiente</span></td>
-                                <td>Papel</td>
-                                <td>12 kg</td>
-                                <td>Camino del Sol 333, Providencia</td>
-                                <td style="text-align: center;">
-                                    <button class="btn-action" onclick="verDetalles(5)" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Empty State (hidden by default) -->
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <i class="fas fa-inbox"></i>
-                    <h5>No hay solicitudes</h5>
-                    <p>Aún no tienes solicitudes registradas. ¡Crea tu primera solicitud!</p>
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>NÚMERO</th>
+                                    <th>FECHA</th>
+                                    <th>ESTADO</th>
+                                    <th>TIPO DE RESIDUO</th>
+                                    <th>CANTIDAD</th>
+                                    <th>DIRECCIÓN</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (typeof solicitudes !== 'undefined' && solicitudes.length > 0) { %>
+                                    <% solicitudes.forEach(solicitud => { %>
+                                        <% 
+                                            let statusClass = '';
+                                            let statusIcon = '';
+                                            const estado = solicitud.estado.toLowerCase();
+                                            if (estado === 'pendiente') {
+                                                statusClass = 'status-pendiente';
+                                                statusIcon = 'fas fa-clock';
+                                            } else if (estado === 'confirmada') {
+                                                statusClass = 'status-confirmada';
+                                                statusIcon = 'fas fa-check-circle';
+                                            } else if (estado === 'completada') {
+                                                statusClass = 'status-completada';
+                                                statusIcon = 'fas fa-check-double';
+                                            } else if (estado === 'cancelada') {
+                                                statusClass = 'status-cancelada';
+                                                statusIcon = 'fas fa-times-circle';
+                                            }
+                                        %>
+                                        <tr>
+                                            <td><strong><%= solicitud.numero_solicitud %></strong></td>
+                                            <td><%= new Date(solicitud.createdAt).toLocaleDateString('es-ES') %></td>
+                                            <td>
+                                                <span class="status-badge <%= statusClass %>">
+                                                    <i class="<%= statusIcon %> me-1"></i>
+                                                    <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
+                                                </span>
+                                            </td>
+                                            <td><%= solicitud.tipo_residuo %></td>
+                                            <td><%= solicitud.cantidad %> <%= solicitud.unidad %></td>
+                                            <td><%= solicitud.direccion_especifica %></td>
+                                            <td>
+                                                <a href="/clientes/solicitudes/<%= solicitud.id %>" class="btn-action">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="text-center no-data">
+                                            <i class="fas fa-folder-open"></i>
+                                            <p>Aún no tienes solicitudes registradas.</p>
+                                            <a href="/clientes/solicitudes/nueva" class="btn btn-primary-custom">Crear mi primera solicitud</a>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1016,316 +994,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // VARIABLES GLOBALES
-        let solicitudesData = [
-            {
-                id: 1,
-                numero_solicitud: 'SR-1001',
-                fecha_solicitud: '2024-06-01T10:00:00Z',
-                estado: 'pendiente',
-                tipo_residuo: 'Cartón',
-                cantidad: '15 kg',
-                direccion_retiro: 'Av. Principal 1234, Santiago',
-                descripcion: 'Cartón de embalajes de productos electrónicos',
-                observaciones: 'Retiro programado según disponibilidad. Contactar antes de llegar.',
-                contacto_nombre: 'Juan Pérez',
-                contacto_telefono: '+56912345678',
-                fecha_preferida: '2024-06-10'
-            },
-            {
-                id: 2,
-                numero_solicitud: 'SR-1002',
-                fecha_solicitud: '2024-05-28T15:30:00Z',
-                estado: 'confirmada',
-                tipo_residuo: 'Plástico',
-                cantidad: '8 kg',
-                direccion_retiro: 'Calle Secundaria 567, Maipú',
-                descripcion: 'Botellas plásticas y envases diversos',
-                observaciones: 'Disponible toda la semana en horario de oficina',
-                contacto_nombre: 'María González',
-                contacto_telefono: '+56987654321',
-                fecha_preferida: '2024-06-05'
-            },
-            {
-                id: 3,
-                numero_solicitud: 'SR-1003',
-                fecha_solicitud: '2024-05-20T09:15:00Z',
-                estado: 'completada',
-                tipo_residuo: 'Vidrio',
-                cantidad: '20 kg',
-                direccion_retiro: 'Pasaje Verde 89, Ñuñoa',
-                descripcion: 'Botellas de vidrio y frascos diversos',
-                observaciones: 'Retiro completado exitosamente el 25/05/2024',
-                contacto_nombre: 'Carlos López',
-                contacto_telefono: '+56911223344',
-                fecha_preferida: '2024-05-25'
-            },
-            {
-                id: 4,
-                numero_solicitud: 'SR-1004',
-                fecha_solicitud: '2024-05-10T13:45:00Z',
-                estado: 'cancelada',
-                tipo_residuo: 'Electrónicos',
-                cantidad: '3 unidades',
-                direccion_retiro: 'Av. Los Pinos 222, La Florida',
-                descripcion: 'Equipos electrónicos obsoletos',
-                observaciones: 'Solicitud cancelada por el cliente',
-                contacto_nombre: 'Ana Martínez',
-                contacto_telefono: '+56955667788',
-                fecha_preferida: '2024-05-15'
-            },
-            {
-                id: 5,
-                numero_solicitud: 'SR-1005',
-                fecha_solicitud: '2024-06-02T11:20:00Z',
-                estado: 'pendiente',
-                tipo_residuo: 'Papel',
-                cantidad: '12 kg',
-                direccion_retiro: 'Camino del Sol 333, Providencia',
-                descripcion: 'Documentos y papel de oficina',
-                observaciones: 'Preferible retiro en horario de mañana',
-                contacto_nombre: 'Luis Rodríguez',
-                contacto_telefono: '+56933445566',
-                fecha_preferida: '2024-06-08'
-            }
-        ];
-
-        // INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🟢 Inicializando sistema Felmart...');
-            actualizarEstadisticas();
-            console.log('✅ Sistema inicializado correctamente');
+            console.log('🟢 Página de solicitudes cargada.');
         });
 
-        // CARGAR SOLICITUDES
-        function cargarSolicitudes() {
-            showAlertBar('Actualizando solicitudes...', 'fa-sync-alt', '#17a2b8', 2000);
-            // Simular carga
-            setTimeout(() => {
-                console.log('📋 Solicitudes actualizadas');
-                hideAlertBar();
-            }, 2000);
-        }
-
-        // VER DETALLES
-        function verDetalles(id) {
-            console.log(`🔍 Cargando detalles de la solicitud ${id}...`);
-            
-            const solicitud = solicitudesData.find(s => s.id === id);
-            if (!solicitud) {
-                showAlertBar('No se encontraron los detalles de esta solicitud', 'fa-exclamation-triangle', '#dc3545', 3000);
-                return;
-            }
-
-            const modalBody = document.getElementById('detallesModalBody');
-            modalBody.innerHTML = generarDetallesHTML(solicitud);
-            
-            const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
-            modal.show();
-        }
-
-        // GENERAR HTML DETALLES
-        function generarDetallesHTML(solicitud) {
-            return `
-                <!-- Información Principal -->
-                <div class="detail-section">
-                    <div class="section-title">
-                        <i class="fas fa-info-circle"></i>
-                        Información General
-                    </div>
-                    <div class="section-content">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-hashtag"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Número de Solicitud</div>
-                                    <div class="info-value">${solicitud.numero_solicitud}</div>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-calendar"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Fecha de Solicitud</div>
-                                    <div class="info-value">${formatearFecha(solicitud.fecha_solicitud)}</div>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-flag"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Estado</div>
-                                    <div class="info-value">
-                                        <span class="status-badge ${solicitud.estado}">
-                                            <i class="fas ${getEstadoIcon(solicitud.estado)}"></i>
-                                            ${getEstadoText(solicitud.estado)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Detalles del Residuo -->
-                <div class="detail-section">
-                    <div class="section-title">
-                        <i class="fas fa-recycle"></i>
-                        Detalles del Residuo
-                    </div>
-                    <div class="section-content">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Tipo de Residuo</div>
-                                    <div class="info-value">${solicitud.tipo_residuo}</div>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-weight"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Cantidad</div>
-                                    <div class="info-value">${solicitud.cantidad}</div>
-                                </div>
-                            </div>
-                        </div>
-                        ${solicitud.descripcion ? `
-                            <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary-color);">
-                                <div class="info-label">Descripción</div>
-                                <div class="info-value">${solicitud.descripcion}</div>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-
-                <!-- Información de Retiro -->
-                <div class="detail-section">
-                    <div class="section-title">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Información de Retiro
-                    </div>
-                    <div class="section-content">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <div class="info-icon">
-                                    <i class="fas fa-location-arrow"></i>
-                                </div>
-                                <div class="info-text">
-                                    <div class="info-label">Dirección</div>
-                                    <div class="info-value">${solicitud.direccion_retiro}</div>
-                                </div>
-                            </div>
-                            ${solicitud.fecha_preferida ? `
-                                <div class="info-item">
-                                    <div class="info-icon">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                    <div class="info-text">
-                                        <div class="info-label">Fecha Preferida</div>
-                                        <div class="info-value">${formatearFecha(solicitud.fecha_preferida)}</div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Información de Contacto -->
-                <div class="detail-section">
-                    <div class="section-title">
-                        <i class="fas fa-address-book"></i>
-                        Información de Contacto
-                    </div>
-                    <div class="section-content">
-                        <div class="info-grid">
-                            ${solicitud.contacto_nombre ? `
-                                <div class="info-item">
-                                    <div class="info-icon">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="info-text">
-                                        <div class="info-label">Contacto</div>
-                                        <div class="info-value">${solicitud.contacto_nombre}</div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                            ${solicitud.contacto_telefono ? `
-                                <div class="info-item">
-                                    <div class="info-icon">
-                                        <i class="fas fa-phone"></i>
-                                    </div>
-                                    <div class="info-text">
-                                        <div class="info-label">Teléfono</div>
-                                        <div class="info-value">${solicitud.contacto_telefono}</div>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </div>
-
-                ${solicitud.observaciones ? `
-                    <!-- Observaciones -->
-                    <div class="detail-section">
-                        <div class="section-title">
-                            <i class="fas fa-comment-alt"></i>
-                            Observaciones
-                        </div>
-                        <div class="section-content">
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #fff3e0, #fce4ec); border-radius: 8px; border-left: 4px solid #ff9800;">
-                                <div class="info-value" style="color: #5d4037;">${solicitud.observaciones}</div>
-                            </div>
-                        </div>
-                    </div>
-                ` : ''}
-            `;
-        }
-
-        // FUNCIONES UTILIDAD
-        function getEstadoIcon(estado) {
-            const iconos = {
-                'pendiente': 'fa-clock',
-                'confirmada': 'fa-check-circle',
-                'completada': 'fa-check-double',
-                'cancelada': 'fa-times-circle'
-            };
-            return iconos[estado] || 'fa-question-circle';
-        }
-
-        function getEstadoText(estado) {
-            const textos = {
-                'pendiente': 'Pendiente',
-                'confirmada': 'Confirmada',
-                'completada': 'Completada',
-                'cancelada': 'Cancelada'
-            };
-            return textos[estado] || estado;
-        }
-
-        function formatearFecha(fecha) {
-            return new Date(fecha).toLocaleDateString('es-CL', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
-
-        // SISTEMA DE ALERTAS
-        function showAlertBar(message, icon = 'fa-info-circle', color = '#17a2b8', duration = 0) {
+        function showAlertBar(message, icon = 'fa-info-circle', color = '#17a2b8', duration = 3000) {
             const alertBarContainer = document.getElementById('alertBarContainer');
+            if (!alertBarContainer) return;
+            
             const alertId = 'alertBar_' + Date.now();
             
             alertBarContainer.innerHTML = `
-                <div class="alert-bar" id="${alertId}">
+                <div class="alert-bar" id="${alertId}" style="animation: slideDown 0.5s ease-out;">
                     <i class="fas ${icon}" style="color: ${color};"></i>
                     <span class="alert-bar-text">${message}</span>
                 </div>
@@ -1333,52 +1013,20 @@
 
             if (duration > 0) {
                 setTimeout(() => {
-                    hideAlertBar();
+                    const alertBar = document.getElementById(alertId);
+                    if (alertBar) {
+                        alertBar.style.opacity = '0';
+                        alertBar.style.transform = 'translateY(-20px)';
+                        setTimeout(() => {
+                            alertBar.remove();
+                        }, 300);
+                    }
                 }, duration);
             }
         }
-
-        function hideAlertBar() {
-            const alertBarContainer = document.getElementById('alertBarContainer');
-            const alertBar = alertBarContainer.querySelector('.alert-bar');
-            if (alertBar) {
-                alertBar.style.opacity = '0';
-                alertBar.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    alertBarContainer.innerHTML = '';
-                }, 300);
-            }
-        }
-
-        // ACTUALIZAR ESTADÍSTICAS
-        function actualizarEstadisticas() {
-            const stats = solicitudesData.reduce((acc, sol) => {
-                switch (sol.estado) {
-                    case 'pendiente': acc.pendientes++; break;
-                    case 'confirmada': acc.confirmadas++; break;
-                    case 'completada': acc.completadas++; break;
-                    case 'cancelada': acc.canceladas++; break;
-                }
-                return acc;
-            }, {
-                pendientes: 0,
-                confirmadas: 0,
-                completadas: 0,
-                canceladas: 0
-            });
-
-            document.getElementById('pendientesCount').textContent = stats.pendientes;
-            document.getElementById('confirmadasCount').textContent = stats.confirmadas;
-            document.getElementById('completadasCount').textContent = stats.completadas;
-            document.getElementById('canceladasCount').textContent = stats.canceladas;
-        }
-
-        // LOGS SISTEMA
-        console.log('🟢 Sistema Felmart - Panel de Cliente');
-        console.log('📋 Módulo: Gestión de Solicitudes de Retiro');
-        console.log('🔧 Versión: 3.0.0 - Diseño Mejorado');
-        console.log('📅 Inicializado:', new Date().toLocaleString('es-CL'));
-        console.log('✅ Todas las funcionalidades cargadas correctamente');
+        
+        // La lógica para mostrar los detalles del modal y refrescar
+        // se puede añadir aquí si es necesario, pero sin datos hardcodeados.
     </script>
 </body>
 </html>

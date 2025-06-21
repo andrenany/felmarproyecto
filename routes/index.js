@@ -3,12 +3,15 @@ const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 const dashboardController = require('../controllers/dashboardController');
+const clienteController = require('../controllers/clienteController');
 
 // Importar rutas necesarias
 const dashboardRoutes = require('./dashboardRoutes');
-const clienteRoutes = require('./api');
+const clienteRoutes = require('./clienteRoutes');
+const apiRoutes = require('./api');
 const usuarioRoutes = require('./usuarioRoutes');
 const precioresiduosRoutes = require('./precioresiduosRoutes');
+const visitaRoutes = require('./visitaRoutes');
 
 // Rutas de cotizaciones
 const cotizacionesRoutes = require('./cotizacionRoutes');
@@ -56,12 +59,7 @@ router.get('/dashboard', (req, res) => {
         success: req.flash('success')
       });
     case 'cliente':
-      return res.render('dashboard/cliente', {
-        titulo: 'Panel de Control - Cliente',
-        usuario: req.session.usuario,
-        error: req.flash('error'),
-        success: req.flash('success')
-      });
+      return clienteController.renderDashboard(req, res);
     default:
       req.flash('error', 'Rol de usuario no válido');
       return res.redirect('/logout'); 
@@ -73,8 +71,14 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/usuarios', usuarioRoutes);
 router.use('/residuos', precioresiduosRoutes);
 
+// Rutas de clientes
+router.use('/clientes', clienteRoutes);
+
+// Rutas de visitas
+router.use('/visitas', visitaRoutes);
+
 // Rutas de la API
-router.use('/api', clienteRoutes);
+router.use('/api', apiRoutes);
 
 // Rutas de cotizaciones
 router.use('/cotizaciones/api', cotizacionesRoutes);

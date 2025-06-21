@@ -248,10 +248,13 @@
                 <button class="btn btn-success" onclick="exportarCotizaciones()">
                     <i class="fas fa-download me-1"></i>Exportar
                 </button>
+                <button class="btn btn-success" onclick="abrirModalNuevaCotizacion()">
+                    <i class="fas fa-plus me-1"></i>Nueva Cotización
+                </button>
             </div>
         </div>
 
-        <div class="row stats-row">
+        <div class="row stats-row g-4">
             <div class="col-md-3 mb-3">
                 <div class="stat-card total">
                     <div class="stat-number" id="totalCotizaciones">0</div>
@@ -322,12 +325,6 @@
             </div>
         </div>
 
-        <!-- Botón para nueva cotización -->
-        <div class="mb-3 d-flex justify-content-end">
-            <button class="btn btn-success" onclick="abrirModalNuevaCotizacion()">
-                <i class="fas fa-plus"></i> Nueva Cotización
-            </button>
-        </div>
 
         <!-- Modal Nueva Cotización -->
         <div class="modal fade" id="nuevaCotizacionModal" tabindex="-1">

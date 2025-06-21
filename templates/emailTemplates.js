@@ -5,7 +5,8 @@ const emailTemplates = {
     header: 'background: linear-gradient(135deg, #00616e, #00818f); padding: 30px; text-align: center; color: white;',
     content: 'background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);',
     section: 'background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px;',
-    footer: 'background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #dee2e6; color: #6c757d;'
+    footer: 'background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #dee2e6; color: #6c757d;',
+    button: 'background-color: #00616e; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin: 10px 5px;'
   },
 
   // Plantilla para cotizaciones
@@ -127,12 +128,7 @@ const emailTemplates = {
               <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente botón:</p>
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${data.resetUrl}" 
-                   style="background-color: #00616e; 
-                          color: white; 
-                          padding: 12px 25px; 
-                          text-decoration: none; 
-                          border-radius: 5px;
-                          font-weight: bold;">
+                   style="${emailTemplates.styles.button}">
                   Restablecer Contraseña
                 </a>
               </div>
@@ -147,7 +143,189 @@ const emailTemplates = {
         </div>
       </div>
     `
-  })
+  }),
+
+  // Plantilla para nueva visita
+  nuevaVisita: (visita, cliente) => {
+    const fechaFormateada = new Date(visita.fecha).toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const tipoVisitaText = visita.tipo_visita === 'evaluacion' ? 'Evaluación' : 'Retiro';
+
+    return {
+      subject: `Visita Programada - ${tipoVisitaText} - ${fechaFormateada}`,
+      html: `
+        <div style="${emailTemplates.styles.container}">
+          <div style="${emailTemplates.styles.content}">
+            <div style="${emailTemplates.styles.header}">
+              <h1 style="margin: 0; font-size: 24px;">Nueva Visita Programada</h1>
+              <p style="margin: 5px 0 0 0; font-size: 16px; opacity: 0.9;">Felmart - Gestión de Residuos</p>
+            </div>
+            
+            <div style="padding: 30px;">
+              <div style="${emailTemplates.styles.section}">
+                <h3 style="color: #00616e; margin: 0 0 15px 0;">Hola ${cliente.nombre_empresa},</h3>
+                <p>Hemos programado una nueva visita para su empresa. A continuación encontrará los detalles:</p>
+              </div>
+
+              <div style="${emailTemplates.styles.section}">
+                <h3 style="color: #00616e; margin: 0 0 15px 0;">Detalles de la Visita</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold; width: 120px;">Tipo de Visita:</td>
+                    <td style="padding: 8px 0;">${tipoVisitaText}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold;">Fecha:</td>
+                    <td style="padding: 8px 0;">${fechaFormateada}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold;">Hora:</td>
+                    <td style="padding: 8px 0;">${visita.hora}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold;">Dirección:</td>
+                    <td style="padding: 8px 0;">${cliente.direccion || 'Dirección registrada en su perfil'}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: bold;">Estado:</td>
+                    <td style="padding: 8px 0;">${visita.estado.charAt(0).toUpperCase() + visita.estado.slice(1)}</td>
+                  </tr>
+                </table>
+              </div>
+
+              ${visita.observaciones ? `
+                <div style="${emailTemplates.styles.section}">
+                  <h3 style="color: #00616e; margin: 0 0 15px 0;">Observaciones</h3>
+                  <p style="margin: 0; white-space: pre-wrap;">${visita.observaciones}</p>
+                </div>
+              ` : ''}
+
+              <div style="${emailTemplates.styles.section}">
+                <p style="margin: 0;">
+                  <strong>Importante:</strong> Si necesita realizar algún cambio en la visita programada,
+                  por favor contáctenos lo antes posible.
+                </p>
+              </div>
+            </div>
+
+            <div style="${emailTemplates.styles.footer}">
+              <p style="margin: 0;">Gracias por confiar en Felmart para el manejo de sus residuos.</p>
+              <p style="margin: 10px 0 0 0; font-size: 12px; color: #6c757d;">
+                Este es un correo automático, por favor no responda a este mensaje.
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+    };
+  },
+
+  // Plantilla para confirmación de visita
+  confirmacionVisita: (visita, cliente) => {
+    const fechaFormateada = new Date(visita.fecha).toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const tipoVisitaText = visita.tipoVisita === 'evaluacion' ? 'Evaluación' : 'Retiro';
+
+    return `
+      <div style="${emailTemplates.styles.container}">
+        <div style="${emailTemplates.styles.content}">
+          <div style="${emailTemplates.styles.header}">
+            <h1 style="margin: 0; font-size: 24px;">Visita Confirmada</h1>
+            <p style="margin: 5px 0 0 0; font-size: 16px; opacity: 0.9;">Felmart - Gestión de Residuos</p>
+          </div>
+          
+          <div style="padding: 30px;">
+            <div style="${emailTemplates.styles.section}">
+              <h3 style="color: #00616e; margin: 0 0 15px 0;">Hola ${cliente.nombre_empresa},</h3>
+              <p>Su visita ha sido confirmada exitosamente. Nos vemos pronto en su empresa.</p>
+            </div>
+
+            <div style="${emailTemplates.styles.section}">
+              <h3 style="color: #00616e; margin: 0 0 15px 0;">Detalles de la Visita Confirmada</h3>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; width: 120px;">Tipo de Visita:</td>
+                  <td style="padding: 8px 0;">${tipoVisitaText}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Fecha:</td>
+                  <td style="padding: 8px 0;">${fechaFormateada}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Hora:</td>
+                  <td style="padding: 8px 0;">${visita.hora}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Dirección:</td>
+                  <td style="padding: 8px 0;">${cliente.direccion || 'Dirección registrada en su perfil'}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold;">Estado:</td>
+                  <td style="padding: 8px 0; color: #28a745; font-weight: bold;">✓ Confirmada</td>
+                </tr>
+              </table>
+            </div>
+
+            ${visita.observaciones ? `
+              <div style="${emailTemplates.styles.section}">
+                <h3 style="color: #00616e; margin: 0 0 15px 0;">Observaciones</h3>
+                <p style="margin: 0; white-space: pre-wrap;">${visita.observaciones}</p>
+              </div>
+            ` : ''}
+
+            <div style="${emailTemplates.styles.section}">
+              <h3 style="color: #00616e; margin: 0 0 15px 0;">Preparación para la Visita</h3>
+              <p>Para agilizar el proceso, le recomendamos tener preparado:</p>
+              <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>Acceso a las áreas donde se encuentran los residuos</li>
+                <li>Información sobre los tipos de residuos a evaluar/retirar</li>
+                <li>Persona autorizada para firmar documentos</li>
+                <li>Documentación relacionada con los residuos (si aplica)</li>
+              </ul>
+            </div>
+
+            <div style="${emailTemplates.styles.section}">
+              <h3 style="color: #00616e; margin: 0 0 15px 0;">Información de Contacto</h3>
+              <p>Si necesita reprogramar o tiene alguna consulta:</p>
+              <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>Teléfono:</strong> +56 2 2345 6789</li>
+                <li><strong>Email:</strong> contacto@felmart.cl</li>
+                <li><strong>Horario:</strong> Lunes a Viernes de 8:00 a 18:00</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="${emailTemplates.styles.footer}">
+            <p style="margin: 0;">Gracias por confiar en Felmart para el manejo de sus residuos.</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px;">Este es un correo automático, por favor no responda a este mensaje.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 };
 
-module.exports = emailTemplates; 
+// Funciones auxiliares para generar templates
+function generarTemplateVisita(visita, cliente) {
+  return emailTemplates.nuevaVisita(visita, cliente);
+}
+
+function generarTemplateConfirmacionVisita(visita, cliente) {
+  return emailTemplates.confirmacionVisita(visita, cliente);
+}
+
+module.exports = {
+  ...emailTemplates,
+  generarTemplateVisita,
+  generarTemplateConfirmacionVisita
+}; 

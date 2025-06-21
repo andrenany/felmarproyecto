@@ -23,6 +23,36 @@ Cliente.belongsTo(Usuario, {
   foreignKey: 'usuario_id'
 });
 
+// Cliente - VisitaRetiro (Obligatorio)
+Cliente.hasMany(VisitaRetiro, {
+  foreignKey: 'clienteId',
+  as: 'visitas'
+});
+VisitaRetiro.belongsTo(Cliente, {
+  foreignKey: 'clienteId',
+  as: 'cliente'
+});
+
+// Cotizacion - VisitaRetiro (Opcional)
+Cotizacion.hasMany(VisitaRetiro, {
+  foreignKey: 'cotizacionId',
+  as: 'visitas'
+});
+VisitaRetiro.belongsTo(Cotizacion, {
+  foreignKey: 'cotizacionId',
+  as: 'cotizacion'
+});
+
+// SolicitudRetiro - VisitaRetiro (Opcional)
+SolicitudRetiro.hasMany(VisitaRetiro, {
+  foreignKey: 'solicitudId',
+  as: 'visitas'
+});
+VisitaRetiro.belongsTo(SolicitudRetiro, {
+  foreignKey: 'solicitudId',
+  as: 'solicitud'
+});
+
 // Region - Comuna
 Region.hasMany(Comuna, { foreignKey: 'region_id' });
 Comuna.belongsTo(Region, { foreignKey: 'region_id', as: 'Region' });
@@ -81,16 +111,6 @@ CotizacionResiduo.belongsTo(PrecioResiduo, {
   as: 'precioResiduo'
 });
 
-// SolicitudRetiro - VisitaRetiro (One-to-One)
-SolicitudRetiro.hasOne(VisitaRetiro, { 
-  foreignKey: 'solicitudRetiroId',
-  as: 'visitaRetiro'
-});
-VisitaRetiro.belongsTo(SolicitudRetiro, { 
-  foreignKey: 'solicitudRetiroId',
-  as: 'solicitudRetiro'
-});
-
 // Cliente - Certificado
 Cliente.hasMany(Certificado, {
   foreignKey: 'cliente_id',
@@ -101,18 +121,6 @@ Certificado.belongsTo(Cliente, {
   foreignKey: 'cliente_id',
   targetKey: 'rut',
   as: 'cliente'
-});
-
-// VisitaRetiro - Certificado (opcional)
-VisitaRetiro.hasMany(Certificado, {
-  foreignKey: 'visita_retiro_id',
-  sourceKey: 'solicitudRetiroId',
-  as: 'certificados'
-});
-Certificado.belongsTo(VisitaRetiro, {
-  foreignKey: 'visita_retiro_id',
-  targetKey: 'solicitudRetiroId',
-  as: 'visitaRetiro'
 });
 
 // Usuario - Notificacion

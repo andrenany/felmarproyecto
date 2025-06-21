@@ -2,21 +2,29 @@
 const express = require('express');
 const router = express.Router();
 const visitaController = require('../controllers/visitaController');
-const auth = require('../middlewares/auth'); // Descomentado para restaurar protección
+const auth = require('../middlewares/auth');
+const { validarRol } = require('../middlewares/validar-rol');
 
-// Rutas para el calendario y detalles
-router.get('/calendario', auth.isAuthenticated, visitaController.calendario);
-router.get('/detalles/:id', auth.isAuthenticated, visitaController.detalles);
+// Rutas para obtener datos (usar middleware de API)
+router.get('/api/visitas', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.obtenerVisitas);
+router.get('/api/visitas/estadisticas', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.obtenerEstadisticas);
+router.get('/api/visitas/clientes', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.obtenerClientes);
+router.get('/api/visitas/:id', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.obtenerVisitaPorId);
 
-// Rutas para administradores
-router.get('/programar', auth.hasRole(['administrador']), visitaController.mostrarProgramar);
-router.post('/programar', auth.hasRole(['administrador']), visitaController.programar);
-router.post('/reprogramar/:id', auth.hasRole(['administrador']), visitaController.reprogramar);
+// Rutas para crear y modificar (usar middleware de API)
+router.post('/api/visitas', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.crearVisita);
+router.put('/api/visitas/:id', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.actualizarVisita);
+router.delete('/api/visitas/:id', auth.isAuthenticatedApi, validarRol('administrador'), visitaController.eliminarVisita);
 
-// Cambiar estado (admin y operador)
-router.post('/cambiar-estado/:id', auth.hasRole(['administrador', 'operador']), visitaController.cambiarEstado);
+// Ruta para cambiar estado (usar middleware de API)
+router.patch('/api/visitas/:id/estado', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.cambiarEstadoVisita);
 
-// Cancelar (todos los roles)
-router.post('/cancelar/:id', auth.isAuthenticated, visitaController.cancelar);
+// Ruta para la vista de administración (usar middleware web)
+router.get('/admin/visitas', auth.isAuthenticated, validarRol('administrador'), (req, res) => {
+    res.render('admin/visitas', {
+        titulo: 'Gestión de Visitas',
+        currentPage: 'visitas'
+    });
+});
 
 module.exports = router;

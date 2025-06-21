@@ -1,5 +1,5 @@
 // controllers/clienteController.js
-const { Cliente, Usuario, SolicitudRetiro, Comuna } = require('../models');
+const { Cliente, Usuario, SolicitudRetiro, Comuna, VisitaRetiro, Cotizacion, Certificado } = require('../models');
 const Region = require('../models/Region');
 const { Op } = require('sequelize');
 
@@ -85,7 +85,13 @@ const clienteController = {
   // Obtener un cliente específico
   obtenerCliente: async (req, res) => {
     try {
-      const { rut } = req.params;
+      const rut = req.params.rut || req.params.id;
+      if (!rut) {
+        return res.status(400).json({
+          success: false,
+          message: 'Debe proporcionar un RUT o ID de cliente válido.'
+        });
+      }
       const rutFormateado = formatearRut(rut);
       // Primero buscar el cliente
       const cliente = await Cliente.findOne({
@@ -284,7 +290,13 @@ const clienteController = {
   // Actualizar cliente
   actualizarCliente: async (req, res) => {
     try {
-      const { rut } = req.params;
+      const rut = req.params.rut || req.params.id;
+      if (!rut) {
+        return res.status(400).json({
+          success: false,
+          message: 'Debe proporcionar un RUT o ID de cliente válido.'
+        });
+      }
       const rutFormateado = formatearRut(rut);
       const { 
         nombreEmpresa, 
@@ -495,6 +507,333 @@ const clienteController = {
         titulo: 'Error',
         mensaje: 'Error al cargar la página'
       });
+    }
+  },
+
+  // Obtener estadísticas para el dashboard del cliente
+  obtenerMisEstadisticas: async (req, res) => {
+    try {
+      if (!req.session.usuario || !req.session.usuario.id) {
+        return res.status(401).json({ success: false, message: 'No autorizado.' });
+      }
+
+      const cliente = await Cliente.findOne({ 
+        where: { usuario_id: req.session.usuario.id } 
+      });
+
+      if (!cliente) {
+        return res.status(404).json({ success: false, message: 'Cliente no encontrado.' });
+      }
+
+      // Consultas en paralelo para mayor eficiencia
+      const [visitas, solicitudes, certificados] = await Promise.all([
+        VisitaRetiro.findAll({ where: { clienteId: cliente.rut } }),
+        SolicitudRetiro.findAll({ where: { clienteRut: cliente.rut } }),
+        Certificado.findAll({ where: { cliente_id: cliente.rut } })
+      ]);
+
+      // Calcular estadísticas
+      const totalVisitas = visitas.length;
+      const visitasPendientes = visitas.filter(v => ['pendiente', 'confirmada'].includes(v.estado)).length;
+      
+      const proximaVisita = visitas
+        .filter(v => new Date(v.fecha) >= new Date() && ['pendiente', 'confirmada'].includes(v.estado))
+        .sort((a,b) => new Date(a.fecha) - new Date(b.fecha))[0];
+
+      const totalSolicitudes = solicitudes.length;
+      const totalCertificados = certificados.length;
+      
+      res.json({
+        success: true,
+        data: {
+          totalVisitas,
+          visitasPendientes,
+          totalCertificados,
+          totalSolicitudes,
+          proximaVisita: proximaVisita ? {
+              fecha: proximaVisita.fecha,
+              tipo: proximaVisita.tipo_visita,
+              estado: proximaVisita.estado
+          } : null,
+          nombreCliente: cliente.nombre_empresa
+        }
+      });
+
+    } catch (error) {
+      console.error('Error al obtener estadísticas del cliente:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+  },
+
+  // Obtener las visitas del cliente autenticado
+  obtenerMisVisitas: async (req, res) => {
+    try {
+      console.log('Obteniendo visitas para usuario:', req.session.usuario?.id);
+      
+      // 1. Verificar que el usuario está en la sesión
+      if (!req.session.usuario || !req.session.usuario.id) {
+        console.log('Usuario no autenticado');
+        // Devuelve un array vacío si no está autorizado, para que el frontend no falle
+        return res.status(401).json([]);
+      }
+
+      // 2. Encontrar al cliente asociado al usuario de la sesión
+      const cliente = await Cliente.findOne({ 
+        where: { usuario_id: req.session.usuario.id } 
+      });
+
+      if (!cliente) {
+        console.log('Cliente no encontrado para usuario:', req.session.usuario.id);
+        // Devuelve un array vacío si no se encuentra el cliente
+        return res.status(404).json([]);
+      }
+
+      console.log('Cliente encontrado:', cliente.rut);
+
+      // 3. Buscar todas las visitas asociadas, incluyendo datos de la solicitud
+      const visitas = await VisitaRetiro.findAll({
+        where: { clienteId: cliente.rut },
+        include: [{
+          model: SolicitudRetiro,
+          as: 'solicitud',
+          required: false // Usamos LEFT JOIN para no excluir visitas sin solicitud
+        }],
+        order: [['fecha', 'ASC']]
+      });
+
+      console.log(`Encontradas ${visitas.length} visitas para cliente ${cliente.rut}`);
+
+      // 4. Formatear las visitas con los datos que el frontend espera
+      const visitasData = visitas.map(visita => {
+        // Combinar fecha y hora para que el frontend pueda parsearlo fácilmente
+        const fechaHora = new Date(`${visita.fecha}T${visita.hora}`);
+
+        return {
+          id: visita.id,
+          titulo: `Visita de ${visita.tipoVisita}`, // Para el título en FullCalendar
+          fecha: fechaHora.toISOString(), // Fecha completa para parsear
+          estado: visita.estado,
+          tipo: visita.tipoVisita,
+          observaciones: visita.observaciones,
+          // Nuevos campos para la respuesta del cliente
+          respuestaCliente: visita.respuestaCliente || 'pendiente',
+          motivoRechazo: visita.motivoRechazo || null,
+          fechaRespuestaCliente: visita.fechaRespuestaCliente || null,
+          // Datos desde la solicitud asociada, con valores por defecto si no existe
+          tipoResiduo: visita.solicitud ? visita.solicitud.tipo_residuo : 'No especificado',
+          cantidadEstimada: visita.solicitud ? `${visita.solicitud.cantidad} ${visita.solicitud.unidad}` : 'No especificada',
+          direccion: visita.solicitud ? visita.solicitud.direccion_especifica : 'No especificada',
+          contacto: visita.solicitud ? visita.solicitud.contacto_nombre : 'No especificado'
+        };
+      });
+
+      console.log('Visitas formateadas:', visitasData);
+
+      // 5. Enviar los datos formateados en formato JSON
+      res.json(visitasData);
+
+    } catch (error) {
+      console.error('Error al obtener las visitas del cliente:', error);
+      // En caso de error, devolver un array vacío para no romper el cliente
+      res.status(500).json([]);
+    }
+  },
+
+  // Aceptar una visita
+  aceptarVisita: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const visita = await VisitaRetiro.findByPk(id);
+
+      if (!visita) {
+        return res.status(404).json({ success: false, message: 'Visita no encontrada.' });
+      }
+
+      visita.respuestaCliente = 'aceptada';
+      visita.fechaRespuestaCliente = new Date();
+      visita.estado = 'confirmada';
+
+      await visita.save();
+
+      res.json({ success: true, message: 'Visita aceptada con éxito.' });
+    } catch (error) {
+      console.error('Error al aceptar la visita:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+  },
+
+  // Rechazar una visita
+  rechazarVisita: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { motivo } = req.body;
+
+      if (!motivo) {
+        return res.status(400).json({ success: false, message: 'El motivo del rechazo es obligatorio.' });
+      }
+
+      const visita = await VisitaRetiro.findByPk(id);
+
+      if (!visita) {
+        return res.status(404).json({ success: false, message: 'Visita no encontrada.' });
+      }
+
+      visita.respuestaCliente = 'rechazada';
+      visita.motivoRechazo = motivo;
+      visita.fechaRespuestaCliente = new Date();
+      visita.estado = 'cancelada';
+
+      await visita.save();
+
+      res.json({ success: true, message: 'Visita rechazada con éxito.' });
+    } catch (error) {
+      console.error('Error al rechazar la visita:', error);
+      res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+  },
+
+  renderMiPerfil: async (req, res) => {
+    try {
+      if (!req.session.usuario || !req.session.usuario.id) {
+        return res.redirect('/usuarios/login');
+      }
+
+      const cliente = await Cliente.findOne({
+        where: { usuario_id: req.session.usuario.id },
+        include: [{ model: Usuario }, { model: Comuna, include: [{ model: Region, as: 'Region' }] }]
+      });
+
+      if (!cliente) {
+        req.flash('error', 'No se encontró un perfil de cliente asociado a su cuenta.');
+        return res.redirect('/dashboard/cliente');
+      }
+
+      // Unificar los datos para la vista
+      const perfilData = {
+        nombre: cliente.Usuario.nombre,
+        email: cliente.Usuario.email,
+        activo: cliente.Usuario.activo,
+        fechaRegistro: cliente.Usuario.createdAt,
+        rut: cliente.rut,
+        telefono: cliente.telefono,
+        nombreEmpresa: cliente.nombre_empresa,
+        contactoPrincipal: cliente.contacto_principal,
+        direccion: cliente.direccion,
+        comuna: cliente.Comuna ? cliente.Comuna.nombre : '',
+        region: cliente.Comuna && cliente.Comuna.Region ? cliente.Comuna.Region.nombre : ''
+      };
+
+      res.render('clientes/perfil/miperfil', {
+        titulo: 'Mi Perfil - Felmart',
+        usuario: perfilData, // Pasamos el objeto unificado
+        layout: false, // Si usas un layout principal, ajústalo
+        currentPage: 'miperfil'
+      });
+
+    } catch (error) {
+      console.error("Error al renderizar la página de perfil:", error);
+      req.flash('error', 'Ocurrió un error al cargar tu perfil.');
+      res.redirect('/dashboard/cliente');
+    }
+  },
+
+  renderDashboard: async (req, res) => {
+    try {
+      if (!req.session.usuario || !req.session.usuario.id) {
+        return res.redirect('/usuarios/login');
+      }
+
+      const cliente = await Cliente.findOne({ 
+        where: { usuario_id: req.session.usuario.id } 
+      });
+
+      if (!cliente) {
+        req.flash('error', 'No se encontró un perfil de cliente asociado a su cuenta.');
+        return res.redirect('/usuarios/login');
+      }
+
+      const [solicitudes, visitas] = await Promise.all([
+        SolicitudRetiro.findAll({
+          where: { clienteRut: cliente.rut },
+          order: [['createdAt', 'DESC']]
+        }),
+        VisitaRetiro.findAll({
+          where: { clienteId: cliente.rut }
+        })
+      ]);
+
+      const misSolicitudes = solicitudes.length;
+      const solicitudesPendientes = solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length;
+      
+      const proximasVisitas = visitas.filter(v => 
+          new Date(v.fecha) >= new Date() && 
+          ['pendiente', 'confirmada'].includes(v.estado.toLowerCase())
+      ).length;
+
+      const ultimasSolicitudes = solicitudes.slice(0, 5).map(s => ({
+          id: s.id,
+          fechaSolicitud: s.createdAt,
+          direccionRetiro: s.direccion_especifica,
+          estado: s.estado
+      }));
+
+      res.render('dashboard/cliente', {
+          titulo: 'Portal Cliente - Felmart',
+          usuario: req.session.usuario,
+          misSolicitudes,
+          solicitudesPendientes,
+          proximasVisitas,
+          ultimasSolicitudes
+      });
+
+    } catch (error) {
+      console.error('Error al renderizar el dashboard del cliente:', error);
+      req.flash('error', 'Ocurrió un error al cargar su panel de control.');
+      res.redirect('/usuarios/login');
+    }
+  },
+
+  renderMisSolicitudes: async (req, res) => {
+    try {
+      if (!req.session.usuario || !req.session.usuario.id) {
+        return res.redirect('/usuarios/login');
+      }
+
+      const cliente = await Cliente.findOne({ 
+        where: { usuario_id: req.session.usuario.id } 
+      });
+
+      if (!cliente) {
+        req.flash('error', 'No se encontró un perfil de cliente asociado a su cuenta.');
+        return res.redirect('/dashboard');
+      }
+
+      const solicitudes = await SolicitudRetiro.findAll({
+        where: { clienteRut: cliente.rut },
+        order: [['createdAt', 'DESC']]
+      });
+
+      // Calcular estadísticas de solicitudes
+      const stats = {
+        pendientes: solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length,
+        confirmadas: solicitudes.filter(s => s.estado.toLowerCase() === 'confirmada').length,
+        completadas: solicitudes.filter(s => s.estado.toLowerCase() === 'completada').length,
+        canceladas: solicitudes.filter(s => s.estado.toLowerCase() === 'cancelada').length
+      };
+
+      res.render('clientes/solicitudes', {
+        titulo: 'Mis Solicitudes - Felmart',
+        usuario: req.session.usuario,
+        solicitudes: solicitudes,
+        stats: stats,
+        currentPage: 'solicitudes',
+        layout: false
+      });
+
+    } catch (error) {
+      console.error('Error al renderizar la página de solicitudes:', error);
+      req.flash('error', 'Ocurrió un error al cargar tus solicitudes.');
+      res.redirect('/dashboard');
     }
   }
 };

@@ -778,21 +778,21 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
-                                <th>RUT</th>
-                                <th>EMPRESA</th>
-                                <th>EMAIL</th>
-                                <th>TELÉFONO</th>
-                                <th>CONTACTO</th>
-                                <th>COMUNA</th>
-                                <th>REGIÓN</th>
-                                <th>ACCIONES</th>
+                                <th scope="col" class="text-center">#</th>
+                                <th scope="col">Nombre Empresa</th>
+                                <th scope="col">RUT</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Teléfono</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Región</th>
+                                <th scope="col" class="text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="clientesTableBody">
-                            <!-- Los datos se cargarán aquí dinámicamente -->
+                        <tbody id="clientes-tbody">
+                            <!-- Clientes se renderizan aquí -->
                         </tbody>
                     </table>
                 </div>
@@ -1057,46 +1057,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    const tbody = document.getElementById('clientesTableBody');
-                    tbody.innerHTML = '';
-                    
-                    if (data.clientes.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="7" class="text-center py-5">
-                                    <div class="empty-state">
-                                        <i class="fas fa-building fa-3x mb-3" style="opacity: 0.3;"></i>
-                                        <h5>No hay clientes registrados</h5>
-                                        <p class="text-muted">Comienza agregando tu primer cliente</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    } else {
-                        data.clientes.forEach(cliente => {
-                            tbody.innerHTML += `
-                                <tr>
-                                    <td><strong>${cliente.rut}</strong></td>
-                                    <td><strong>${cliente.nombre_empresa}</strong></td>
-                                    <td>${cliente.Usuario ? cliente.Usuario.email : 'No disponible'}</td>
-                                    <td>${cliente.telefono}</td>
-                                    <td>${cliente.contacto_principal}</td>
-                                    <td>${cliente.Comuna ? cliente.Comuna.nombre : 'No disponible'}</td>
-                                    <td>${cliente.Comuna && cliente.Comuna.Region ? cliente.Comuna.Region.nombre : 'No disponible'}</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <button class="btn btn-info btn-sm" onclick="editarCliente('${cliente.rut}')" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm" onclick="eliminarCliente('${cliente.rut}')" title="Eliminar">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                    }
+                    renderizarClientes(data.clientes);
                 } else {
                     mostrarNotificacion(data.message || 'Error al cargar los clientes', 'danger');
                 }
@@ -1105,7 +1066,7 @@
                 mostrarNotificacion('Error al cargar los clientes', 'danger');
                 
                 // Mostrar estado de error en la tabla
-                const tbody = document.getElementById('clientesTableBody');
+                const tbody = document.getElementById('clientes-tbody');
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center py-5">
@@ -1122,6 +1083,52 @@
                 `;
             }
         }
+
+        // Función para renderizar clientes
+        function renderizarClientes(clientes) {
+            const tbody = document.getElementById('clientes-tbody');
+            tbody.innerHTML = '';
+            clientes.forEach((cliente, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center">${index + 1}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-building me-2 text-primary"></i>
+                            <strong>${cliente.nombre_empresa}</strong>
+                        </div>
+                    </td>
+                    <td>${cliente.rut}</td>
+                    <td>${cliente.email}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>
+                        <span class="badge ${cliente.activo ? 'bg-success' : 'bg-danger'}">
+                            ${cliente.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>${cliente.Comuna && cliente.Comuna.Region ? cliente.Comuna.Region.nombre : 'No disponible'}</td>
+                    <td class="text-center">
+                        <div class="btn-group" role="group">
+                            <a href="/cotizaciones/cotizar?clienteId=${cliente.rut}" class="btn btn-primary btn-sm" title="Crear Cotización">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </a>
+                            <button class="btn btn-info btn-sm" onclick="editarCliente('${cliente.rut}')" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="verCliente('${cliente.rut}')" title="Ver Detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="eliminarCliente('${cliente.rut}')" title="Eliminar Cliente">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- Funciones para el CRUD de clientes ---
 
         // Mostrar modal para crear
         function mostrarModalCrear() {

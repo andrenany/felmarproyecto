@@ -71,8 +71,8 @@ const usuarioController = {
         rol: usuario.rol
       };
       if (usuario.rol === 'cliente') {
-        const cliente = await Cliente.findOne({ where: { usuarioId: usuario.id } });
-        if (cliente) req.session.clienteId = cliente.id;
+        const cliente = await Cliente.findOne({ where: { usuario_id: usuario.id } });
+        if (cliente) req.session.clienteId = cliente.rut;
       }
       
       // Redirigir a la URL original o al dashboard

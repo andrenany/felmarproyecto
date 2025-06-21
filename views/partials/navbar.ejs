@@ -1,99 +1,279 @@
 <!-- views/partials/navbar.ejs -->
-<header class="site-header">
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--nav-primary-color);">
-    <div class="container-fluid">
-      <!-- Logo -->
-      <a href="/" class="navbar-brand">
-        <img src="/img/logo.png" alt="Felmart Logo" style="height: 60px; width: auto;">
-      </a>
-      
-      <!-- Contenido del navbar derecha -->
-      <div class="ms-auto">
-        <% if (typeof usuario !== 'undefined' && usuario) { %>
-          <!-- Usuario logueado -->
-          <div class="d-flex align-items-center">
-            <a href="/dashboard" class="btn btn-outline-light me-3">
-              <i class="fas fa-tachometer-alt me-2"></i>Panel Principal
-            </a>
-            <% if (usuario && usuario.rol === 'administrador') { %>
-              <a href="/dashboard/clientes" class="btn btn-outline-light me-3">
-                <i class="fas fa-users me-2"></i>Gestión de Clientes
-              </a>
-            <% } %>
-            <div class="dropdown">
-              <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" 
-                      style="background: rgba(255,255,255,0.1); border: none; border-radius: 25px; padding: 5px 15px 5px 5px;">
-                <div class="avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                  <i class="fas fa-user" style="color: #004c57; font-size: 14px;"></i>
+<header class="header-nav">
+    <div class="container-fluid px-4">
+        <div class="nav-container">
+            <a href="/" class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
                 </div>
-                <span class="text-light me-2"><%= usuario.nombre %></span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/dashboard">
-                  <i class="fas fa-tachometer-alt me-2"></i>Panel Principal
-                </a></li>
-                <li><a class="dropdown-item" href="/perfil">
-                  <i class="fas fa-user me-2"></i>Mi Perfil
-                </a></li>
-                <% if (usuario && usuario.rol === 'administrador') { %>
-                  <li><a class="dropdown-item" href="/dashboard/clientes">
-                    <i class="fas fa-users me-2"></i>Gestión de Clientes
-                  </a></li>
-                <% } %>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="/logout">
-                  <i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión
-                </a></li>
-              </ul>
+                <span class="logo-text">Felmart</span>
+            </a>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link <%= currentPage === 'inicio' ? 'active' : '' %>">
+                            <i class="fas fa-home"></i>
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/clientes" class="nav-link <%= currentPage === 'clientes' ? 'active' : '' %>">
+                            <i class="fas fa-building"></i>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/cotizaciones" class="nav-link <%= currentPage === 'cotizaciones' ? 'active' : '' %>">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Cotizaciones</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/certificados" class="nav-link <%= currentPage === 'certificados' ? 'active' : '' %>">
+                            <i class="fas fa-certificate"></i>
+                            <span>Certificados</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/visitas" class="nav-link <%= currentPage === 'visitas' ? 'active' : '' %>">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Visitas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/residuos" class="nav-link <%= currentPage === 'residuos' ? 'active' : '' %>">
+                            <i class="fas fa-trash"></i>
+                            <span>Residuos</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-dropdown">
+                <button class="user-btn" id="adminDropdownBtn" type="button">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administrador</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="adminDropdownMenu">
+                    <a href="/admin/perfil" class="dropdown-item">
+                        <i class="fas fa-user"></i> Mi Perfil
+                    </a>
+                    <a href="/admin/notificaciones" class="dropdown-item">
+                        <i class="fas fa-bell"></i> Notificaciones
+                    </a>
+                    <a href="/admin/auditoria" class="dropdown-item">
+                        <i class="fas fa-shield-alt"></i> Registro de Actividad
+                    </a>
+                    <a href="/admin/backups" class="dropdown-item">
+                        <i class="fas fa-database"></i> Respaldo de Datos
+                    </a>
+                    <a href="/admin/ayuda" class="dropdown-item">
+                        <i class="fas fa-question-circle"></i> Ayuda y Soporte
+                    </a>
+                    <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
+                    <a href="/" class="dropdown-item">
+                        <i class="fas fa-home"></i> Volver al Inicio
+                    </a>
+                    <a href="/logout" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
             </div>
-          </div>
-        <% } else { %>
-          <!-- Usuario no logueado -->
-          <div class="d-flex">
-            <a href="/login" class="btn btn-outline-light me-2">
-              <i class="fas fa-sign-in-alt me-2"></i>Iniciar sesión
-            </a>
-            <a href="/registro" class="btn btn-light text-primary">
-              <i class="fas fa-user-plus me-2"></i>Registrarse
-            </a>
-          </div>
-        <% } %>
-      </div>
+        </div>
     </div>
-  </nav>
 </header>
 
 <style>
-/* Estilos adicionales para el navbar */
-.site-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1030;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+:root {
+    --nav-primary-color: #00616e;
+    --nav-primary-dark: #004d57;
+    --nav-primary-light: #00818f;
+    --nav-secondary-color: #6c757d;
+    --nav-white: #ffffff;
+    --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body {
-  padding-top: 76px; /* Espacio para el navbar fijo */
+.header-nav {
+    background: var(--nav-white);
+    box-shadow: var(--nav-shadow);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--nav-primary-color);
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 1rem;
+    color: var(--nav-secondary-color);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--nav-transition);
+    font-weight: 500;
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--nav-primary-color);
+    background: rgba(0, 97, 110, 0.05);
+}
+
+.nav-link i {
+    font-size: 16px;
+}
+
+.user-dropdown {
+    position: relative;
+}
+
+.user-btn {
+    background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--nav-transition);
+}
+
+.user-btn:hover {
+    background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
 }
 
 .dropdown-menu {
-  border: none;
-  box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-  border-radius: 10px;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--nav-white);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s;
+    z-index: 1000;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .dropdown-item {
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--nav-primary-color);
+    text-decoration: none;
+    transition: var(--nav-transition);
+    font-size: 14px;
+    border-radius: 8px;
+    margin: 0.25rem 0;
+    font-weight: 500;
 }
 
 .dropdown-item:hover {
-  background-color: #f5f7fa;
+    background: rgba(0, 97, 110, 0.05);
+    color: var(--nav-primary-color);
+    transform: translateX(5px);
+}
+
+.dropdown-item.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color) !important;
 }
 
 .dropdown-item i {
-  width: 20px;
+    width: 20px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+    }
 }
 </style>
+
+<script>
+// Dropdown funcional para el admin
+const adminDropdownBtn = document.getElementById('adminDropdownBtn');
+const adminDropdownMenu = document.getElementById('adminDropdownMenu');
+
+adminDropdownBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    adminDropdownMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', function(e) {
+    if (!adminDropdownMenu.contains(e.target) && !adminDropdownBtn.contains(e.target)) {
+        adminDropdownMenu.classList.remove('show');
+    }
+});
+</script>
