@@ -16,8 +16,8 @@ router.post('/api/visitas', auth.isAuthenticatedApi, validarRol('administrador',
 router.put('/api/visitas/:id', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.actualizarVisita);
 router.delete('/api/visitas/:id', auth.isAuthenticatedApi, validarRol('administrador'), visitaController.eliminarVisita);
 
-// Ruta para cambiar estado (usar middleware de API)
-router.patch('/api/visitas/:id/estado', auth.isAuthenticatedApi, validarRol('administrador', 'operador'), visitaController.cambiarEstadoVisita);
+// Ruta para que el cliente responda a la visita
+router.patch('/api/visitas/:id/responder', auth.isAuthenticatedApi, validarRol('cliente'), visitaController.responderVisita);
 
 // Ruta para la vista de administración (usar middleware web)
 router.get('/admin/visitas', auth.isAuthenticated, validarRol('administrador'), (req, res) => {

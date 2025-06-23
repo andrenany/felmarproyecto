@@ -30,17 +30,14 @@ const VisitaRetiro = sequelize.define('VisitaRetiro', {
     type: DataTypes.TIME,
     allowNull: false
   },
-  horaInicio: {
-    type: DataTypes.TIME,
-    allowNull: true,
-    defaultValue: null,
-    field: 'hora_inicio'
-  },
-  horaFin: {
-    type: DataTypes.TIME,
+  estado: {
+    type: DataTypes.ENUM('pendiente', 'confirmada', 'completada', 'rechazada'),
     allowNull: false,
-    defaultValue: '11:00:00',
-    field: 'hora_fin'
+    defaultValue: 'pendiente'
+  },
+  observaciones: {
+    type: DataTypes.TEXT,
+    allowNull: true
   },
   cotizacionId: {
     type: DataTypes.STRING,
@@ -51,49 +48,14 @@ const VisitaRetiro = sequelize.define('VisitaRetiro', {
     allowNull: true,
     field: 'cotizacion_id'
   },
-  solicitudId: {
+  solicitudRetiroId: {
     type: DataTypes.INTEGER,
     references: {
       model: 'solicitudes_retiro',
       key: 'id'
     },
     allowNull: true,
-    field: 'solicitud_id'
-  },
-  estado: {
-    type: DataTypes.ENUM('pendiente', 'confirmada', 'evaluacion', 'retiro', 'cancelada'),
-    defaultValue: 'pendiente'
-  },
-  respuestaCliente: {
-    type: DataTypes.ENUM('pendiente', 'aceptada', 'rechazada'),
-    defaultValue: 'pendiente',
-    field: 'respuesta_cliente'
-  },
-  motivoRechazo: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-    field: 'motivo_rechazo'
-  },
-  fechaRespuestaCliente: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    field: 'fecha_respuesta_cliente'
-  },
-  observaciones: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  fechaProgramada: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
-    field: 'fecha_programada'
-  },
-  fechaHoraProgramada: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: DataTypes.NOW,
-    field: 'fecha_hora_programada'
+    field: 'solicitud_retiro_id'
   }
 }, {
   timestamps: true,

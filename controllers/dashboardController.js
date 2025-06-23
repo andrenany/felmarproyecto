@@ -111,6 +111,17 @@ exports.mostrarDashboard = async (req, res) => {
                 proximasVisitas,
                 clientesRecientes
             });
+        } else if (req.usuario.rol === 'cliente') {
+            return res.render('dashboard/cliente', {
+                currentPage: 'dashboard',
+                stats,
+                actividades,
+                usuario: {
+                    nombre: req.usuario.nombre,
+                    rol: req.usuario.rol,
+                    clienteId: req.usuario.clienteId
+                }
+            });
         }
         
         res.render('dashboard/index', {

@@ -229,4 +229,35 @@ router.get('/clientes/eliminar/:id', isAdmin, async (req, res) => {
     }
 });
 
+// Ruta específica para el dashboard de cliente
+router.get('/cliente', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.usuario.rol !== 'cliente') {
+            req.flash('error', 'No tienes permisos para acceder a esta sección');
+            return res.redirect('/dashboard');
+        }
+
+        let datosCliente = null;
+        let mostrarNotificacion = false;
+
+        if (req.session.clienteId) {
+            datosCliente = await Cliente.findByPk(req.session.clienteId);
+        } else {
+            mostrarNotificacion = true;
+        }
+
+        res.render('dashboard/cliente', {
+            title: 'Dashboard Cliente - Felmart',
+            usuario: req.session.usuario,
+            cliente: datosCliente,
+            mostrarNotificacion: mostrarNotificacion,
+            currentPage: 'dashboard'
+        });
+    } catch (error) {
+        console.error('Error al cargar dashboard de cliente:', error);
+        req.flash('error', 'Error al cargar el dashboard');
+        res.redirect('/');
+    }
+});
+
 module.exports = router;

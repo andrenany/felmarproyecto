@@ -478,6 +478,62 @@ const {
           message: 'Error al crear certificado'
         });
       }
+
+    // Método para mostrar la vista de certificados del cliente
+    listarCertificadosCliente: async (req, res) => {
+        try {
+            // Verificar que el usuario está autenticado y es un cliente
+            if (!req.session.usuario || !req.session.clienteId) {
+                req.flash('error', 'No tienes permiso para ver esta página');
+                return res.redirect('/login');
+            }
+
+            res.render('clientes/certificados', {
+                usuario: req.session.usuario,
+                error: req.flash('error'),
+                success: req.flash('success')
+            });
+        } catch (error) {
+            console.error('Error al mostrar certificados:', error);
+            req.flash('error', 'Error al cargar la página de certificados');
+            res.redirect('/dashboard');
+        }
+    },
+
+    // Método API para obtener los certificados del cliente
+    obtenerCertificadosCliente: async (req, res) => {
+        try {
+            // Asegurar que la respuesta sea JSON
+            res.setHeader('Content-Type', 'application/json');
+
+            if (!req.session.usuario || !req.session.clienteId) {
+                return res.status(403).json({
+                    error: 'No autorizado'
+                });
+            }
+
+            const clienteId = req.session.clienteId;
+
+            const certificados = await Certificado.findAll({
+                where: { cliente_id: clienteId },
+                order: [['fechaEmision', 'DESC']]
+            });
+
+            return res.json(certificados.map(cert => ({
+                id: cert.id,
+                titulo: `Certificado #${cert.id}`,
+                fecha: moment(cert.fechaEmision).format('DD/MM/YYYY'),
+                descripcion: cert.observaciones || 'Sin observaciones',
+                rutaPdf: cert.rutaPdf,
+                visita_retiro_id: cert.visita_retiro_id
+            })));
+
+        } catch (error) {
+            console.error('Error al obtener certificados:', error);
+            return res.status(500).json({
+                error: 'Error interno del servidor'
+            });
+        }
     }
   };
   
