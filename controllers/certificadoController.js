@@ -478,6 +478,7 @@ const {
           message: 'Error al crear certificado'
         });
       }
+    },
 
     // Método para mostrar la vista de certificados del cliente
     listarCertificadosCliente: async (req, res) => {

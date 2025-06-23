@@ -180,19 +180,14 @@ const visitaController = {
                 observaciones
             } = req.body;
 
-
             console.log('\n--- INICIO crearVisita ---');
             console.log('1. Recibido clienteId (RUT):', cliente_id);
 
-            // Validaciones
-            if (!cliente_id || !tipo_visita || !fecha || !hora || !observaciones) {
-
             // Validaciones de campos obligatorios
-            if (!clienteId || !tipoVisita || !fecha || !hora) {
-
+            if (!cliente_id || !tipo_visita || !fecha || !hora) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Los campos clienteId, tipoVisita, fecha y hora son obligatorios'
+                    message: 'Los campos cliente_id, tipo_visita, fecha y hora son obligatorios'
                 });
             }
 
@@ -209,7 +204,7 @@ const visitaController = {
             }
 
             // Validar tipo de visita
-            if (!['evaluacion', 'retiro'].includes(tipoVisita)) {
+            if (!['evaluacion', 'retiro'].includes(tipo_visita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido. Debe ser "evaluacion" o "retiro"'
@@ -227,18 +222,6 @@ const visitaController = {
                 });
             }
 
-            const visita = await VisitaRetiro.create({
-                clienteId,
-                tipoVisita,
-                fecha,
-                hora,
-                estado: 'pendiente',
-                observaciones: observaciones || null,
-                cotizacionId: cotizacionId || null,
-                solicitudId: solicitudId || null
-            });
-
-
             // Crear la visita
             const nuevaVisita = await VisitaRetiro.create({
                 clienteId: cliente_id,
@@ -247,27 +230,18 @@ const visitaController = {
                 hora,
                 cotizacionId: cotizacion_id,
                 solicitudId: solicitud_id,
-                estado,
+                estado: estado || 'pendiente',
                 observaciones
             });
 
             console.log('5. Intentando enviar correo...');
+            const emailCliente = cliente.Usuario?.email;
             const emailEnviado = await enviarCorreoVisita(nuevaVisita, cliente, emailCliente);
 
             res.status(201).json({
                 success: true,
                 message: 'Visita creada exitosamente' + (emailEnviado ? ' y notificación enviada.' : ' pero no se pudo enviar la notificación.'),
                 data: nuevaVisita
-
-            const emailCliente = cliente.Usuario?.email;
-            if (emailCliente) {
-                await enviarCorreoVisita(visita, cliente, emailCliente);
-            }
-
-            res.status(201).json({
-                success: true,
-                message: 'Visita creada exitosamente',
-                data: visita
             });
 
         } catch (error) {
@@ -346,7 +320,7 @@ const visitaController = {
             }
 
             // Validar campos obligatorios si se proporcionan
-            if (tipoVisita && !['evaluacion', 'retiro'].includes(tipoVisita)) {
+            if (tipo_visita && !['evaluacion', 'retiro'].includes(tipo_visita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido'
@@ -361,7 +335,7 @@ const visitaController = {
             }
 
             await visita.update({
-                tipoVisita: tipoVisita || visita.tipoVisita,
+                tipoVisita: tipo_visita || visita.tipoVisita,
                 fecha: fecha || visita.fecha,
                 hora: hora || visita.hora,
                 estado: estado || visita.estado,
@@ -376,21 +350,6 @@ const visitaController = {
                 if (cliente && cliente.Usuario?.email) {
                     await enviarCorreoVisita(visita, cliente, cliente.Usuario.email);
                 }
-
-            });
-
-            await connection.execute(`
-                UPDATE visitas_retiro SET tipo_visita = ?, fecha = ?, hora = ?, estado = ?, observaciones = ?,
-                fecha_programada = ?, fecha_hora_programada = ?, updated_at = NOW() WHERE id = ?
-            `, [tipo_visita, fecha, hora, estado, observaciones, fecha, `${fecha} ${hora}:00`, id]);
-
-            const [visitaActualizada] = await connection.execute('SELECT * FROM visitas_retiro WHERE id = ?', [id]);
-
-            let emailEnviado = false;
-            if (visita.fecha !== fecha || visita.hora !== hora || visita.estado !== estado) {
-                console.log('4. Se detectaron cambios. Intentando enviar correo...');
-                emailEnviado = await enviarCorreoVisita(visitaActualizada[0], cliente, emailCliente);
-
             }
 
             res.json({

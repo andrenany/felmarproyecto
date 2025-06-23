@@ -112,6 +112,36 @@ exports.mostrarDashboard = async (req, res) => {
                 clientesRecientes
             });
         } else if (req.usuario.rol === 'cliente') {
+            // Buscar información del cliente para determinar si mostrar notificación
+            const cliente = await Cliente.findOne({ 
+                where: { usuario_id: req.usuario.id } 
+            });
+            
+            // Obtener estadísticas específicas del cliente
+            const [solicitudes, visitas] = await Promise.all([
+                SolicitudRetiro.findAll({
+                    where: { clienteRut: cliente ? cliente.rut : null },
+                    order: [['createdAt', 'DESC']]
+                }),
+                VisitaRetiro.findAll({
+                    where: { clienteId: cliente ? cliente.rut : null }
+                })
+            ]);
+
+            const misSolicitudes = solicitudes.length;
+            const solicitudesPendientes = solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length;
+            const proximasVisitas = visitas.filter(v => 
+                new Date(v.fecha) >= new Date() && 
+                ['pendiente', 'confirmada'].includes(v.estado.toLowerCase())
+            ).length;
+
+            const ultimasSolicitudes = solicitudes.slice(0, 5).map(s => ({
+                id: s.id,
+                fechaSolicitud: s.createdAt,
+                direccionRetiro: s.direccion_especifica,
+                estado: s.estado
+            }));
+            
             return res.render('dashboard/cliente', {
                 currentPage: 'dashboard',
                 stats,
@@ -120,7 +150,12 @@ exports.mostrarDashboard = async (req, res) => {
                     nombre: req.usuario.nombre,
                     rol: req.usuario.rol,
                     clienteId: req.usuario.clienteId
-                }
+                },
+                mostrarNotificacion: !cliente,
+                misSolicitudes,
+                solicitudesPendientes,
+                proximasVisitas,
+                ultimasSolicitudes
             });
         }
         

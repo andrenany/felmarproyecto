@@ -6,6 +6,8 @@ const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const pool = require('../config/database');
 const dashboardController = require('../controllers/dashboardController');
+const SolicitudRetiro = require('../models/SolicitudRetiro');
+const VisitaRetiro = require('../models/VisitaRetiro');
 
 // Ruta principal del dashboard (redirige según el rol)
 router.get('/', isAuthenticated, (req, res) => {
@@ -21,12 +23,52 @@ router.get('/', isAuthenticated, (req, res) => {
 router.get('/admin', isAuthenticated, isAdmin, dashboardController.mostrarDashboardAdmin);
 
 // Ejemplo de ruta para un dashboard de cliente (puedes crear su propio controlador)
-router.get('/cliente', isAuthenticated, (req, res) => {
-    // Aquí iría la lógica para el dashboard del cliente
-    res.render('dashboard/cliente', {
-         layout: 'layouts/main',
-         usuario: req.session.usuario 
-    });
+router.get('/cliente', isAuthenticated, async (req, res) => {
+    try {
+        // Buscar información del cliente para determinar si mostrar notificación
+        const cliente = await Cliente.findOne({ 
+            where: { usuario_id: req.session.usuario.id } 
+        });
+        
+        // Obtener estadísticas específicas del cliente
+        const [solicitudes, visitas] = await Promise.all([
+            SolicitudRetiro.findAll({
+                where: { clienteRut: cliente ? cliente.rut : null },
+                order: [['createdAt', 'DESC']]
+            }),
+            VisitaRetiro.findAll({
+                where: { clienteId: cliente ? cliente.rut : null }
+            })
+        ]);
+
+        const misSolicitudes = solicitudes.length;
+        const solicitudesPendientes = solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length;
+        const proximasVisitas = visitas.filter(v => 
+            new Date(v.fecha) >= new Date() && 
+            ['pendiente', 'confirmada'].includes(v.estado.toLowerCase())
+        ).length;
+
+        const ultimasSolicitudes = solicitudes.slice(0, 5).map(s => ({
+            id: s.id,
+            fechaSolicitud: s.createdAt,
+            direccionRetiro: s.direccion_especifica,
+            estado: s.estado
+        }));
+
+        res.render('dashboard/cliente', {
+            layout: 'layouts/main',
+            usuario: req.session.usuario,
+            mostrarNotificacion: !cliente,
+            misSolicitudes,
+            solicitudesPendientes,
+            proximasVisitas,
+            ultimasSolicitudes
+        });
+    } catch (error) {
+        console.error('Error al cargar dashboard del cliente:', error);
+        req.flash('error', 'Error al cargar el dashboard');
+        res.redirect('/dashboard');
+    }
 });
 
 // Rutas de gestión de clientes
@@ -226,37 +268,6 @@ router.get('/clientes/eliminar/:id', isAdmin, async (req, res) => {
         console.error('Error al eliminar cliente:', error);
         req.flash('error', 'Error al eliminar el cliente');
         res.redirect('/dashboard/clientes');
-    }
-});
-
-// Ruta específica para el dashboard de cliente
-router.get('/cliente', isAuthenticated, async (req, res) => {
-    try {
-        if (req.session.usuario.rol !== 'cliente') {
-            req.flash('error', 'No tienes permisos para acceder a esta sección');
-            return res.redirect('/dashboard');
-        }
-
-        let datosCliente = null;
-        let mostrarNotificacion = false;
-
-        if (req.session.clienteId) {
-            datosCliente = await Cliente.findByPk(req.session.clienteId);
-        } else {
-            mostrarNotificacion = true;
-        }
-
-        res.render('dashboard/cliente', {
-            title: 'Dashboard Cliente - Felmart',
-            usuario: req.session.usuario,
-            cliente: datosCliente,
-            mostrarNotificacion: mostrarNotificacion,
-            currentPage: 'dashboard'
-        });
-    } catch (error) {
-        console.error('Error al cargar dashboard de cliente:', error);
-        req.flash('error', 'Error al cargar el dashboard');
-        res.redirect('/');
     }
 });
 

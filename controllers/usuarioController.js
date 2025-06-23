@@ -82,6 +82,14 @@ const usuarioController = {
         rol: usuario.rol
       };
 
+      // Si es cliente, buscar información adicional
+      if (usuario.rol === 'cliente') {
+        const cliente = await Cliente.findOne({ where: { usuario_id: usuario.id } });
+        if (cliente) {
+          req.session.clienteId = cliente.rut;
+        }
+      }
+
       // Guardar la sesión antes de redirigir
       req.session.save(err => {
         if (err) {
@@ -91,27 +99,20 @@ const usuarioController = {
         }
 
         // Redireccionar según el rol
+        let redirectUrl;
         if (usuario.rol === 'administrador') {
-          return res.redirect('/admin');
+          redirectUrl = '/admin';
         } else if (usuario.rol === 'operador') {
-          return res.redirect('/operador/dashboard'); // O la ruta que corresponda
+          redirectUrl = '/operador/dashboard';
+        } else if (usuario.rol === 'cliente') {
+          redirectUrl = '/dashboard/cliente';
         } else {
-          return res.redirect('/dashboard');
+          redirectUrl = req.session.returnTo || '/dashboard';
         }
+        
+        delete req.session.returnTo;
+        res.redirect(redirectUrl);
       });
-      
-      if (usuario.rol === 'cliente') {
-        const cliente = await Cliente.findOne({ where: { usuario_id: usuario.id } });
-        if (cliente) {
-          req.session.clienteId = cliente.rut;
-        }
-        return res.redirect('/dashboard/cliente');
-      }
-      
-      // Redirigir a la URL original o al dashboard general para otros roles
-      const redirectUrl = req.session.returnTo || '/dashboard';
-      delete req.session.returnTo;
-      res.redirect(redirectUrl);
 
     } catch (error) {
       console.error('Error en el login:', error);
