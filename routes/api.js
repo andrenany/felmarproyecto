@@ -309,4 +309,12 @@ router.get('/solicitudes/listar', auth.isAuthenticatedApi, async (req, res) => {
     }
 });
 
+// Importar rutas de la API
+const regionRoutes = require('./api/regionRoutes');
+const cmfBancosRoutes = require('./api/cmfBancos.routes');
+
+// Registrar rutas
+router.use('/regiones', regionRoutes);
+router.use('/cmf-bancos', cmfBancosRoutes);
+
 module.exports = router; 

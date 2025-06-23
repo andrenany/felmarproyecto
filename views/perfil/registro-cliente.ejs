@@ -701,360 +701,145 @@
         </div>
     </nav>
 
-    <!-- Dashboard Content -->
-    <div class="container-fluid dashboard-container px-4">
-        <!-- Modal de Actualización de Datos -->
-        <% if (mostrarNotificacion) { %>
-        <div class="modal fade" id="actualizarDatosModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="actualizarDatosModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="actualizarDatosModalLabel">Actualización de Datos Requerida</h5>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Registro de Datos de Cliente</h4>
                     </div>
-                    <div class="modal-body">
-                        <p>Para acceder a todas las funcionalidades del sistema, necesitamos que actualices tus datos empresariales.</p>
-                        <p>¿Deseas actualizar tus datos ahora?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="/perfil/registro-cliente" class="btn btn-primary">Actualizar Datos</a>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Más tarde</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <div class="card-body">
+                        <% if (messages && messages.error) { %>
+                            <div class="alert alert-danger" role="alert">
+                                <%= messages.error %>
+                            </div>
+                        <% } %>
+                        
+                        <form action="/perfil/registro-cliente" method="POST" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="rut" class="form-label">RUT Empresa o su rut personal *</label>
+                                <input type="text" class="form-control" id="rut" name="rut" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese el RUT de la empresa o su rut personal
+                                </div>
+                            </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('actualizarDatosModal'));
-                myModal.show();
-            });
-        </script>
-        <% } %>
+                            <div class="mb-3">
+                                <label for="nombre_empresa" class="form-label">Nombre Empresa o su nombre personal *</label>
+                                <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese el nombre de la empresa o su nombre personal
+                                </div>
+                            </div>
 
-        <!-- Page Header -->
-        <div class="page-header fade-in-up">
-            <h1 class="page-title">Panel de Control</h1>
-            <p class="page-subtitle">Bienvenido al sistema de gestión de residuos Felmart</p>
-        </div>
-        
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="stats-card fade-in-up stagger-1">
-                    <div class="card-content">
-                        <div class="card-icon primary">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="card-info">
-                            <h6>Mis Solicitudes</h6>
-                            <h2 class="primary"><%= typeof misSolicitudes !== 'undefined' ? misSolicitudes : 0 %></h2>
-                        </div>
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono *</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese un teléfono válido
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="contacto_principal" class="form-label">Nombre Contacto Principal *</label>
+                                <input type="text" class="form-control" id="contacto_principal" name="contacto_principal" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese el nombre del contacto principal
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección *</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese la dirección
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="region_id" class="form-label">Región *</label>
+                                <select class="form-select" id="region_id" name="region_id" required>
+                                    <option value="">Seleccione una región</option>
+                                    <% regiones.forEach(region => { %>
+                                        <option value="<%= region.id %>"><%= region.nombre %></option>
+                                    <% }); %>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione una región
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="comuna_id" class="form-label">Comuna *</label>
+                                <select class="form-select" id="comuna_id" name="comuna_id" required>
+                                    <option value="">Primero seleccione una región</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione una comuna
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Registrar Datos</button>
+                                <a href="/dashboard/cliente" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="stats-card warning fade-in-up stagger-2">
-                    <div class="card-content">
-                        <div class="card-icon warning">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="card-info">
-                            <h6>Pendientes</h6>
-                            <h2 class="warning"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 mb-3">
-                <div class="stats-card success fade-in-up stagger-3">
-                    <div class="card-content">
-                        <div class="card-icon success">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="card-info">
-                            <h6>Próximas Visitas</h6>
-                            <h2 class="success"><%= typeof proximasVisitas !== 'undefined' ? proximasVisitas : 0 %></h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="action-section fade-in-up">
-            <h5 class="section-title">
-                <i class="fas fa-bolt me-2"></i>
-                Acciones Rápidas
-            </h5>
-            
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a href="clientes/solicitudes/nueva" class="action-btn primary">
-                        <i class="fas fa-plus-circle"></i>
-                        <span>Nueva Solicitud de Retiro</span>
-                    </a>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 mb-3">
-                        <a href="clientes/cotizaciones" class="action-btn primary">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Nueva Cotización</span>
-                        </a>
-                    </div>
-                
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <a href="/clientes/calendario" class="action-btn success">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>Mis Visitas</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Requests -->
-        <div class="table-section fade-in-up">
-            <div class="table-header">
-                <h5 class="table-title">
-                    <i class="fas fa-history me-2"></i>
-                    Mis Solicitudes Recientes
-                </h5>
-                <a href="/clientes/solicitudes" class="btn-outline-custom">
-                    <i class="fas fa-eye me-2"></i>
-                    Ver todas
-                </a>
-            </div>
-            
-            <div class="table-content">
-                <% if (typeof ultimasSolicitudes !== 'undefined' && ultimasSolicitudes && ultimasSolicitudes.length > 0) { %>
-                    <div class="table-responsive">
-                        <table class="table table-hover table-custom">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Fecha Solicitud</th>
-                                    <th>Dirección</th>
-                                    <th>Estado</th>
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% ultimasSolicitudes.forEach(solicitud => { %>
-                                    <tr>
-                                        <td><strong>#<%= solicitud.id %></strong></td>
-                                        <td><%= new Date(solicitud.fechaSolicitud).toLocaleDateString('es-ES') %></td>
-                                        <td><%= solicitud.direccionRetiro %></td>
-                                        <td>
-                                            <span class="status-badge <%= solicitud.estado %>">
-                                                <%= solicitud.estado %>
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="/clisolicitudes/detalles/<%= solicitud.id %>" class="btn-action">
-                                                <i class="fas fa-eye"></i>Ver Detalles
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
-                    </div>
-                <% } else { %>
-                    <div class="empty-state">
-                        <i class="fas fa-file-alt"></i>
-                        <h5>No tienes solicitudes recientes</h5>
-                        <p class="mb-3">Aún no has realizado ninguna solicitud de retiro</p>
-                    </div>
-                <% } %>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    
-    <!-- Custom JavaScript -->
+
     <script>
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-
-        // Initialize dropdowns manually if Bootstrap doesn't work
-        document.querySelectorAll('.dropdown-toggle').forEach(function(dropdown) {
-            dropdown.addEventListener('click', function(e) {
-                const dropdownMenu = this.nextElementSibling;
-                
-                // Close all other dropdowns
-                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
-                    if (menu !== dropdownMenu) {
-                        menu.classList.remove('show');
-                    }
-                });
-                
-                // Toggle current dropdown
-                dropdownMenu.classList.toggle('show');
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
-                    menu.classList.remove('show');
-                });
-            }
-        });
-
-        // Add click effect to stat cards
-        document.querySelectorAll('.stats-card').forEach(card => {
-            card.addEventListener('click', function() {
-                // Add a subtle click animation
-                this.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            });
-        });
-
-        // Add animation on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate elements with fade-in-up class
-            const animatedElements = document.querySelectorAll('.fade-in-up');
-            animatedElements.forEach((element, index) => {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(30px)';
-                
-                setTimeout(() => {
-                    element.style.transition = 'all 0.6s ease-out';
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        });
-
-        // Auto-refresh data every 5 minutes
-        setInterval(function() {
-            // You can implement auto-refresh logic here
-            console.log('Auto-refreshing dashboard data...');
-        }, 300000); // 5 minutes
-
-        // Add search functionality to table (if needed)
-        function filterTable() {
-            const input = document.getElementById('searchInput');
-            const filter = input.value.toUpperCase();
-            const table = document.querySelector('.table-custom tbody');
-            const rows = table.getElementsByTagName('tr');
-
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].getElementsByTagName('td');
-                let found = false;
-                
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j]) {
-                        const textValue = cells[j].textContent || cells[j].innerText;
-                        if (textValue.toUpperCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Validación del formulario
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-                
-                rows[i].style.display = found ? '' : 'none';
-            }
-        }
-
-        // Notification system (basic implementation)
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            notification.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        // Example usage of notification system
-        // showNotification('¡Bienvenido a tu panel de control!', 'success');
-
-        document.addEventListener('DOMContentLoaded', function() {
-            cargarEstadisticas();
+                form.classList.add('was-validated');
+            }, false);
         });
 
-        async function cargarEstadisticas() {
+        // Cargar comunas cuando se selecciona una región
+        const regionSelect = document.getElementById('region_id');
+        const comunaSelect = document.getElementById('comuna_id');
+
+        regionSelect.addEventListener('change', async function() {
+            const regionId = this.value;
+            if (!regionId) {
+                comunaSelect.innerHTML = '<option value="">Primero seleccione una región</option>';
+                return;
+            }
+
             try {
-                const response = await fetch('/api/estadisticas', {
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                });
-
-                if (response.status === 401) {
-                    window.location.href = '/login';
-                    return;
-                }
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-                }
-
+                const response = await fetch(`/api/regiones/${regionId}/comunas`);
                 const data = await response.json();
                 
-                if (data.success) {
-                    const stats = data.data;
-                    
-                    // Actualizar estadísticas en la UI con verificaciones
-                    const statCard1 = document.querySelector('.stats-card:nth-child(1) h2');
-                    const statCard2 = document.querySelector('.stats-card:nth-child(2) h2');
-                    const statCard3 = document.querySelector('.stats-card:nth-child(3) h2');
-                    
-                    if (statCard1) {
-                        statCard1.textContent = stats.solicitudes?.total || 0;
-                    }
-                    if (statCard2) {
-                        statCard2.textContent = stats.solicitudes?.pendientes || 0;
-                    }
-                    if (statCard3) {
-                        statCard3.textContent = stats.visitas?.proximas || 0;
-                    }
-                } else {
-                    throw new Error(data.message || 'Error al cargar las estadísticas');
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar comunas');
                 }
+                
+                comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+                data.comunas.forEach(comuna => {
+                    const option = document.createElement('option');
+                    option.value = comuna.id;
+                    option.textContent = comuna.nombre;
+                    comunaSelect.appendChild(option);
+                });
             } catch (error) {
-                console.error('Error al cargar estadísticas:', error);
-                // Mostrar mensaje de error al usuario
-                const dashboardContainer = document.querySelector('.dashboard-container');
-                if (dashboardContainer) {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-                    alertDiv.innerHTML = `
-                        <strong>Error:</strong> ${error.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
-                    dashboardContainer.prepend(alertDiv);
-
-                    // Auto-ocultar el mensaje después de 5 segundos
-                    setTimeout(() => {
-                        alertDiv.classList.remove('show');
-                        setTimeout(() => alertDiv.remove(), 150);
-                    }, 5000);
-                }
+                console.error('Error al cargar comunas:', error);
+                comunaSelect.innerHTML = '<option value="">Error al cargar comunas</option>';
             }
-        }
+        });
+    });
     </script>
 </body>
-</html>
+</html> 

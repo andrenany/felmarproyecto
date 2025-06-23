@@ -14,6 +14,25 @@ const validarRol = (...roles) => {
     };
 };
 
+const esCliente = (req, res, next) => {
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            msg: 'No hay sesión de usuario activa'
+        });
+    }
+
+    const { rol } = req.session.usuario;
+
+    if (rol !== 'cliente') {
+        return res.status(403).json({
+            msg: 'El usuario no tiene rol de cliente'
+        });
+    }
+
+    next();
+}
+
 module.exports = {
-    validarRol
+    validarRol,
+    esCliente
 }; 

@@ -81,15 +81,6 @@ router.get('/calendario', requireAuth, (req, res) => {
   });
 });
 
-// Agendar visita
-router.get('/calendario/agendar-visita', requireAuth, (req, res) => {
-  res.render('clientes/calendario/agendar-visita', {
-    layout: false,
-    usuario: req.session.usuario,
-    currentPage: 'calendario'
-  });
-});
-
 // Perfil de cliente
 router.get('/perfil/miperfil', requireAuth, clienteController.renderMiPerfil);
 

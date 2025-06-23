@@ -70,12 +70,16 @@ const usuarioController = {
         email: usuario.email,
         rol: usuario.rol
       };
+      
       if (usuario.rol === 'cliente') {
         const cliente = await Cliente.findOne({ where: { usuario_id: usuario.id } });
-        if (cliente) req.session.clienteId = cliente.rut;
+        if (cliente) {
+          req.session.clienteId = cliente.rut;
+        }
+        return res.redirect('/dashboard/cliente');
       }
       
-      // Redirigir a la URL original o al dashboard
+      // Redirigir a la URL original o al dashboard general para otros roles
       const redirectUrl = req.session.returnTo || '/dashboard';
       delete req.session.returnTo;
       res.redirect(redirectUrl);

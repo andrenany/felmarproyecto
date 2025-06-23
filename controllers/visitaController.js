@@ -46,17 +46,11 @@ async function enviarCorreoVisita(visita, cliente, emailCliente) {
             ...emailContent
         };
 
-        // LOG DE DIAGNÓSTICO FINAL
-        console.log('--- DEBUG: Contenido final del correo ---');
-        console.log(JSON.stringify(mailOptions, null, 2));
-        console.log('-----------------------------------------');
-
         await sendMailWithRetry(mailOptions);
         console.log(`✅ Correo de visita enviado exitosamente a: ${emailCliente}`);
         return true;
     } catch (error) {
-        console.error('❌ Error al enviar correo de visita:');
-        console.error(error);
+        console.error('❌ Error al enviar correo de visita:', error);
         return false;
     }
 }
@@ -65,14 +59,13 @@ const visitaController = {
     // Obtener todas las visitas con paginación
     async obtenerVisitas(req, res) {
         try {
-            const { page = 1, limit = 50, estado, clienteId, respuestaCliente } = req.query;
+            const { page = 1, limit = 50, estado, clienteId } = req.query;
             const offset = (page - 1) * limit;
 
             // Construir filtros
             const whereClause = {};
             if (estado) whereClause.estado = estado;
             if (clienteId) whereClause.clienteId = clienteId;
-            if (respuestaCliente) whereClause.respuestaCliente = respuestaCliente;
 
             const { count, rows: visitas } = await VisitaRetiro.findAndCountAll({
                 where: whereClause,
@@ -80,7 +73,7 @@ const visitaController = {
                     {
                         model: Cliente,
                         as: 'cliente',
-                        attributes: ['rut', 'nombre_empresa', 'telefono', 'direccion']
+                        attributes: ['rut', 'nombre_empresa', 'direccion']
                     },
                     {
                         model: Cotizacion,
@@ -105,15 +98,12 @@ const visitaController = {
                 id: visita.id,
                 clienteId: visita.clienteId,
                 cliente_nombre: visita.cliente?.nombre_empresa,
+                cliente_direccion: visita.cliente?.direccion,
                 tipo_visita: visita.tipoVisita,
                 fecha: visita.fecha,
                 hora: visita.hora,
                 estado: visita.estado,
                 observaciones: visita.observaciones,
-                // Nuevos campos de respuesta del cliente
-                respuestaCliente: visita.respuestaCliente || 'pendiente',
-                motivoRechazo: visita.motivoRechazo || null,
-                fechaRespuestaCliente: visita.fechaRespuestaCliente || null,
                 cotizacionId: visita.cotizacionId,
                 cotizacion_numero: visita.cotizacion?.numeroCotizacion,
                 solicitudId: visita.solicitudId,
@@ -145,47 +135,20 @@ const visitaController = {
         }
     },
 
-    // Obtener estadísticas de visitas unificadas
+    // Obtener estadísticas de visitas
     async obtenerEstadisticas(req, res) {
         try {
             const visitas = await VisitaRetiro.findAll();
 
             const stats = {
-                pendienteDeRespuesta: 0,
+                pendiente: 0,
                 confirmada: 0,
-                cancelada: 0,
-                evaluacion: 0,
-                retiro: 0
+                completada: 0,
+                rechazada: 0
             };
 
             visitas.forEach(visita => {
-                // La respuesta del cliente tiene la máxima prioridad.
-                if (visita.respuestaCliente === 'aceptada') {
-                    stats.confirmada++;
-                } else if (visita.respuestaCliente === 'rechazada') {
-                    stats.cancelada++;
-                } 
-                // Si no hay respuesta del cliente (o está pendiente), nos basamos en el estado principal.
-                else {
-                    switch (visita.estado) {
-                        case 'pendiente':
-                            stats.pendienteDeRespuesta++;
-                            break;
-                        case 'evaluacion':
-                            stats.evaluacion++;
-                            break;
-                        case 'retiro':
-                            stats.retiro++;
-                            break;
-                        // Manejar casos donde el estado se cambió manualmente sin respuesta de cliente
-                        case 'confirmada':
-                            stats.confirmada++;
-                            break;
-                        case 'cancelada':
-                            stats.cancelada++;
-                            break;
-                    }
-                }
+                stats[visita.estado]++;
             });
 
             res.json({
@@ -194,7 +157,7 @@ const visitaController = {
             });
 
         } catch (error) {
-            console.error('Error al obtener estadísticas unificadas:', error);
+            console.error('Error al obtener estadísticas:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor al obtener estadísticas',
@@ -205,7 +168,6 @@ const visitaController = {
 
     // Crear nueva visita
     async crearVisita(req, res) {
-        let connection;
         try {
             const {
                 clienteId,
@@ -217,40 +179,28 @@ const visitaController = {
                 observaciones
             } = req.body;
 
-            console.log('\n--- INICIO crearVisita ---');
-            console.log('1. Recibido clienteId (RUT):', clienteId);
-
-            // Validaciones
-            if (!clienteId || !tipoVisita || !fecha || !hora || !observaciones) {
+            // Validaciones de campos obligatorios
+            if (!clienteId || !tipoVisita || !fecha || !hora) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Todos los campos obligatorios deben estar completos'
+                    message: 'Los campos clienteId, tipoVisita, fecha y hora son obligatorios'
                 });
             }
 
-            console.log('2. Buscando cliente y usuario asociado...');
             const cliente = await Cliente.findOne({
                 where: { rut: clienteId },
                 include: [{ model: Usuario }]
             });
-            
-            // LOG DE DIAGNÓSTICO
-            console.log('3. DEBUG: Resultado de Cliente.findOne:', JSON.stringify(cliente, null, 2));
 
             if (!cliente) {
-                console.log('Error: Cliente no encontrado.');
                 return res.status(404).json({
                     success: false,
                     message: `Cliente con RUT ${clienteId} no encontrado`
                 });
             }
 
-            const emailCliente = cliente.Usuario ? cliente.Usuario.email : null;
-            console.log('4. Email extraído:', emailCliente);
-
             // Validar tipo de visita
-            const tiposValidos = ['evaluacion', 'retiro'];
-            if (!tiposValidos.includes(tipoVisita)) {
+            if (!['evaluacion', 'retiro'].includes(tipoVisita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido. Debe ser "evaluacion" o "retiro"'
@@ -268,60 +218,35 @@ const visitaController = {
                 });
             }
 
-            // Crear la conexión
-            connection = await mysql.createConnection({
-                host: process.env.DB_HOST,
-                user: process.env.DB_USER,
-                password: process.env.DB_PASS,
-                database: process.env.DB_NAME,
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                }
+            const visita = await VisitaRetiro.create({
+                clienteId,
+                tipoVisita,
+                fecha,
+                hora,
+                estado: 'pendiente',
+                observaciones: observaciones || null,
+                cotizacionId: cotizacionId || null,
+                solicitudId: solicitudId || null
             });
 
-            // Crear la visita
-            const [result] = await connection.execute(`
-                INSERT INTO visitas_retiro (
-                    cliente_id, tipo_visita, fecha, hora, hora_inicio, hora_fin,
-                    cotizacion_id, solicitud_retiro_id, estado, observaciones,
-                    fecha_programada, fecha_hora_programada, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-            `, [
-                clienteId, tipoVisita, fecha, hora, hora || '00:00:00', hora || '00:00:00',
-                cotizacionId || null, solicitudId || null, 'pendiente', observaciones,
-                fecha, `${fecha} ${hora}:00`
-            ]);
-
-            const [visitaCreada] = await connection.execute(
-                'SELECT * FROM visitas_retiro WHERE id = ?',
-                [result.insertId]
-            );
-
-            console.log('5. Intentando enviar correo...');
-            const emailEnviado = await enviarCorreoVisita(visitaCreada[0], cliente, emailCliente);
+            const emailCliente = cliente.Usuario?.email;
+            if (emailCliente) {
+                await enviarCorreoVisita(visita, cliente, emailCliente);
+            }
 
             res.status(201).json({
                 success: true,
-                message: 'Visita creada exitosamente' + (emailEnviado ? ' y notificación enviada.' : ' pero no se pudo enviar la notificación.'),
-                data: visitaCreada[0]
+                message: 'Visita creada exitosamente',
+                data: visita
             });
 
-            console.log('--- FIN crearVisita ---\n');
-
         } catch (error) {
-            console.error('\n--- ERROR FATAL en crearVisita ---');
-            console.error(error);
-            console.error('--- FIN ERROR FATAL ---\n');
+            console.error('Error al crear visita:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor al crear la visita',
                 error: error.message
             });
-        } finally {
-            if (connection) {
-                await connection.end();
-            }
         }
     },
 
@@ -333,7 +258,7 @@ const visitaController = {
                 include: [{
                     model: Cliente,
                     as: 'cliente',
-                    attributes: ['rut', 'nombre_empresa']
+                    attributes: ['rut', 'nombre_empresa', 'direccion']
                 }]
             });
 
@@ -344,30 +269,24 @@ const visitaController = {
                 });
             }
 
-            // Formatear la respuesta para que coincida con lo que espera el frontend
-            const visitaFormateada = {
-                id: visita.id,
-                clienteId: visita.clienteId,
-                cliente: visita.cliente,
-                tipo_visita: visita.tipoVisita,
-                fecha: visita.fecha,
-                hora: visita.hora,
-                estado: visita.estado,
-                observaciones: visita.observaciones,
-                respuestaCliente: visita.respuestaCliente,
-                motivoRechazo: visita.motivoRechazo,
-                fechaRespuestaCliente: visita.fechaRespuestaCliente,
-                createdAt: visita.createdAt,
-                updatedAt: visita.updatedAt
-            };
-
             res.json({
                 success: true,
-                data: visitaFormateada
+                data: {
+                    id: visita.id,
+                    clienteId: visita.clienteId,
+                    cliente: visita.cliente,
+                    tipo_visita: visita.tipoVisita,
+                    fecha: visita.fecha,
+                    hora: visita.hora,
+                    estado: visita.estado,
+                    observaciones: visita.observaciones,
+                    createdAt: visita.createdAt,
+                    updatedAt: visita.updatedAt
+                }
             });
 
         } catch (error) {
-            console.error(`Error al obtener visita por ID (${req.params.id}):`, error);
+            console.error('Error al obtener visita:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor al obtener la visita',
@@ -378,7 +297,6 @@ const visitaController = {
 
     // Actualizar visita
     async actualizarVisita(req, res) {
-        let connection;
         try {
             const { id } = req.params;
             const {
@@ -388,69 +306,61 @@ const visitaController = {
                 estado,
                 observaciones
             } = req.body;
-            
-            console.log(`\n--- INICIO actualizarVisita (ID: ${id}) ---`);
 
             const visita = await VisitaRetiro.findByPk(id);
             if (!visita) {
-                return res.status(404).json({ success: false, message: 'Visita no encontrada' });
+                return res.status(404).json({
+                    success: false,
+                    message: 'Visita no encontrada'
+                });
             }
 
-            console.log('1. Buscando cliente y usuario asociado para la visita...');
-            const cliente = await Cliente.findOne({
-                where: { rut: visita.clienteId },
-                include: [{ model: Usuario }]
+            // Validar campos obligatorios si se proporcionan
+            if (tipoVisita && !['evaluacion', 'retiro'].includes(tipoVisita)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Tipo de visita inválido'
+                });
+            }
+
+            if (estado && !['pendiente', 'confirmada', 'completada', 'rechazada'].includes(estado)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Estado inválido'
+                });
+            }
+
+            await visita.update({
+                tipoVisita: tipoVisita || visita.tipoVisita,
+                fecha: fecha || visita.fecha,
+                hora: hora || visita.hora,
+                estado: estado || visita.estado,
+                observaciones: observaciones !== undefined ? observaciones : visita.observaciones
             });
 
-            console.log('2. DEBUG: Resultado de Cliente.findOne:', JSON.stringify(cliente, null, 2));
-
-            if (!cliente) {
-                console.log('Error: Cliente no encontrado.');
-                return res.status(404).json({ success: false, message: `Cliente con RUT ${visita.clienteId} no encontrado` });
-            }
-
-            const emailCliente = cliente.Usuario ? cliente.Usuario.email : null;
-            console.log('3. Email extraído:', emailCliente);
-
-            connection = await mysql.createConnection({
-                host: process.env.DB_HOST,
-                user: process.env.DB_USER,
-                password: process.env.DB_PASS,
-                database: process.env.DB_NAME,
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
+            // Si hay cambios importantes, notificar al cliente
+            if (fecha !== visita.fecha || hora !== visita.hora || estado !== visita.estado) {
+                const cliente = await Cliente.findByPk(visita.clienteId, {
+                    include: [{ model: Usuario }]
+                });
+                if (cliente && cliente.Usuario?.email) {
+                    await enviarCorreoVisita(visita, cliente, cliente.Usuario.email);
                 }
-            });
-
-            await connection.execute(`
-                UPDATE visitas_retiro SET tipo_visita = ?, fecha = ?, hora = ?, estado = ?, observaciones = ?,
-                fecha_programada = ?, fecha_hora_programada = ?, updated_at = NOW() WHERE id = ?
-            `, [tipoVisita, fecha, hora, estado, observaciones, fecha, `${fecha} ${hora}:00`, id]);
-
-            const [visitaActualizada] = await connection.execute('SELECT * FROM visitas_retiro WHERE id = ?', [id]);
-
-            let emailEnviado = false;
-            if (visita.fecha !== fecha || visita.hora !== hora || visita.estado !== estado) {
-                console.log('4. Se detectaron cambios. Intentando enviar correo...');
-                emailEnviado = await enviarCorreoVisita(visitaActualizada[0], cliente, emailCliente);
             }
 
             res.json({
                 success: true,
-                message: 'Visita actualizada exitosamente' + (emailEnviado ? ' y notificación enviada.' : '.'),
-                data: visitaActualizada[0]
+                message: 'Visita actualizada exitosamente',
+                data: visita
             });
-            console.log(`--- FIN actualizarVisita (ID: ${id}) ---\n`);
+
         } catch (error) {
-            console.error(`\n--- ERROR FATAL en actualizarVisita (ID: ${id}) ---`);
-            console.error(error);
-            console.error('--- FIN ERROR FATAL ---\n');
-            res.status(500).json({ success: false, message: 'Error interno del servidor al actualizar la visita', error: error.message });
-        } finally {
-            if (connection) {
-                await connection.end();
-            }
+            console.error('Error al actualizar visita:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor al actualizar la visita',
+                error: error.message
+            });
         }
     },
 
@@ -484,73 +394,11 @@ const visitaController = {
         }
     },
 
-    // Cambiar estado de visita
-    async cambiarEstadoVisita(req, res) {
-        try {
-            const { id } = req.params;
-            const { estado } = req.body;
-
-            if (!estado) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'El estado es requerido'
-                });
-            }
-
-            const estadosValidos = ['pendiente', 'confirmada', 'evaluacion', 'retiro', 'cancelada'];
-            if (!estadosValidos.includes(estado)) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Estado inválido'
-                });
-            }
-
-            const visita = await VisitaRetiro.findByPk(id);
-            if (!visita) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Visita no encontrada'
-                });
-            }
-
-            await visita.update({ estado });
-
-            // Si el estado es confirmada, enviar email de confirmación
-            if (estado === 'confirmada') {
-                try {
-                    const cliente = await Cliente.findByPk(visita.clienteId);
-                    if (cliente) {
-                        await enviarCorreoVisita(visita, cliente, await obtenerCorreoCliente(cliente));
-                    }
-                } catch (emailError) {
-                    console.error('Error al enviar email de confirmación:', emailError);
-                }
-            }
-
-            res.json({
-                success: true,
-                message: 'Estado de visita actualizado correctamente',
-                data: {
-                    id: visita.id,
-                    estado: visita.estado
-                }
-            });
-
-        } catch (error) {
-            console.error('Error al cambiar estado de visita:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Error interno del servidor al cambiar el estado de la visita',
-                error: error.message
-            });
-        }
-    },
-
     // Obtener clientes para el formulario
     async obtenerClientes(req, res) {
         try {
             const clientes = await Cliente.findAll({
-                attributes: ['rut', 'nombre_empresa'],
+                attributes: ['rut', 'nombre_empresa', 'direccion'],
                 order: [['nombre_empresa', 'ASC']]
             });
 
@@ -564,6 +412,65 @@ const visitaController = {
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor al obtener los clientes',
+                error: error.message
+            });
+        }
+    },
+
+    // Nuevo método para que el cliente responda a la visita
+    async responderVisita(req, res) {
+        try {
+            const { id } = req.params;
+            const { estado } = req.body;
+            const clienteId = req.usuario.clienteId; // Asumiendo que viene del middleware de autenticación
+
+            // Validar que el estado sea válido para el cliente
+            if (!['confirmada', 'rechazada'].includes(estado)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Estado inválido. Solo puede ser "confirmada" o "rechazada"'
+                });
+            }
+
+            // Buscar la visita y verificar que pertenezca al cliente
+            const visita = await VisitaRetiro.findOne({
+                where: {
+                    id,
+                    clienteId,
+                    estado: 'pendiente' // Solo puede responder si está pendiente
+                }
+            });
+
+            if (!visita) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Visita no encontrada o no tienes permiso para responder a esta visita'
+                });
+            }
+
+            // Actualizar el estado
+            await visita.update({ estado });
+
+            // Notificar por email del cambio
+            const cliente = await Cliente.findByPk(clienteId, {
+                include: [{ model: Usuario }]
+            });
+
+            if (cliente && cliente.Usuario?.email) {
+                await enviarCorreoVisita(visita, cliente, cliente.Usuario.email);
+            }
+
+            res.json({
+                success: true,
+                message: `Visita ${estado === 'confirmada' ? 'confirmada' : 'rechazada'} exitosamente`,
+                data: visita
+            });
+
+        } catch (error) {
+            console.error('Error al responder a la visita:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor al responder a la visita',
                 error: error.message
             });
         }

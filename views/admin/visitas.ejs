@@ -434,19 +434,13 @@
             border: 1px solid #28a745;
         }
 
-        .status-evaluacion {
+        .status-completada {
             background: linear-gradient(135deg, #cce5ff, #b3d9ff);
             color: #004085;
             border: 1px solid #17a2b8;
         }
 
-        .status-retiro {
-            background: linear-gradient(135deg, #e2e3e5, #ced4da);
-            color: #383d41;
-            border: 1px solid #6c757d;
-        }
-
-        .status-cancelada {
+        .status-rechazada {
             background: linear-gradient(135deg, #f8d7da, #f5c6cb);
             color: #721c24;
             border: 1px solid #dc3545;
@@ -945,9 +939,9 @@
                         <div class="mb-3">
                             <label class="form-label">
                                 <i class="fas fa-comment"></i>
-                                Observaciones *
+                                Observaciones
                             </label>
-                            <textarea class="form-control" name="observaciones" rows="3" required placeholder="Ingrese observaciones para la visita..."></textarea>
+                            <textarea class="form-control" name="observaciones" rows="3" placeholder="Ingrese observaciones para la visita..."></textarea>
                         </div>
                     </form>
                 </div>
@@ -1030,6 +1024,14 @@
                         <p class="detail-value" id="detallesObservaciones">-</p>
                     </div>
                     
+                    <div class="detail-group">
+                        <div class="detail-label">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Dirección
+                        </div>
+                        <p class="detail-value" id="detallesDireccion">-</p>
+                    </div>
+                    
                     <!-- Contenedor para la respuesta del cliente -->
                     <div id="detallesRespuestaClienteContainer"></div>
                 </div>
@@ -1083,9 +1085,8 @@
                                         <option value="">Seleccione estado</option>
                                         <option value="pendiente">Pendiente</option>
                                         <option value="confirmada">Confirmada</option>
-                                        <option value="evaluacion">Evaluación</option>
-                                        <option value="retiro">Retiro</option>
-                                        <option value="cancelada">Cancelada</option>
+                                        <option value="completada">Completada</option>
+                                        <option value="rechazada">Rechazada</option>
                                     </select>
                                 </div>
                             </div>
@@ -1428,11 +1429,10 @@
                 container.innerHTML = '';
 
                 const statConfig = {
-                    pendienteDeRespuesta: { label: 'Pendiente de Respuesta', icon: 'fa-clock', color: '#ffc107' },
+                    pendiente: { label: 'Pendientes', icon: 'fa-clock', color: '#ffc107' },
                     confirmada: { label: 'Confirmadas', icon: 'fa-check-circle', color: '#28a745' },
-                    evaluacion: { label: 'En Evaluación', icon: 'fa-search', color: '#17a2b8' },
-                    retiro: { label: 'Retiros', icon: 'fa-truck', color: '#00616e' },
-                    cancelada: { label: 'Canceladas', icon: 'fa-times-circle', color: '#dc3545' },
+                    completada: { label: 'Completadas', icon: 'fa-check-double', color: '#00616e' },
+                    rechazada: { label: 'Rechazadas', icon: 'fa-times-circle', color: '#dc3545' }
                 };
 
                 for (const key in statConfig) {
@@ -1496,30 +1496,22 @@
 
         function createVisitItemHTML(visita) {
             const statusConfig = {
-                pendiente: { label: 'Pendiente de Respuesta', class: 'status-pendiente', icon: 'fa-clock' },
+                pendiente: { label: 'Pendiente', class: 'status-pendiente', icon: 'fa-clock' },
                 confirmada: { label: 'Confirmada', class: 'status-confirmada', icon: 'fa-check-circle' },
-                evaluacion: { label: 'Evaluación', class: 'status-evaluacion', icon: 'fa-search' },
-                retiro: { label: 'Retiro', class: 'status-retiro', icon: 'fa-truck' },
-                cancelada: { label: 'Cancelada', class: 'status-cancelada', icon: 'fa-times-circle' }
+                completada: { label: 'Completada', class: 'status-completada', icon: 'fa-check-double' },
+                rechazada: { label: 'Rechazada', class: 'status-rechazada', icon: 'fa-times-circle' }
             };
 
-            let finalStatus;
-            
-            if (visita.respuestaCliente === 'aceptada') {
-                finalStatus = statusConfig.confirmada;
-                finalStatus.label = 'Aceptada por Cliente';
-            } else if (visita.respuestaCliente === 'rechazada') {
-                finalStatus = statusConfig.cancelada;
-                finalStatus.label = 'Rechazada por Cliente';
-            } else {
-                finalStatus = statusConfig[visita.estado] || { label: visita.estado, class: 'status-pendiente', icon: 'fa-question-circle' };
-                // Si está pendiente y sin respuesta, lo especificamos
-                if (visita.estado === 'pendiente') {
-                    finalStatus.label = 'Pendiente de Respuesta';
-                }
-            }
-            
-            const cliente = allClients.find(c => c.rut === visita.clienteId) || { nombre_empresa: visita.cliente_nombre || 'Cliente no encontrado' };
+            const finalStatus = statusConfig[visita.estado] || { 
+                label: visita.estado, 
+                class: 'status-pendiente', 
+                icon: 'fa-question-circle' 
+            };
+
+            const cliente = {
+                nombre_empresa: visita.cliente_nombre || 'Cliente no encontrado',
+                direccion: visita.cliente_direccion || 'Dirección no especificada'
+            };
 
             return `
                 <div class="visit-item">
@@ -1539,6 +1531,10 @@
                                 <i class="fas fa-clock"></i> 
                                 ${visita.hora}
                             </div>
+                        </div>
+                        <div class="meta-item mb-3" style="grid-column: span 2;">
+                            <i class="fas fa-map-marker-alt"></i> 
+                            ${cliente.direccion}
                         </div>
                         <div class="meta-item mb-3" style="grid-column: span 2;">
                             <i class="fas fa-tag"></i> 
@@ -1576,9 +1572,8 @@
             const tipoVisita = formData.get('tipoVisita');
             const fecha = formData.get('fecha');
             const hora = formData.get('hora');
-            const observaciones = formData.get('observaciones');
             
-            if (!clienteId || !tipoVisita || !fecha || !hora || !observaciones) {
+            if (!clienteId || !tipoVisita || !fecha || !hora) {
                 showAlert('Por favor complete todos los campos requeridos', 'warning');
                 return;
             }
@@ -1590,7 +1585,7 @@
                 hora: hora,
                 cotizacionId: formData.get('cotizacionId') || null,
                 solicitudId: formData.get('solicitudId') || null,
-                observaciones: observaciones,
+                observaciones: formData.get('observaciones') || null,
                 estado: 'pendiente'
             };
             
@@ -1676,14 +1671,14 @@
         async function verDetallesVisita(id) {
             const modal = new bootstrap.Modal(document.getElementById('detallesVisitaModal'));
             
-            // Limpiar contenido anterior y mostrar spinner
+            // Limpiar contenido anterior
             document.getElementById('detallesCliente').textContent = 'Cargando...';
             document.getElementById('detallesTipo').textContent = '...';
             document.getElementById('detallesFecha').textContent = '...';
             document.getElementById('detallesHora').textContent = '...';
             document.getElementById('detallesEstado').textContent = '...';
             document.getElementById('detallesObservaciones').textContent = '...';
-            document.getElementById('detallesRespuestaClienteContainer').innerHTML = '';
+            document.getElementById('detallesDireccion').textContent = '...';
 
             modal.show();
 
@@ -1698,71 +1693,13 @@
                 const visita = result.data;
                 
                 // Actualizar contenido del modal
-                document.getElementById('detallesCliente').textContent = visita.cliente?.nombre_empresa || 'Cliente no encontrado';
-                document.getElementById('detallesTipo').textContent = visita.tipo_visita || visita.tipoVisita || 'No especificado';
+                document.getElementById('detallesCliente').textContent = visita.cliente_nombre || 'Cliente no encontrado';
+                document.getElementById('detallesDireccion').textContent = visita.cliente_direccion || 'Dirección no especificada';
+                document.getElementById('detallesTipo').textContent = visita.tipo_visita.charAt(0).toUpperCase() + visita.tipo_visita.slice(1);
                 document.getElementById('detallesFecha').textContent = formatearFecha(visita.fecha);
                 document.getElementById('detallesHora').textContent = visita.hora;
-                document.getElementById('detallesEstado').textContent = visita.estado;
+                document.getElementById('detallesEstado').textContent = visita.estado.charAt(0).toUpperCase() + visita.estado.slice(1);
                 document.getElementById('detallesObservaciones').textContent = visita.observaciones || 'Sin observaciones';
-                
-                const respuestaContainer = document.getElementById('detallesRespuestaClienteContainer');
-                
-                let respuestaClienteHTML = '';
-                if (visita.respuestaCliente && visita.respuestaCliente !== 'pendiente') {
-                    const respuestaLabels = {
-                        'aceptada': 'Aceptada por Cliente',
-                        'rechazada': 'Rechazada por Cliente'
-                    };
-                    const respuestaColors = {
-                        'aceptada': 'success',
-                        'rechazada': 'danger'
-                    };
-                    const label = respuestaLabels[visita.respuestaCliente];
-                    const color = respuestaColors[visita.respuestaCliente];
-                    
-                    if (label) {
-                        respuestaClienteHTML += `
-                            <div class="detail-group">
-                                <div class="detail-label">
-                                    <i class="fas fa-user-check"></i>
-                                    Respuesta del Cliente
-                                </div>
-                                <p class="detail-value">
-                                    <span class="badge bg-${color} px-3 py-2" style="font-size: 0.9rem; border-radius: 25px;">
-                                        <i class="fas fa-${color === 'success' ? 'check' : 'times'} me-1"></i>
-                                        ${label}
-                                    </span>
-                                </p>
-                            </div>
-                        `;
-                    }
-                    if (visita.respuestaCliente === 'rechazada' && visita.motivoRechazo) {
-                        respuestaClienteHTML += `
-                            <div class="detail-group">
-                                <div class="detail-label">
-                                    <i class="fas fa-times-circle"></i>
-                                    Motivo de Rechazo
-                                </div>
-                                <p class="detail-value text-danger" style="font-weight: 600;">${visita.motivoRechazo}</p>
-                            </div>
-                        `;
-                    }
-                }
-                if (visita.fechaRespuestaCliente) {
-                    respuestaClienteHTML += `
-                        <div class="detail-group">
-                            <div class="detail-label">
-                                <i class="fas fa-calendar-check"></i>
-                                Fecha de Respuesta
-                            </div>
-                            <p class="detail-value">${formatearFecha(visita.fechaRespuestaCliente)}</p>
-                        </div>
-                    `;
-                }
-
-                if (respuestaClienteHTML) {
-                    respuestaContainer.innerHTML = respuestaClienteHTML;
-                }
                 
             } catch (error) {
                 console.error('Error al obtener detalles de la visita:', error);

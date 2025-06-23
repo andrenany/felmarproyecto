@@ -783,7 +783,8 @@ const clienteController = {
           misSolicitudes,
           solicitudesPendientes,
           proximasVisitas,
-          ultimasSolicitudes
+          ultimasSolicitudes,
+          mostrarNotificacion: !cliente
       });
 
     } catch (error) {

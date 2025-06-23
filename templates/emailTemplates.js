@@ -198,25 +198,28 @@ const emailTemplates = {
                 </table>
               </div>
 
-              ${visita.observaciones ? `
-                <div style="${emailTemplates.styles.section}">
-                  <h3 style="color: #00616e; margin: 0 0 15px 0;">Observaciones</h3>
-                  <p style="margin: 0; white-space: pre-wrap;">${visita.observaciones}</p>
-                </div>
-              ` : ''}
-
               <div style="${emailTemplates.styles.section}">
-                <p style="margin: 0;">
-                  <strong>Importante:</strong> Si necesita realizar algún cambio en la visita programada,
-                  por favor contáctenos lo antes posible.
+                <h3 style="color: #00616e; margin: 0 0 15px 0;">Acción Requerida</h3>
+                <p style="margin-bottom: 20px;">Por favor, ingrese a su cuenta de Felmart para confirmar o rechazar esta visita:</p>
+                <div style="text-align: center;">
+                  <a href="${process.env.BASE_URL}/clientes/solicitudes" 
+                     style="${emailTemplates.styles.button}">
+                    Gestionar Visita
+                  </a>
+                </div>
+                <p style="margin-top: 20px; color: #666; font-size: 14px;">
+                  * Es importante que confirme o rechace la visita lo antes posible para una mejor coordinación.
                 </p>
               </div>
             </div>
 
             <div style="${emailTemplates.styles.footer}">
               <p style="margin: 0;">Gracias por confiar en Felmart para el manejo de sus residuos.</p>
-              <p style="margin: 10px 0 0 0; font-size: 12px; color: #6c757d;">
-                Este es un correo automático, por favor no responda a este mensaje.
+              <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">
+                Si tiene problemas con el botón, puede acceder directamente a través de este enlace: 
+                <a href="${process.env.BASE_URL}/clientes/solicitudes" style="color: #00616e;">
+                  ${process.env.BASE_URL}/clientes/solicitudes
+                </a>
               </p>
             </div>
           </div>
