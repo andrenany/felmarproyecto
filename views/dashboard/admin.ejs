@@ -850,39 +850,45 @@
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card primary fade-in-up stagger-1">
+                        <a href="/admin/clientes" class="nav-link">
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Total Clientes</h6>
                                 <h2 class="primary"><%= typeof totalClientes !== 'undefined' ? totalClientes : 0 %></h2>
                             </div>
+                            </a>
                             <div class="card-icon primary">
                                 <i class="fas fa-building"></i>
                             </div>
                         </div>
                     </div>
-                </div>
-                
+                </div> 
+               
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card warning fade-in-up stagger-2">
+                        <a href="/admin/solicitud" class="nav-link">
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Solicitudes Pendientes</h6>
                                 <h2 class="warning"><%= typeof solicitudesPendientes !== 'undefined' ? solicitudesPendientes : 0 %></h2>
                             </div>
+                            </a>
                             <div class="card-icon warning">
                                 <i class="fas fa-clock"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+               
                 <div class="col-lg-3 col-md-6">
                     <div class="stats-card info fade-in-up stagger-3">
+                        <a href="/admin/visitas" class="nav-link">
                         <div class="card-content">
                             <div class="card-info">
                                 <h6>Visitas Programadas Hoy</h6>
                                 <h2 class="info"><%= typeof visitasHoy !== 'undefined' ? visitasHoy : 0 %></h2>
                             </div>
+                            </a>
                             <div class="card-icon info">
                                 <i class="fas fa-calendar-check"></i>
                             </div>

@@ -1,13 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const { isAdmin } = require('../middlewares/auth');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const SolicitudRetiro = require('../models/SolicitudRetiro');
 const PrecioResiduo = require('../models/PrecioResiduo');
 
 // Middleware para verificar si es administrador
+router.use(isAuthenticated);
 router.use(isAdmin);
+
+// Ruta para la vista de solicitudes
+router.get('/solicitud', async (req, res) => {
+    try {
+        const solicitudes = await SolicitudRetiro.findAll({
+            include: [{ 
+                model: Cliente,
+                as: 'cliente',
+                attributes: ['rut', 'nombre_empresa']
+            }],
+            order: [['created_at', 'DESC']]
+        });
+
+        const clientes = await Cliente.findAll({
+            order: [['nombre_empresa', 'ASC']]
+        });
+
+        res.render('admin/solicitud', {
+            titulo: 'Gestión de Solicitudes',
+            solicitudes,
+            clientes,
+            clienteSeleccionado: req.query.cliente || '',
+            urgenciaSeleccionada: req.query.urgencia || '',
+            fechaSeleccionada: req.query.fecha || '',
+            error: req.flash('error'),
+            success: req.flash('success')
+        });
+    } catch (error) {
+        console.error('Error al cargar solicitudes:', error);
+        req.flash('error', 'Error al cargar la página');
+        res.redirect('/dashboard');
+    }
+});
 
 // Panel de administración principal
 router.get('/', async (req, res) => {
@@ -237,50 +271,6 @@ router.get('/clientes/eliminar/:id', async (req, res) => {
         console.error('Error al eliminar cliente:', error);
         req.flash('error', 'Error al eliminar el cliente');
         res.redirect('/admin/clientes');
-    }
-});
-
-// Ruta para solicitudes
-router.get('/solicitud', async (req, res) => {
-    try {
-        const { cliente, fecha, urgencia } = req.query;
-        
-        // Construir condiciones de búsqueda
-        const whereClause = {};
-        if (cliente) whereClause.clienteRut = cliente;
-        if (fecha) whereClause.fecha_preferida = fecha;
-        if (urgencia) whereClause.urgencia = urgencia;
-
-        // Obtener todas las solicitudes con sus relaciones
-        const solicitudes = await SolicitudRetiro.findAll({
-            where: whereClause,
-            include: [
-                { model: Cliente }
-            ],
-            order: [['created_at', 'DESC']]
-        });
-
-        // Obtener lista de clientes para el filtro
-        const clientes = await Cliente.findAll({
-            order: [['nombreEmpresa', 'ASC']]
-        });
-
-        res.render('admin/solicitud', {
-            titulo: 'Gestión de Solicitudes',
-            solicitudes,
-            clientes,
-            clienteSeleccionado: cliente,
-            fechaSeleccionada: fecha,
-            urgenciaSeleccionada: urgencia,
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
-        });
-    } catch (error) {
-        console.error('Error al cargar solicitudes:', error);
-        req.flash('error', 'Error al cargar las solicitudes');
-        res.redirect('/admin');
     }
 });
 

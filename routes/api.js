@@ -279,32 +279,197 @@ router.post('/notificaciones/marcar-leidas', auth.isAuthenticatedApi, async (req
     }
 });
 
-// Ruta para listar solicitudes
+// === RUTAS API PARA SOLICITUDES ===
 router.get('/solicitudes/listar', auth.isAuthenticatedApi, async (req, res) => {
     try {
-        const SolicitudRetiro = require('../models/SolicitudRetiro');
-        const Cliente = require('../models/Cliente');
+        const { usuario } = req.session;
+        let solicitudes = [];
         
-        const solicitudes = await SolicitudRetiro.findAll({
-            include: [
-                {
+        if (usuario.rol === 'administrador') {
+            solicitudes = await SolicitudRetiro.findAll({
+                include: [{ 
                     model: Cliente,
-                    as: 'cliente',
-                    attributes: ['rut', 'nombre_empresa']
-                }
-            ],
-            order: [['createdAt', 'DESC']]
-        });
+                    as: 'cliente'
+                }],
+                order: [['created_at', 'DESC']]
+            });
+        } else if (usuario.rol === 'cliente' && req.session.cliente) {
+            solicitudes = await SolicitudRetiro.findAll({
+                where: { cliente_id: req.session.cliente.rut },
+                order: [['created_at', 'DESC']]
+            });
+        }
 
         res.json({
             success: true,
             data: solicitudes
         });
     } catch (error) {
-        console.error('Error al obtener solicitudes:', error);
+        console.error('Error al listar solicitudes:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al cargar las solicitudes'
+            message: 'Error al cargar las solicitudes',
+            error: error.message
+        });
+    }
+});
+
+router.post('/solicitudes/crear', auth.isAuthenticatedApi, async (req, res) => {
+    try {
+        const { tipo_solicitud, descripcion, urgencia } = req.body;
+        
+        // Validar tipo de solicitud
+        const tiposSolicitudValidos = ['retiro', 'evaluacion', 'cotizacion', 'visitas', 'otros'];
+        if (!tipo_solicitud || !tiposSolicitudValidos.includes(tipo_solicitud)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Tipo de solicitud no válido'
+            });
+        }
+
+        // Validar urgencia
+        const urgenciasValidas = ['baja', 'media', 'alta'];
+        if (urgencia && !urgenciasValidas.includes(urgencia)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Nivel de urgencia no válido'
+            });
+        }
+
+        const nuevaSolicitud = await SolicitudRetiro.create({
+            cliente_id: req.session.cliente.rut,
+            tipo_solicitud,
+            descripcion,
+            urgencia: urgencia || 'media',
+            estado: 'pendiente'
+        });
+
+        // Notificar a administradores
+        const admins = await Usuario.findAll({
+            where: { rol: 'administrador' }
+        });
+
+        // Crear notificaciones en paralelo
+        const notificacionesPromises = admins.map(admin => 
+            Notificacion.create({
+                usuarioId: admin.id,
+                tipo: 'nueva_solicitud', // Cambiado de 'solicitud' a 'nueva_solicitud'
+                titulo: 'Nueva solicitud de retiro',
+                mensaje: `Se ha registrado una nueva solicitud de ${tipo_solicitud}`,
+                leida: false,
+                fecha_creacion: new Date()
+            }).catch(error => {
+                console.error('Error al crear notificación:', error);
+                return null; // Continuar incluso si falla una notificación
+            })
+        );
+
+        await Promise.all(notificacionesPromises);
+
+        res.json({
+            success: true,
+            message: 'Solicitud creada correctamente',
+            data: nuevaSolicitud
+        });
+    } catch (error) {
+        console.error('Error al crear solicitud:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al crear la solicitud',
+            error: error.message
+        });
+    }
+});
+
+router.get('/solicitudes/:id', auth.isAuthenticatedApi, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const solicitud = await SolicitudRetiro.findByPk(id, {
+            include: [{ 
+                model: Cliente,
+                as: 'cliente'
+            }]
+        });
+
+        if (!solicitud) {
+            return res.status(404).json({
+                success: false,
+                message: 'Solicitud no encontrada'
+            });
+        }
+
+        // Verificar permisos para clientes
+        if (req.session.usuario.rol === 'cliente' && 
+            solicitud.cliente_id !== req.session.cliente.rut) {
+            return res.status(403).json({
+                success: false,
+                message: 'No tienes permiso para ver esta solicitud'
+            });
+        }
+
+        res.json({
+            success: true,
+            solicitud
+        });
+    } catch (error) {
+        console.error('Error al obtener detalles de solicitud:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al cargar los detalles de la solicitud',
+            error: error.message
+        });
+    }
+});
+
+router.put('/solicitudes/:id', auth.isAuthenticatedApi, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { tipo_solicitud, descripcion, urgencia } = req.body;
+        
+        const solicitud = await SolicitudRetiro.findByPk(id);
+        
+        if (!solicitud) {
+            return res.status(404).json({
+                success: false,
+                message: 'Solicitud no encontrada'
+            });
+        }
+
+        // Verificar permisos
+        if (req.session.usuario.rol === 'cliente' && 
+            solicitud.cliente_id !== req.session.cliente.rut) {
+            return res.status(403).json({
+                success: false,
+                message: 'No tienes permiso para editar esta solicitud'
+            });
+        }
+
+        // Solo permitir editar solicitudes pendientes
+        if (solicitud.estado !== 'pendiente') {
+            return res.status(400).json({
+                success: false,
+                message: 'Solo se pueden editar solicitudes pendientes'
+            });
+        }
+
+        // Actualizar solicitud
+        await solicitud.update({
+            tipo_solicitud,
+            descripcion,
+            urgencia
+        });
+
+        res.json({
+            success: true,
+            message: 'Solicitud actualizada correctamente',
+            data: solicitud
+        });
+    } catch (error) {
+        console.error('Error al actualizar solicitud:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar la solicitud',
+            error: error.message
         });
     }
 });

@@ -892,10 +892,10 @@
                             <i class="fas fa-sync-alt"></i>
                             Actualizar
                         </button>
-                        <a href="/clientes/solicitudes/nueva" class="btn-new-request">
+                        <button onclick="mostrarModalCrear()" class="btn-new-request">
                             <i class="fas fa-plus-circle"></i>
                             Nueva Solicitud
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -906,62 +906,15 @@
                                 <tr>
                                     <th>NÚMERO</th>
                                     <th>FECHA</th>
+                                    <th>TIPO</th>
+                                    <th>URGENCIA</th>
+                                    <th>DESCRIPCIÓN</th>
                                     <th>ESTADO</th>
-                                    <th>TIPO DE RESIDUO</th>
-                                    <th>CANTIDAD</th>
-                                    <th>DIRECCIÓN</th>
                                     <th>ACCIONES</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% if (typeof solicitudes !== 'undefined' && solicitudes.length > 0) { %>
-                                    <% solicitudes.forEach(solicitud => { %>
-                                        <% 
-                                            let statusClass = '';
-                                            let statusIcon = '';
-                                            const estado = solicitud.estado.toLowerCase();
-                                            if (estado === 'pendiente') {
-                                                statusClass = 'status-pendiente';
-                                                statusIcon = 'fas fa-clock';
-                                            } else if (estado === 'confirmada') {
-                                                statusClass = 'status-confirmada';
-                                                statusIcon = 'fas fa-check-circle';
-                                            } else if (estado === 'completada') {
-                                                statusClass = 'status-completada';
-                                                statusIcon = 'fas fa-check-double';
-                                            } else if (estado === 'cancelada') {
-                                                statusClass = 'status-cancelada';
-                                                statusIcon = 'fas fa-times-circle';
-                                            }
-                                        %>
-                                        <tr>
-                                            <td><strong><%= solicitud.numero_solicitud %></strong></td>
-                                            <td><%= new Date(solicitud.createdAt).toLocaleDateString('es-ES') %></td>
-                                            <td>
-                                                <span class="status-badge <%= statusClass %>">
-                                                    <i class="<%= statusIcon %> me-1"></i>
-                                                    <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
-                                                </span>
-                                            </td>
-                                            <td><%= solicitud.tipo_residuo %></td>
-                                            <td><%= solicitud.cantidad %> <%= solicitud.unidad %></td>
-                                            <td><%= solicitud.direccion_especifica %></td>
-                                            <td>
-                                                <a href="/clientes/solicitudes/<%= solicitud.id %>" class="btn-action">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    <% }); %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="7" class="text-center no-data">
-                                            <i class="fas fa-folder-open"></i>
-                                            <p>Aún no tienes solicitudes registradas.</p>
-                                            <a href="/clientes/solicitudes/nueva" class="btn btn-primary-custom">Crear mi primera solicitud</a>
-                                        </td>
-                                    </tr>
-                                <% } %>
+                            <tbody id="solicitudesTableBody">
+                                <!-- El contenido se cargará dinámicamente -->
                             </tbody>
                         </table>
                     </div>
@@ -970,21 +923,110 @@
         </div>
     </div>
 
-    <!-- MODAL MEJORADO -->
-    <div class="modal fade" id="detallesModal" tabindex="-1" aria-labelledby="detallesModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+    <!-- Modal de Detalles -->
+    <div class="modal fade" id="detallesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detallesModalLabel">
-                        <i class="fas fa-eye"></i>
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
                         Detalles de la Solicitud
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="detallesModalBody">
-                    <!-- Contenido dinámico -->
+                <div class="modal-body">
+                    <div id="detallesSolicitud"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div class="modal fade" id="editarModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Editar Solicitud
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarSolicitudForm">
+                        <input type="hidden" id="solicitudId">
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Solicitud</label>
+                            <select class="form-select" id="tipoSolicitud" required>
+                                <option value="retiro">Retiro</option>
+                                <option value="evaluacion">Evaluación</option>
+                                <option value="cotizacion">Cotización</option>
+                                <option value="visitas">Visitas</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Urgencia</label>
+                            <select class="form-select" id="urgencia" required>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarEdicion()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Creación -->
+    <div class="modal fade" id="crearModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Nueva Solicitud
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="crearSolicitudForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Solicitud</label>
+                            <select class="form-select" id="nuevoTipoSolicitud" required>
+                                <option value="retiro">Retiro</option>
+                                <option value="evaluacion">Evaluación</option>
+                                <option value="cotizacion">Cotización</option>
+                                <option value="visitas">Visitas</option>
+                                <option value="otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Urgencia</label>
+                            <select class="form-select" id="nuevaUrgencia" required>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="nuevaDescripcion" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="crearSolicitud()">Crear Solicitud</button>
                 </div>
             </div>
         </div>
@@ -994,39 +1036,310 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
+        let detallesModal;
+        let editarModal;
+        let crearModal;
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🟢 Página de solicitudes cargada.');
+            detallesModal = new bootstrap.Modal(document.getElementById('detallesModal'));
+            editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
+            crearModal = new bootstrap.Modal(document.getElementById('crearModal'));
+            cargarSolicitudes();
         });
 
-        function showAlertBar(message, icon = 'fa-info-circle', color = '#17a2b8', duration = 3000) {
-            const alertBarContainer = document.getElementById('alertBarContainer');
-            if (!alertBarContainer) return;
-            
-            const alertId = 'alertBar_' + Date.now();
-            
-            alertBarContainer.innerHTML = `
-                <div class="alert-bar" id="${alertId}" style="animation: slideDown 0.5s ease-out;">
-                    <i class="fas ${icon}" style="color: ${color};"></i>
-                    <span class="alert-bar-text">${message}</span>
-                </div>
-            `;
+        function mostrarModalCrear() {
+            document.getElementById('crearSolicitudForm').reset();
+            crearModal.show();
+        }
 
-            if (duration > 0) {
-                setTimeout(() => {
-                    const alertBar = document.getElementById(alertId);
-                    if (alertBar) {
-                        alertBar.style.opacity = '0';
-                        alertBar.style.transform = 'translateY(-20px)';
-                        setTimeout(() => {
-                            alertBar.remove();
-                        }, 300);
-                    }
-                }, duration);
+        async function crearSolicitud() {
+            const datos = {
+                tipo_solicitud: document.getElementById('nuevoTipoSolicitud').value,
+                urgencia: document.getElementById('nuevaUrgencia').value,
+                descripcion: document.getElementById('nuevaDescripcion').value
+            };
+
+            try {
+                const response = await fetch('/api/solicitudes/crear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al crear solicitud');
+                }
+
+                crearModal.hide();
+                showAlertBar('Solicitud creada correctamente', 'fa-check-circle', '#28a745');
+                cargarSolicitudes();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlertBar('Error al crear la solicitud', 'fa-exclamation-circle', '#dc3545');
             }
         }
-        
-        // La lógica para mostrar los detalles del modal y refrescar
-        // se puede añadir aquí si es necesario, pero sin datos hardcodeados.
+
+        async function cargarSolicitudes() {
+            try {
+                const response = await fetch('/api/solicitudes/listar');
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar solicitudes');
+                }
+
+                const solicitudes = data.data;
+                const tbody = document.getElementById('solicitudesTableBody');
+                
+                if (solicitudes.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <h5>No hay solicitudes registradas</h5>
+                                    <p class="text-muted">Comienza creando tu primera solicitud</p>
+                                    <button onclick="mostrarModalCrear()" class="btn btn-primary mt-3">
+                                        <i class="fas fa-plus-circle me-2"></i>Nueva Solicitud
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = solicitudes.map(solicitud => {
+                                            let statusClass = '';
+                                            let statusIcon = '';
+                                            const estado = solicitud.estado.toLowerCase();
+                    
+                                            if (estado === 'pendiente') {
+                        statusClass = 'status-badge pendiente';
+                                                statusIcon = 'fas fa-clock';
+                    } else if (estado === 'en_proceso') {
+                        statusClass = 'status-badge confirmada';
+                        statusIcon = 'fas fa-cog';
+                                            } else if (estado === 'completada') {
+                        statusClass = 'status-badge completada';
+                                                statusIcon = 'fas fa-check-double';
+                                            }
+
+                    return `
+                                        <tr>
+                            <td><strong>#${solicitud.id}</strong></td>
+                            <td>${new Date(solicitud.created_at).toLocaleDateString('es-ES')}</td>
+                                            <td>
+                                <span class="badge bg-primary">
+                                    ${solicitud.tipo_solicitud.toUpperCase()}
+                                                </span>
+                                            </td>
+                            <td>
+                                <span class="badge ${solicitud.urgencia === 'alta' ? 'bg-danger' : 
+                                                solicitud.urgencia === 'media' ? 'bg-warning' : 'bg-info'}">
+                                    ${solicitud.urgencia.toUpperCase()}
+                                </span>
+                            </td>
+                            <td>${solicitud.descripcion ? solicitud.descripcion.substring(0, 50) + (solicitud.descripcion.length > 50 ? '...' : '') : 'Sin descripción'}</td>
+                            <td>
+                                <span class="${statusClass}">
+                                    <i class="${statusIcon} me-1"></i>
+                                    ${solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-info btn-sm" onclick="verDetalles(${solicitud.id})">
+                                                    <i class="fas fa-eye"></i>
+                                    </button>
+                                    ${estado === 'pendiente' ? `
+                                        <button class="btn btn-warning btn-sm" onclick="editarSolicitud(${solicitud.id})">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                                            </td>
+                                        </tr>
+                    `;
+                }).join('');
+
+                // Actualizar contadores
+                actualizarContadores(solicitudes);
+            } catch (error) {
+                console.error('Error:', error);
+                showAlertBar('Error al cargar las solicitudes', 'fa-exclamation-circle', '#dc3545');
+            }
+        }
+
+        function actualizarContadores(solicitudes) {
+            const contadores = {
+                pendientes: 0,
+                en_proceso: 0,
+                completadas: 0,
+                canceladas: 0
+            };
+
+            solicitudes.forEach(solicitud => {
+                const estado = solicitud.estado.toLowerCase();
+                if (contadores.hasOwnProperty(estado)) {
+                    contadores[estado]++;
+                }
+            });
+
+            document.getElementById('pendientesCount').textContent = contadores.pendientes;
+            document.getElementById('confirmadasCount').textContent = contadores.en_proceso;
+            document.getElementById('completadasCount').textContent = contadores.completadas;
+            document.getElementById('canceladasCount').textContent = contadores.canceladas;
+        }
+
+        async function verDetalles(id) {
+            try {
+                const response = await fetch(`/api/solicitudes/${id}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar detalles');
+                }
+
+                const solicitud = data.solicitud;
+                document.getElementById('detallesSolicitud').innerHTML = `
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-hashtag"></i>
+                    </div>
+                            <div class="info-text">
+                                <div class="info-label">Número</div>
+                                <div class="info-value">#${solicitud.id}</div>
+                </div>
+            </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-calendar"></i>
+        </div>
+                            <div class="info-text">
+                                <div class="info-label">Fecha</div>
+                                <div class="info-value">${new Date(solicitud.created_at).toLocaleDateString('es-ES')}</div>
+    </div>
+                </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-tag"></i>
+                </div>
+                            <div class="info-text">
+                                <div class="info-label">Tipo</div>
+                                <div class="info-value">${solicitud.tipo_solicitud.toUpperCase()}</div>
+            </div>
+        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+    </div>
+                            <div class="info-text">
+                                <div class="info-label">Urgencia</div>
+                                <div class="info-value">${solicitud.urgencia.toUpperCase()}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="info-text">
+                                <div class="info-label">Estado</div>
+                                <div class="info-value">${solicitud.estado.toUpperCase()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h6 class="mb-3">Descripción</h6>
+                        <p>${solicitud.descripcion || 'Sin descripción'}</p>
+                    </div>
+                `;
+
+                detallesModal.show();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlertBar('Error al cargar los detalles', 'fa-exclamation-circle', '#dc3545');
+            }
+        }
+
+        async function editarSolicitud(id) {
+            try {
+                const response = await fetch(`/api/solicitudes/${id}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al cargar solicitud');
+                }
+
+                const solicitud = data.solicitud;
+                document.getElementById('solicitudId').value = solicitud.id;
+                document.getElementById('tipoSolicitud').value = solicitud.tipo_solicitud;
+                document.getElementById('urgencia').value = solicitud.urgencia;
+                document.getElementById('descripcion').value = solicitud.descripcion;
+
+                editarModal.show();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlertBar('Error al cargar la solicitud', 'fa-exclamation-circle', '#dc3545');
+            }
+        }
+
+        async function guardarEdicion() {
+            const id = document.getElementById('solicitudId').value;
+            const datos = {
+                tipo_solicitud: document.getElementById('tipoSolicitud').value,
+                urgencia: document.getElementById('urgencia').value,
+                descripcion: document.getElementById('descripcion').value
+            };
+
+            try {
+                const response = await fetch(`/api/solicitudes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Error al actualizar solicitud');
+                }
+
+                editarModal.hide();
+                showAlertBar('Solicitud actualizada correctamente', 'fa-check-circle', '#28a745');
+                cargarSolicitudes();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlertBar('Error al actualizar la solicitud', 'fa-exclamation-circle', '#dc3545');
+            }
+        }
+
+        function showAlertBar(message, icon, color) {
+            const alertBar = document.createElement('div');
+            alertBar.className = 'alert-bar fade-in-up';
+            alertBar.innerHTML = `
+                <i class="fas ${icon}"></i>
+                    <span class="alert-bar-text">${message}</span>
+            `;
+            alertBar.style.background = `linear-gradient(135deg, ${color}22, ${color}11)`;
+            alertBar.style.borderColor = color;
+            alertBar.style.color = color;
+
+            const container = document.getElementById('alertBarContainer');
+            container.innerHTML = '';
+            container.appendChild(alertBar);
+
+                        setTimeout(() => {
+                            alertBar.remove();
+            }, 5000);
+        }
     </script>
 </body>
 </html>

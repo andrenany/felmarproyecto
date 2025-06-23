@@ -67,12 +67,12 @@ Cliente.belongsTo(Region, { foreignKey: 'region_id', as: 'RegionCliente' });
 
 // Cliente - SolicitudRetiro
 Cliente.hasMany(SolicitudRetiro, { 
-  foreignKey: 'clienteRut', 
+  foreignKey: 'cliente_id', 
   sourceKey: 'rut',
   as: 'solicitudesRetiro'
 });
 SolicitudRetiro.belongsTo(Cliente, { 
-  foreignKey: 'clienteRut', 
+  foreignKey: 'cliente_id', 
   targetKey: 'rut',
   as: 'cliente'
 });

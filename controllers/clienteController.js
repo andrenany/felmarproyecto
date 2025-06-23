@@ -453,7 +453,7 @@ const clienteController = {
 
       // Verificar si el cliente tiene solicitudes asociadas
       const solicitudes = await SolicitudRetiro.findOne({
-        where: { cliente_rut: rutFormateado }
+        where: { cliente_id: rutFormateado }
       });
 
       if (solicitudes) {
@@ -527,8 +527,8 @@ const clienteController = {
 
       // Consultas en paralelo para mayor eficiencia
       const [visitas, solicitudes, certificados] = await Promise.all([
-        VisitaRetiro.findAll({ where: { clienteId: cliente.rut } }),
-        SolicitudRetiro.findAll({ where: { clienteRut: cliente.rut } }),
+        VisitaRetiro.findAll({ where: { cliente_id: cliente.rut } }),
+        SolicitudRetiro.findAll({ where: { cliente_id: cliente.rut } }),
         Certificado.findAll({ where: { cliente_id: cliente.rut } })
       ]);
 
@@ -592,7 +592,7 @@ const clienteController = {
 
       // 3. Buscar todas las visitas asociadas, incluyendo datos de la solicitud
       const visitas = await VisitaRetiro.findAll({
-        where: { clienteId: cliente.rut },
+        where: { cliente_id: cliente.rut },
         include: [{
           model: SolicitudRetiro,
           as: 'solicitud',
@@ -754,11 +754,11 @@ const clienteController = {
 
       const [solicitudes, visitas] = await Promise.all([
         SolicitudRetiro.findAll({
-          where: { clienteRut: cliente.rut },
+          where: { cliente_id: cliente.rut },
           order: [['createdAt', 'DESC']]
         }),
         VisitaRetiro.findAll({
-          where: { clienteId: cliente.rut }
+          where: { cliente_id: cliente.rut }
         })
       ]);
 
@@ -810,14 +810,14 @@ const clienteController = {
       }
 
       const solicitudes = await SolicitudRetiro.findAll({
-        where: { clienteRut: cliente.rut },
+        where: { cliente_id: cliente.rut },
         order: [['createdAt', 'DESC']]
       });
 
       // Calcular estadísticas de solicitudes
       const stats = {
         pendientes: solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length,
-        confirmadas: solicitudes.filter(s => s.estado.toLowerCase() === 'confirmada').length,
+        confirmadas: solicitudes.filter(s => s.estado.toLowerCase() === 'en_proceso').length,
         completadas: solicitudes.filter(s => s.estado.toLowerCase() === 'completada').length,
         canceladas: solicitudes.filter(s => s.estado.toLowerCase() === 'cancelada').length
       };

@@ -1,4 +1,6 @@
 // middlewares/auth.js
+const { Cliente } = require('../models');
+
 const rutasPublicas = [
   '/notificaciones/no-leidas',
   '/notificaciones/marcar-leida',
@@ -40,7 +42,7 @@ const auth = {
   },
   
   // Middleware para la API - devuelve JSON en lugar de redireccionar
-  isAuthenticatedApi: (req, res, next) => {
+  isAuthenticatedApi: async (req, res, next) => {
     // Permitir acceso a rutas públicas de notificaciones
     if (rutasPublicas.some(ruta => req.path.startsWith(ruta))) {
       return next();
@@ -54,34 +56,47 @@ const auth = {
       });
     }
 
-    // Para clientes, ser más permisivo con la sesión
-    if (req.session.usuario.rol === 'cliente') {
-      // Solo verificar que tenga id y rol para clientes
-      if (!req.session.usuario.id || !req.session.usuario.rol) {
+    try {
+      // Para clientes, cargar la información del cliente si no está en la sesión
+      if (req.session.usuario.rol === 'cliente' && !req.session.cliente) {
+        const cliente = await Cliente.findOne({
+          where: { usuario_id: req.session.usuario.id }
+        });
+
+        if (cliente) {
+          req.session.cliente = cliente;
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'No se encontró el perfil de cliente. Por favor, complete su perfil.',
+            code: 'PROFILE_REQUIRED'
+          });
+        }
+      }
+
+      // Para otros roles, verificar que la sesión tenga todos los datos necesarios
+      const camposRequeridos = ['id', 'nombre', 'email', 'rol'];
+      const sesionCompleta = camposRequeridos.every(campo => 
+        req.session.usuario[campo] !== undefined
+      );
+
+      if (!sesionCompleta) {
         return res.status(401).json({
           success: false,
           message: 'Sesión inválida. Por favor, vuelva a iniciar sesión.',
           code: 'INVALID_SESSION'
         });
       }
+
       return next();
-    }
-
-    // Para otros roles, verificar que la sesión tenga todos los datos necesarios
-    const camposRequeridos = ['id', 'nombre', 'email', 'rol'];
-    const sesionCompleta = camposRequeridos.every(campo => 
-      req.session.usuario[campo] !== undefined
-    );
-
-    if (!sesionCompleta) {
-      return res.status(401).json({
+    } catch (error) {
+      console.error('Error en middleware de autenticación:', error);
+      return res.status(500).json({
         success: false,
-        message: 'Sesión inválida. Por favor, vuelva a iniciar sesión.',
-        code: 'INVALID_SESSION'
+        message: 'Error al verificar la autenticación',
+        error: error.message
       });
     }
-
-    return next();
   },
   
   // Verificar si es un Administrador

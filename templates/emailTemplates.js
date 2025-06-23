@@ -315,7 +315,121 @@ const emailTemplates = {
         </div>
       </div>
     `;
-  }
+  },
+
+  nuevaSolicitud: (data) => `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .header {
+                background: linear-gradient(135deg, #00616e, #00818f);
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 10px 10px 0 0;
+            }
+            .content {
+                background: #f9f9f9;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 0 0 10px 10px;
+            }
+            .info-section {
+                background: white;
+                padding: 15px;
+                margin: 10px 0;
+                border-radius: 5px;
+                border-left: 4px solid #00616e;
+            }
+            .label {
+                font-weight: bold;
+                color: #00616e;
+            }
+            .urgencia {
+                display: inline-block;
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-weight: bold;
+            }
+            .urgencia-alta {
+                background: #ffebee;
+                color: #d32f2f;
+            }
+            .urgencia-media {
+                background: #fff3e0;
+                color: #f57c00;
+            }
+            .urgencia-baja {
+                background: #e8f5e9;
+                color: #388e3c;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+                color: #666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>Nueva Solicitud de Retiro</h2>
+                <p>Se ha registrado una nueva solicitud en el sistema</p>
+            </div>
+            <div class="content">
+                <div class="info-section">
+                    <p><span class="label">Número de Solicitud:</span> #${data.numeroSolicitud}</p>
+                    <p><span class="label">Fecha:</span> ${data.fecha}</p>
+                    <p><span class="label">Tipo de Solicitud:</span> ${data.tipoSolicitud.toUpperCase()}</p>
+                    <p>
+                        <span class="label">Urgencia:</span> 
+                        <span class="urgencia urgencia-${data.urgencia}">
+                            ${data.urgencia.toUpperCase()}
+                        </span>
+                    </p>
+                </div>
+
+                <div class="info-section">
+                    <h3 style="color: #00616e;">Información del Cliente</h3>
+                    <p><span class="label">Empresa:</span> ${data.cliente.nombre}</p>
+                    <p><span class="label">RUT:</span> ${data.cliente.rut}</p>
+                    <p><span class="label">Email:</span> ${data.cliente.email}</p>
+                    <p><span class="label">Teléfono:</span> ${data.cliente.telefono}</p>
+                </div>
+
+                <div class="info-section">
+                    <h3 style="color: #00616e;">Descripción de la Solicitud</h3>
+                    <p>${data.descripcion}</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="http://localhost:3000/admin/solicitud" 
+                       style="background: #00616e; color: white; padding: 10px 20px; 
+                              text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Ver Solicitud en el Sistema
+                    </a>
+                </div>
+            </div>
+            <div class="footer">
+                <p>Este es un correo automático, por favor no responder.</p>
+                <p>© ${new Date().getFullYear()} Felmart - Gestión de Residuos</p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `
 };
 
 // Funciones auxiliares para generar templates

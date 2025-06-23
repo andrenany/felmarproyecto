@@ -42,7 +42,6 @@
             line-height: 1.6;
         }
 
-        /* Header Navigation */
         .header-nav {
             background: var(--nav-white);
             box-shadow: var(--nav-shadow);
@@ -117,18 +116,12 @@
             background: rgba(0, 97, 110, 0.05);
         }
 
-        .nav-link i {
-            font-size: 16px;
-        }
-
-        /* Content Wrapper */
         .content-wrapper {
             padding: 2rem 1.5rem;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Page Header */
         .page-header {
             background: var(--nav-white);
             border-radius: var(--border-radius);
@@ -145,23 +138,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Filtros */
-        .filtros-section {
-            background: var(--nav-white);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .filtros-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--nav-primary-color);
-            margin-bottom: 1rem;
-        }
-
-        /* Card y Tabla */
         .card {
             background: var(--nav-white);
             border: 1px solid #e2e8f0;
@@ -170,8 +146,9 @@
             overflow: hidden;
         }
 
-        .table {
-            margin: 0;
+        .table-responsive {
+            border-radius: var(--border-radius);
+            overflow: hidden;
         }
 
         .table thead th {
@@ -194,102 +171,27 @@
             font-weight: 500;
         }
 
-        /* Estados */
-        .estado-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
+        .badge {
+            padding: 0.5em 1em;
             font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .estado-pendiente {
-            background: var(--warning-color);
-            color: #000;
-        }
-
-        .estado-cotizada {
-            background: var(--info-color);
-            color: white;
-        }
-
-        .estado-programada {
-            background: var(--purple-color);
-            color: white;
-        }
-
-        .estado-completada {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .estado-cancelada {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        /* Urgencia */
-        .urgencia-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .urgencia-baja {
-            background: var(--success-color);
-            color: white;
-        }
-
-        .urgencia-media {
-            background: var(--warning-color);
-            color: #000;
-        }
-
-        .urgencia-alta {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        /* Botones */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .btn-group {
-            gap: 0.5rem;
-        }
-
-        .btn-info {
-            background: var(--info-color);
-            border: none;
-            color: white;
-            padding: 0.5rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
         }
 
-        .btn-info:hover {
-            background: #138496;
-            color: white;
-            transform: translateY(-1px);
+        .badge-pendiente {
+            background-color: var(--warning-color);
+            color: #000;
         }
 
-        /* Modal */
+        .badge-en_proceso {
+            background-color: var(--info-color);
+            color: #fff;
+        }
+
+        .badge-completada {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
         .modal-content {
             border: none;
             border-radius: 16px;
@@ -303,35 +205,42 @@
             padding: 1.5rem 2rem;
         }
 
-        .modal-title {
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-
         .modal-body {
             padding: 2rem;
+            background: #fafbfc;
         }
 
-        .modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 1px solid #e2e8f0;
+        .form-label {
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.75rem;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .content-wrapper {
-                padding: 1rem;
-            }
+        .form-control {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 0.875rem 1.125rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
 
-            .page-header {
-                padding: 1.5rem;
-            }
+        .form-control:focus {
+            border-color: var(--nav-primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 97, 110, 0.1);
+        }
 
-            .table thead th,
-            .table tbody td {
-                padding: 1rem;
-                font-size: 0.8rem;
-            }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -356,14 +265,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/Cotizaciones" class="nav-link">
+                            <a href="/admin/cotizaciones" class="nav-link">
                                 <i class="fas fa-file-alt"></i>
                                 <span>Cotizaciones</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="/admin/Certificados" class="nav-link">
-                                <i class="fas fa-file-alt"></i>
+                            <a href="/admin/certificados" class="nav-link">
+                                <i class="fas fa-certificate"></i>
                                 <span>Certificados</span>
                             </a>
                         </li>
@@ -375,24 +284,26 @@
                         </li>
                         <li class="nav-item">
                             <a href="/admin/solicitud" class="nav-link active">
-                                <i class="fas fa-calendar-check"></i>
+                                <i class="fas fa-tasks"></i>
                                 <span>Solicitudes</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="/admin/residuos" class="nav-link">
-                                <i class="fas fa-chart-bar"></i>
+                                <i class="fas fa-trash"></i>
                                 <span>Residuos y precios</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/dashboard" class="nav-link">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <span>Dashboard</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
+
+                <div class="user-dropdown">
+                    <button class="btn btn-primary" id="adminDropdownBtn">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Administrador</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -408,92 +319,25 @@
                     </ol>
                 </nav>
             </div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrear">
-                <i class="fas fa-plus me-2"></i>Nueva Solicitud
-            </button>
         </div>
 
-        <!-- Sección de Filtros -->
-        <div class="filtros-section">
-            <h5 class="filtros-title">
-                <i class="fas fa-filter me-2"></i>Filtros
-            </h5>
-            <form action="/admin/solicitud" method="GET" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Cliente</label>
-                    <select name="cliente" class="form-control">
-                        <option value="">Todos los clientes</option>
-                        <% clientes.forEach(function(cliente) { %>
-                            <option value="<%= cliente.rut %>" <%= clienteSeleccionado === cliente.rut ? 'selected' : '' %>>
-                                <%= cliente.nombreEmpresa %>
-                            </option>
-                        <% }); %>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Fecha</label>
-                    <input type="date" name="fecha" class="form-control" value="<%= fechaSeleccionada %>">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Urgencia</label>
-                    <select name="urgencia" class="form-control">
-                        <option value="">Todas</option>
-                        <option value="baja" <%= urgenciaSeleccionada === 'baja' ? 'selected' : '' %>>Baja</option>
-                        <option value="media" <%= urgenciaSeleccionada === 'media' ? 'selected' : '' %>>Media</option>
-                        <option value="alta" <%= urgenciaSeleccionada === 'alta' ? 'selected' : '' %>>Alta</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Filtrar
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Tabla de Solicitudes -->
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Urgencia</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
+                                <th>CLIENTE</th>
+                                <th>TIPO</th>
+                                <th>DESCRIPCIÓN</th>
+                                <th>URGENCIA</th>
+                                <th>ESTADO</th>
+                                <th>ACCIONES</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <% solicitudes.forEach(function(solicitud) { %>
-                                <tr>
-                                    <td><strong><%= solicitud.numero_solicitud %></strong></td>
-                                    <td><%= solicitud.Cliente.nombreEmpresa %></td>
-                                    <td><%= new Date(solicitud.fecha_preferida).toLocaleDateString() %></td>
-                                    <td>
-                                        <span class="urgencia-badge urgencia-<%= solicitud.urgencia %>">
-                                            <%= solicitud.urgencia.charAt(0).toUpperCase() + solicitud.urgencia.slice(1) %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="estado-badge estado-<%= solicitud.estado %>">
-                                            <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalles<%= solicitud.id %>" title="Ver Detalles">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEstado<%= solicitud.id %>" title="Cambiar Estado">
-                                                <i class="fas fa-exchange-alt"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }); %>
+                        <tbody id="solicitudesTableBody">
+                            <!-- Los datos se cargarán dinámicamente -->
                         </tbody>
                     </table>
                 </div>
@@ -501,122 +345,242 @@
         </div>
     </div>
 
-    <!-- Modal Detalles -->
-    <% solicitudes.forEach(function(solicitud) { %>
-        <div class="modal fade" id="modalDetalles<%= solicitud.id %>" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Detalles de Solicitud #<%= solicitud.numero_solicitud %>
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 class="mb-3">Información General</h6>
-                                <p><strong>Cliente:</strong> <%= solicitud.Cliente.nombreEmpresa %></p>
-                                <p><strong>Fecha Preferida:</strong> <%= new Date(solicitud.fecha_preferida).toLocaleDateString() %></p>
-                                <p><strong>Urgencia:</strong> 
-                                    <span class="urgencia-badge urgencia-<%= solicitud.urgencia %>">
-                                        <%= solicitud.urgencia.charAt(0).toUpperCase() + solicitud.urgencia.slice(1) %>
-                                    </span>
-                                </p>
-                                <p><strong>Estado:</strong>
-                                    <span class="estado-badge estado-<%= solicitud.estado %>">
-                                        <%= solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1) %>
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="mb-3">Detalles de Contacto</h6>
-                                <p><strong>Contacto:</strong> <%= solicitud.contacto_nombre %></p>
-                                <p><strong>Teléfono:</strong> <%= solicitud.contacto_telefono %></p>
-                                <p><strong>Ubicación:</strong> <%= solicitud.ubicacion %></p>
-                                <p><strong>Dirección:</strong> <%= solicitud.direccion_especifica %></p>
-                            </div>
+    <!-- Modal para ver detalles y cambiar estado -->
+    <div class="modal fade" id="solicitudModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Detalles de la Solicitud
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Cliente</label>
+                            <p id="modalCliente" class="form-control-static"></p>
                         </div>
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <h6 class="mb-3">Residuos</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Cantidad</th>
-                                                <th>Unidad</th>
-                                                <th>Observaciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% solicitud.DetalleResiduos.forEach(function(detalle) { %>
-                                                <tr>
-                                                    <td><%= detalle.Residuo.descripcion %></td>
-                                                    <td><%= detalle.cantidad %></td>
-                                                    <td><%= detalle.Residuo.unidad %></td>
-                                                    <td><%= detalle.observaciones || '-' %></td>
-                                                </tr>
-                                            <% }); %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tipo de Solicitud</label>
+                            <p id="modalTipo" class="form-control-static"></p>
                         </div>
-                        <% if (solicitud.observaciones) { %>
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <h6 class="mb-2">Observaciones Generales</h6>
-                                    <p class="text-muted"><%= solicitud.observaciones %></p>
-                                </div>
-                            </div>
-                        <% } %>
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <p id="modalDescripcion" class="form-control-static"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Urgencia</label>
+                            <p id="modalUrgencia" class="form-control-static"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Estado Actual</label>
+                            <select class="form-select" id="modalEstado">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="en_proceso">En Proceso</option>
+                                <option value="completada">Completada</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="actualizarEstado()">Guardar Cambios</button>
                 </div>
             </div>
         </div>
-    <% }); %>
+    </div>
 
-    <!-- Modal Cambiar Estado -->
-    <% solicitudes.forEach(function(solicitud) { %>
-        <div class="modal fade" id="modalEstado<%= solicitud.id %>" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form action="/admin/solicitud/cambiar-estado/<%= solicitud.id %>" method="POST">
-                        <div class="modal-header">
-                            <h5 class="modal-title">
-                                <i class="fas fa-exchange-alt me-2"></i>
-                                Cambiar Estado - Solicitud #<%= solicitud.numero_solicitud %>
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Nuevo Estado</label>
-                                <select name="estado" class="form-control" required>
-                                    <option value="pendiente" <%= solicitud.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
-                                    <option value="cotizada" <%= solicitud.estado === 'cotizada' ? 'selected' : '' %>>Cotizada</option>
-                                    <option value="programada" <%= solicitud.estado === 'programada' ? 'selected' : '' %>>Programada</option>
-                                    <option value="completada" <%= solicitud.estado === 'completada' ? 'selected' : '' %>>Completada</option>
-                                    <option value="cancelada" <%= solicitud.estado === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
+    <!-- Toasts para notificaciones -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Éxito</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
+            <div class="toast-body" id="toastMessage"></div>
         </div>
-    <% }); %>
+
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastMessage"></div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let solicitudModal;
+        let solicitudActualId;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            solicitudModal = new bootstrap.Modal(document.getElementById('solicitudModal'));
+            cargarSolicitudes();
+
+            // Dropdown del administrador
+            const dropdownBtn = document.getElementById('adminDropdownBtn');
+            dropdownBtn.addEventListener('click', function() {
+                window.location.href = '/dashboard';
+            });
+        });
+
+        async function cargarSolicitudes() {
+            try {
+                const response = await fetch('/api/solicitudes/listar');
+                const data = await response.json();
+                
+                const tbody = document.getElementById('solicitudesTableBody');
+                tbody.innerHTML = '';
+                
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-tasks fa-3x mb-3" style="opacity: 0.3;"></i>
+                                    <h5>No hay solicitudes registradas</h5>
+                                    <p class="text-muted">Las solicitudes aparecerán aquí cuando los clientes las creen</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.data.forEach(solicitud => {
+                    const estadoBadgeClass = {
+                        'pendiente': 'badge-pendiente',
+                        'en_proceso': 'badge-en_proceso',
+                        'completada': 'badge-completada'
+                    }[solicitud.estado];
+
+                    const clienteInfo = solicitud.cliente ? `
+                        <div>
+                            <strong>${solicitud.cliente.nombre_empresa}</strong><br>
+                            <small class="text-muted">RUT: ${solicitud.cliente_id}</small>
+                        </div>
+                    ` : 'N/A';
+
+                    const urgenciaBadgeClass = {
+                        'alta': 'bg-danger',
+                        'media': 'bg-warning',
+                        'baja': 'bg-info'
+                    }[solicitud.urgencia];
+
+                    const tipoSolicitudBadge = {
+                        'retiro': 'bg-primary',
+                        'evaluacion': 'bg-info',
+                        'cotizacion': 'bg-success',
+                        'visitas': 'bg-warning',
+                        'otros': 'bg-secondary'
+                    }[solicitud.tipo_solicitud];
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${solicitud.id}</td>
+                            <td>${clienteInfo}</td>
+                            <td>
+                                <span class="badge ${tipoSolicitudBadge}">
+                                    ${solicitud.tipo_solicitud.toUpperCase()}
+                                </span>
+                            </td>
+                            <td>${solicitud.descripcion ? solicitud.descripcion.substring(0, 50) + (solicitud.descripcion.length > 50 ? '...' : '') : 'Sin descripción'}</td>
+                            <td>
+                                <span class="badge ${urgenciaBadgeClass}">
+                                    ${solicitud.urgencia.toUpperCase()}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge ${estadoBadgeClass}">
+                                    ${solicitud.estado.replace('_', ' ').toUpperCase()}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-info btn-sm" onclick="verDetalles(${solicitud.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error al cargar solicitudes:', error);
+                document.getElementById('solicitudesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-danger">
+                            Error al cargar las solicitudes. Por favor, intente nuevamente.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function verDetalles(id) {
+            try {
+                const response = await fetch(`/api/solicitudes/${id}`);
+                const data = await response.json();
+                
+                if (data.success && data.solicitud) {
+                    const solicitud = data.solicitud;
+                    solicitudActualId = solicitud.id;
+                    
+                    const clienteInfo = solicitud.cliente ? 
+                        `${solicitud.cliente.nombre_empresa} (RUT: ${solicitud.cliente_id})` : 'N/A';
+                    
+                    document.getElementById('modalCliente').textContent = clienteInfo;
+                    document.getElementById('modalTipo').textContent = solicitud.tipo_solicitud;
+                    document.getElementById('modalDescripcion').textContent = solicitud.descripcion;
+                    document.getElementById('modalUrgencia').textContent = solicitud.urgencia.toUpperCase();
+                    document.getElementById('modalEstado').value = solicitud.estado;
+                    
+                    solicitudModal.show();
+                } else {
+                    alert('Error al cargar los detalles de la solicitud');
+                }
+            } catch (error) {
+                console.error('Error al cargar detalles:', error);
+                alert('Error al cargar los detalles de la solicitud');
+            }
+        }
+
+        async function actualizarEstado() {
+            const nuevoEstado = document.getElementById('modalEstado').value;
+            
+            try {
+                const response = await fetch(`/solicitudes/estado/${solicitudActualId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    solicitudModal.hide();
+                    cargarSolicitudes();
+                    // Mostrar notificación de éxito
+                    const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                    document.getElementById('toastMessage').textContent = 'Estado actualizado correctamente';
+                    toast.show();
+                } else {
+                    throw new Error(data.message || 'Error al actualizar el estado');
+                }
+            } catch (error) {
+                console.error('Error al actualizar estado:', error);
+                // Mostrar notificación de error
+                const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+                document.getElementById('errorToastMessage').textContent = error.message;
+                toast.show();
+            }
+        }
+    </script>
 </body>
 </html>
