@@ -478,6 +478,13 @@
             box-shadow: var(--shadow);
             margin-bottom: 2rem;
             overflow: hidden;
+            transition: var(--nav-transition);
+            border: 1px solid #e9ecef;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
         }
 
         .chart-card .card-header {
@@ -490,6 +497,9 @@
             padding: 2rem;
             height: 350px;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .chart-card .card-title {
@@ -500,6 +510,44 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        .chart-card .card-title i {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* Mejorar el espaciado de los gráficos */
+        .charts-grid .row {
+            margin: 0 -0.75rem;
+        }
+
+        .charts-grid .col-lg-6,
+        .charts-grid .col-xl-4,
+        .charts-grid .col-xl-12 {
+            padding: 0 0.75rem;
+        }
+
+        /* Responsive para gráficos */
+        @media (max-width: 1200px) {
+            .chart-card .card-body {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chart-card .card-body {
+                height: 250px;
+                padding: 1.5rem;
+            }
+            
+            .chart-card .card-header {
+                padding: 1rem;
+            }
+            
+            .chart-card .card-title {
+                font-size: 1.1rem;
+            }
         }
 
         /* Table Styles */
@@ -690,6 +738,30 @@
             color: var(--nav-secondary-color);
         }
 
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.15s; }
+        .stagger-3 { animation-delay: 0.2s; }
+        .stagger-4 { animation-delay: 0.25s; }
+        .stagger-5 { animation-delay: 0.3s; }
+        .stagger-6 { animation-delay: 0.35s; }
+        .stagger-7 { animation-delay: 0.4s; }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-menu {
@@ -728,30 +800,6 @@
                 margin-bottom: 2rem;
             }
         }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.15s; }
-        .stagger-3 { animation-delay: 0.2s; }
-        .stagger-4 { animation-delay: 0.25s; }
-        .stagger-5 { animation-delay: 0.3s; }
-        .stagger-6 { animation-delay: 0.35s; }
-        .stagger-7 { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
@@ -814,13 +862,7 @@
                         <a href="/admin/notificaciones" class="dropdown-item">
                             <i class="fas fa-bell"></i> Notificaciones
                         </a>
-                        <a href="/admin/auditoria" class="dropdown-item">
-                            <i class="fas fa-shield-alt"></i> Registro de Actividad
-                        </a>
-                        <a href="/admin/backups" class="dropdown-item">
-                            <i class="fas fa-database"></i> Respaldo de Datos
-                        </a>
-                        <a href="/admin/ayuda" class="dropdown-item">
+                        <a href="/admin/ayuda-soporte" class="dropdown-item">
                             <i class="fas fa-question-circle"></i> Ayuda y Soporte
                         </a>
                         <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
@@ -910,7 +952,8 @@
         <!-- Charts Row -->
         <div class="charts-grid">
             <div class="row">
-                <div class="col-lg-6 mb-4">
+                <!-- Gráfico 1: Solicitudes por Estado -->
+                <div class="col-lg-6 col-xl-4 mb-4">
                     <div class="chart-card fade-in-up">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -923,10 +966,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-4 mb-4">
+                <!-- Gráfico 2: Clientes por Comuna -->
+                <div class="col-lg-6 col-xl-4 mb-4">
                     <div class="chart-card fade-in-up">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -940,7 +982,8 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 mb-4">
+                <!-- Gráfico 3: Tipos de Residuos -->
+                <div class="col-lg-6 col-xl-4 mb-4">
                     <div class="chart-card fade-in-up">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -953,10 +996,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-6 mb-4">
+                <!-- Gráfico 4: Cotizaciones por Estado -->
+                <div class="col-lg-12 col-xl-12 mb-4">
                     <div class="chart-card fade-in-up">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -1000,66 +1042,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><strong>#SOL-001</strong></td>
-                                        <td>Nestlé Chile</td>
-                                        <td>Aceites Contaminados</td>
-                                        <td>
-                                            <span class="status-badge pendiente">
-                                                Pendiente
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="/admin/solicitudes/detalles/1" class="btn-action">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#SOL-002</strong></td>
-                                        <td>Salmones Camanchaca</td>
-                                        <td>Químicos Veterinarios</td>
-                                        <td>
-                                            <span class="status-badge programada">
-                                                Programada
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="/admin/solicitudes/detalles/2" class="btn-action">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#SOL-003</strong></td>
-                                        <td>Forestal Arauco</td>
-                                        <td>Pesticidas Vencidos</td>
-                                        <td>
-                                            <span class="status-badge cotizada">
-                                                Cotizada
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="/admin/solicitudes/detalles/3" class="btn-action">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>#SOL-004</strong></td>
-                                        <td>Naviera Austral</td>
-                                        <td>Lubricantes Usados</td>
-                                        <td>
-                                            <span class="status-badge completada">
-                                                Completada
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="/admin/solicitudes/detalles/4" class="btn-action">
-                                                <i class="fas fa-eye"></i> Ver
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    <% if (typeof solicitudesUrgentes !== 'undefined' && solicitudesUrgentes.length > 0) { %>
+                                        <% solicitudesUrgentes.forEach(solicitud => { %>
+                                            <tr>
+                                                <td><strong>#SOL-<%= solicitud.id %></strong></td>
+                                                <td><%= solicitud.Cliente ? solicitud.Cliente.nombreEmpresa : 'N/A' %></td>
+                                                <td><%= solicitud.tipoResiduo || 'No especificado' %></td>
+                                                <td>
+                                                    <span class="status-badge <%= solicitud.estado ? solicitud.estado.toLowerCase() : 'pendiente' %>">
+                                                        <%= solicitud.estado %>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="/admin/solicitudes/detalles/<%= solicitud.id %>" class="btn-action">
+                                                        <i class="fas fa-eye"></i> Ver
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">No hay solicitudes urgentes por el momento.</td>
+                                        </tr>
+                                    <% } %>
                                 </tbody>
                             </table>
                         </div>
@@ -1093,58 +1098,36 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><strong>09:00</strong></td>
-                                        <td>Nestlé Chile</td>
-                                        <td>Puerto Montt</td>
-                                        <td>Carlos Ruiz</td>
-                                        <td class="text-center">
-                                            <span class="status-badge programada">Programada</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>11:30</strong></td>
-                                        <td>Salmones Camanchaca</td>
-                                        <td>Castro, Chiloé</td>
-                                        <td>Ana López</td>
-                                        <td class="text-center">
-                                            <span class="status-badge programada">Programada</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>14:00</strong></td>
-                                        <td>Forestal Arauco</td>
-                                        <td>Osorno</td>
-                                        <td>Miguel Torres</td>
-                                        <td class="text-center">
-                                            <span class="status-badge programada">Programada</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>16:30</strong></td>
-                                        <td>Naviera Austral</td>
-                                        <td>Puerto Varas</td>
-                                        <td>Sin asignar</td>
-                                        <td class="text-center">
-                                            <span class="status-badge pendiente">Pendiente</span>
-                                        </td>
-                                    </tr>
+                                    <% if (typeof proximasVisitas !== 'undefined' && proximasVisitas.length > 0) { %>
+                                        <% proximasVisitas.forEach(visita => { %>
+                                            <tr>
+                                                <td><strong><%= visita.hora %></strong></td>
+                                                <td><%= visita.Cliente ? visita.Cliente.nombreEmpresa : 'N/A' %></td>
+                                                <td><%= visita.direccion || 'No especificada' %></td>
+                                                <td><%= visita.operador ? visita.operador.nombre : 'Sin asignar' %></td>
+                                                <td class="text-center">
+                                                    <span class="status-badge <%= visita.estado ? visita.estado.toLowerCase() : 'pendiente' %>"><%= visita.estado %></span>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">No hay visitas programadas próximamente.</td>
+                                        </tr>
+                                    <% } %>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Additional Information Row -->
-        <div class="row">
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-12 mb-4">
                 <div class="table-section fade-in-up">
                     <div class="table-header">
                         <h5 class="table-title">
-                            <i class="fas fa-building"></i>
-                            Clientes Principales
+                            <i class="fas fa-user-plus"></i>
+                            Clientes Nuevos
                         </h5>
                         <a href="/admin/clientes" class="btn-outline-custom">
                             <i class="fas fa-list me-2"></i>
@@ -1163,34 +1146,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><strong>Nestlé Chile</strong></td>
-                                        <td>Agrícola</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Activo</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Salmones Camanchaca</strong></td>
-                                        <td>Salmonero</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Activo</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Forestal Arauco</strong></td>
-                                        <td>Forestal</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Activo</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Naviera Austral</strong></td>
-                                        <td>Naviero</td>
-                                        <td class="text-center">
-                                            <span class="status-badge activo">Activo</span>
-                                        </td>
-                                    </tr>
+                                    <% if (typeof clientesRecientes !== 'undefined' && clientesRecientes.length > 0) { %>
+                                        <% clientesRecientes.forEach(cliente => { %>
+                                            <tr>
+                                                <td><strong><%= cliente.nombreEmpresa %></strong></td>
+                                                <td><%= cliente.sector || 'No especificado' %></td>
+                                                <td class="text-center">
+                                                    <span class="status-badge <%= cliente.estado ? cliente.estado.toLowerCase() : 'activo' %>">
+                                                        <%= cliente.estado %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4">No hay clientes nuevos para mostrar.</td>
+                                        </tr>
+                                    <% } %>
                                 </tbody>
                             </table>
                         </div>

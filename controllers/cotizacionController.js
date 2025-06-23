@@ -8,15 +8,16 @@ const {
   Notificacion,
   PrecioResiduo,
   Region,
-  Comuna
+  Comuna,
+  CotizacionResiduo
 } = require('../models');
 const sequelize = require('../config/database');
 const { Op } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
-const pdf = require('html-pdf');
 const ejs = require('ejs');
 const moment = require('moment');
+const PDFDocument = require('pdfkit');
 const { sendMailWithRetry } = require('../config/email.config');
 const emailTemplates = require('../templates/emailTemplates');
 moment.locale('es');
@@ -547,36 +548,116 @@ const cotizacionController = {
     }
   },
 
-  // Descargar PDF de cotización
-  descargarPDF: async (req, res) => {
+  // Esta es la nueva función para descargar el PDF con PDFKit
+  descargarPdf: async (req, res) => {
     try {
-      const { id } = req.params;
-      const { usuario } = req.session;
-      
-      // Buscar cotización
-      const cotizacion = await Cotizacion.findByPk(id);
-      
-      if (!cotizacion) {
-        req.flash('error', 'Cotización no encontrada');
-        return res.redirect('/cotizaciones');
-      }
-      
-   
-      
-      // Verificar que exista el archivo PDF
-      const rutaPdf = path.join(__dirname, '..', 'public', 'uploads', 'cotizaciones', `cotizacion-${id}.pdf`);
-      
-      if (!fs.existsSync(rutaPdf)) {
-        // Si no existe, generarlo
-        await generarPDFCotizacion(id);
-      }
-      
-      // Enviar el archivo al cliente
-      res.download(rutaPdf, `Cotizacion-${cotizacion.numeroCotizacion}.pdf`);
+        const { id } = req.params;
+        const cotizacion = await Cotizacion.findByPk(id, {
+            include: [{
+                model: CotizacionResiduo,
+                as: 'residuos'
+            }]
+        });
+
+        if (!cotizacion) {
+            return res.status(404).send('Cotización no encontrada');
+        }
+
+        const doc = new PDFDocument({ margin: 50 });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=cotizacion-${cotizacion.numeroCotizacion}.pdf`);
+
+        doc.pipe(res);
+
+        // Header
+        const logoPath = path.join(__dirname, '../public/img/logo.png');
+        if (fs.existsSync(logoPath)) {
+            doc.image(logoPath, 50, 45, { width: 50 });
+        }
+        
+        doc.fontSize(20).text('COTIZACIÓN', { align: 'right' });
+        doc.moveDown(0.5);
+
+        // Info de la empresa
+        doc.fontSize(10);
+        doc.text('Felmar E.I.R.L.', { align: 'right' });
+        doc.text('76.327.Fel-k', { align: 'right' });
+        
+        doc.moveDown(2);
+
+        // Client details
+        doc.fontSize(12).text(`Cotización N°: ${cotizacion.numeroCotizacion}`);
+        doc.text(`Fecha: ${new Date(cotizacion.fecha).toLocaleDateString('es-CL')}`);
+        doc.moveDown();
+        doc.fontSize(10).text('Cliente:', { continued: true, underline: true });
+        doc.font('Helvetica').text(` ${cotizacion.nombre}`);
+        doc.font('Helvetica-Bold').text('RUT:', { continued: true });
+        doc.font('Helvetica').text(` ${cotizacion.rut}`);
+        doc.font('Helvetica-Bold').text('Correo:', { continued: true });
+        doc.font('Helvetica').text(` ${cotizacion.correo}`);
+        doc.font('Helvetica-Bold').text('Teléfono:', { continued: true });
+        doc.font('Helvetica').text(` ${cotizacion.telefono}`);
+        if(cotizacion.nombreEmpresa) {
+            doc.font('Helvetica-Bold').text('Empresa:', { continued: true });
+            doc.font('Helvetica').text(` ${cotizacion.nombreEmpresa}`);
+        }
+        doc.moveDown();
+
+        // Tabla de residuos
+        const tableTop = doc.y;
+        doc.font('Helvetica-Bold');
+        doc.text('Ítem / Descripción', 50, tableTop);
+        doc.text('Cantidad', 300, tableTop, { width: 90, align: 'right' });
+        doc.text('Precio Unit.', 370, tableTop, { width: 100, align: 'right' });
+        doc.text('Subtotal', 450, tableTop, { width: 100, align: 'right' });
+        
+        const startX = 50;
+        const endX = 550;
+        doc.moveTo(startX, tableTop + 20).lineTo(endX, tableTop + 20).stroke();
+
+        let y = tableTop + 30;
+        
+        cotizacion.residuos.forEach(item => {
+            doc.font('Helvetica').text(item.descripcion, 50, y, { width: 250 });
+            doc.text(item.cantidad.toString(), 300, y, { width: 90, align: 'right' });
+            doc.text(`$${Number(item.precio_unitario).toLocaleString('es-CL')}`, 370, y, { width: 100, align: 'right' });
+            doc.text(`$${Number(item.subtotal).toLocaleString('es-CL')}`, 450, y, { width: 100, align: 'right' });
+            y += 25;
+        });
+
+        // Línea divisoria
+        doc.moveTo(startX, y).lineTo(endX, y).stroke();
+        y += 10;
+        
+        // Totales
+        const totalX = 450;
+        doc.font('Helvetica-Bold');
+        doc.text('Subtotal:', 350, y, { align: 'right', width: 100 });
+        doc.font('Helvetica').text(`$${Number(cotizacion.subtotal).toLocaleString('es-CL')}`, totalX, y, { width: 100, align: 'right' });
+        y += 20;
+
+        doc.font('Helvetica-Bold').text('IVA (19%):', 350, y, { align: 'right', width: 100 });
+        doc.font('Helvetica').text(`$${Number(cotizacion.iva).toLocaleString('es-CL')}`, totalX, y, { width: 100, align: 'right' });
+        y += 20;
+
+        doc.font('Helvetica-Bold').text('Total:', 350, y, { align: 'right', width: 100 });
+        doc.font('Helvetica-Bold').text(`$${Number(cotizacion.total).toLocaleString('es-CL')}`, totalX, y, { width: 100, align: 'right' });
+        
+        // Footer / Observaciones
+        if (cotizacion.observaciones) {
+            doc.font('Helvetica').text('Observaciones:', 50, y + 50, { underline: true });
+            doc.text(cotizacion.observaciones, {
+                width: 500,
+                align: 'justify'
+            });
+        }
+
+        doc.end();
+
     } catch (error) {
-      console.error('Error al descargar PDF:', error);
-      req.flash('error', 'Error al descargar PDF');
-      res.redirect(`/cotizaciones/detalles/${req.params.id}`);
+        console.error('Error al generar PDF con pdfkit:', error);
+        res.status(500).send('Error al generar el PDF');
     }
   },
 
@@ -1033,63 +1114,14 @@ async function enviarCotizacionPorCorreo(cotizacion, emailCliente, detallesObj) 
   }
 }
 
-// Función para generar PDF de cotización
-const generarPDFCotizacion = async (cotizacionId) => {
-  try {
-    // Buscar cotización con todos sus detalles
-    const cotizacion = await Cotizacion.findByPk(cotizacionId);
-    
-    if (!cotizacion) {
-      throw new Error('Cotización no encontrada');
-    }
-    
-    // Crear directorio si no existe
-    const directorioDestino = path.join(__dirname, '..', 'public', 'uploads', 'cotizaciones');
-    if (!fs.existsSync(directorioDestino)) {
-      fs.mkdirSync(directorioDestino, { recursive: true });
-    }
-    
-    // Ruta del archivo de plantilla
-    const rutaPlantilla = path.join(__dirname, '..', 'views', 'cotizaciones', 'plantilla-pdf.ejs');
-    
-    // Leer plantilla
-    const contenidoPlantilla = fs.readFileSync(rutaPlantilla, 'utf8');
-    
-    // Compilar plantilla con datos
-    const html = ejs.render(contenidoPlantilla, {
-      cotizacion,
-      moment
-    });
-    
-    // Generar PDF
-    const rutaArchivoPDF = path.join(directorioDestino, `cotizacion-${cotizacionId}.pdf`);
-    
-    return new Promise((resolve, reject) => {
-      pdf.create(html, {
-        format: 'Letter',
-        border: {
-          top: '1cm',
-          right: '1cm',
-          bottom: '1cm',
-          left: '1cm'
-        }
-      }).toFile(rutaArchivoPDF, (err, res) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        
-        // Actualizar ruta en la base de datos
-        cotizacion.rutaPdf = `/uploads/cotizaciones/cotizacion-${cotizacionId}.pdf`;
-        cotizacion.save().then(() => {
-          resolve(rutaArchivoPDF);
-        }).catch(reject);
-      });
-    });
-  } catch (error) {
-    console.error('Error al generar PDF:', error);
-    throw error;
-  }
-};
+// Función auxiliar para la tabla del PDF
+function generarFilaTabla(doc, y, c1, c2, c3, c4, c5) {
+    doc.fontSize(10)
+        .text(c1, 50, y, { width: 190, align: 'left' })
+        .text(c2, 240, y, { width: 60, align: 'center' })
+        .text(c3, 300, y, { width: 80, align: 'center' })
+        .text(c4, 380, y, { width: 90, align: 'right' })
+        .text(c5, 470, y, { width: 90, align: 'right' });
+}
 
 module.exports = cotizacionController;

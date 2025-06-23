@@ -34,7 +34,7 @@ const {
   const upload = multer({ 
     storage,
     limits: {
-      fileSize: 5 * 1024 * 1024 // 5MB máximo
+      fileSize: 10 * 1024 * 1024 // 10MB máximo
     },
     fileFilter: (req, file, cb) => {
       // Aceptar solo PDFs
@@ -79,7 +79,19 @@ const {
         } else if (fechaHasta) {
           where.fechaEmision = { [Op.lte]: moment(fechaHasta).endOf('day').toDate() };
         }
-        const certificados = await Certificado.findAll({ where, order: [['fechaEmision', 'DESC']] });
+        
+        const certificados = await Certificado.findAll({ 
+          where, 
+          order: [['fechaEmision', 'DESC']],
+          include: [
+            {
+              model: Cliente,
+              as: 'cliente',
+              attributes: ['nombre_empresa', 'email']
+            }
+          ]
+        });
+        
         // Traer los usuarios con rol cliente para el select
         const Usuario = require('../models/Usuario');
         const clientes = await Usuario.findAll({ where: { rol: 'cliente', activo: true } });
@@ -94,6 +106,7 @@ const {
           fechaHasta: fechaHasta || ''
         });
       } catch (error) {
+        console.error('Error al listar certificados:', error);
         req.flash('error', 'Error al cargar certificados');
         res.redirect('/dashboard');
       }
@@ -120,6 +133,7 @@ const {
         }
         res.download(rutaArchivo, `certificado-${certificado.id}.pdf`);
       } catch (error) {
+        console.error('Error al descargar PDF:', error);
         req.flash('error', 'Error al descargar PDF');
         res.redirect('/admin/certificados');
       }
@@ -138,6 +152,7 @@ const {
         const clientes = await Usuario.findAll({ where: { rol: 'cliente', activo: true } });
         res.render('admin/certificados_form', { certificado: null, usuario, clientes, error: req.flash('error'), success: req.flash('success') });
       } catch (error) {
+        console.error('Error al mostrar formulario:', error);
         req.flash('error', 'Error al mostrar formulario');
         res.redirect('/admin/certificados');
       }
@@ -146,7 +161,8 @@ const {
     // Crear certificado
     crear: async (req, res) => {
       try {
-        const { cliente_id, visita_retiro_id, observaciones } = req.body;
+        const { cliente_id, visita_retiro_id, observaciones, fechaEmision } = req.body;
+        
         // Validación de campos obligatorios
         if (!cliente_id) {
           req.flash('error', 'Debes seleccionar un cliente.');
@@ -156,6 +172,7 @@ const {
           req.flash('error', 'Debes adjuntar un archivo PDF.');
           return res.redirect('/admin/certificados');
         }
+        
         // Buscar usuario cliente
         const Usuario = require('../models/Usuario');
         const usuarioCliente = await Usuario.findByPk(cliente_id);
@@ -163,6 +180,7 @@ const {
           req.flash('error', 'El usuario seleccionado no existe.');
           return res.redirect('/admin/certificados');
         }
+        
         // Buscar cliente asociado a ese usuario
         const Cliente = require('../models/Cliente');
         const cliente = await Cliente.findOne({ where: { usuario_id: usuarioCliente.id } });
@@ -170,17 +188,27 @@ const {
           req.flash('error', 'No se encontró un perfil de cliente asociado a este usuario.');
           return res.redirect('/admin/certificados');
         }
+        
         // Validar PDF
         if (req.file.mimetype !== 'application/pdf') {
           req.flash('error', 'El archivo debe ser un PDF.');
           return res.redirect('/admin/certificados');
         }
+        
         const rutaPdf = `/uploads/certificados/${req.file.filename}`;
-        let fechaEmisionFinal = req.body.fechaEmision;
+        let fechaEmisionFinal = fechaEmision;
         if (fechaEmisionFinal) {
           fechaEmisionFinal = new Date(fechaEmisionFinal + 'T12:00:00');
         }
-        await Certificado.create({ cliente_id: cliente.rut, visita_retiro_id: visita_retiro_id || null, observaciones, rutaPdf, fechaEmision: fechaEmisionFinal });
+        
+        await Certificado.create({ 
+          cliente_id: cliente.rut, 
+          visita_retiro_id: visita_retiro_id || null, 
+          observaciones, 
+          rutaPdf, 
+          fechaEmision: fechaEmisionFinal 
+        });
+        
         // Enviar correo al cliente
         const { sendMailWithRetry } = require('../config/email.config');
         try {
@@ -194,12 +222,15 @@ const {
             html: `<p>Hola <b>${usuarioCliente.nombre}</b>,<br>Ya puedes descargar tu certificado desde la página de Felmart.</p>`
           });
         } catch (correoError) {
-          req.flash('error', 'Certificado creado, pero no se pudo enviar el correo al cliente.');
+          console.error('Error al enviar correo:', correoError);
+          req.flash('warning', 'Certificado creado, pero no se pudo enviar el correo al cliente.');
           return res.redirect('/admin/certificados');
         }
+        
         req.flash('success', 'Certificado creado correctamente y correo enviado al cliente.');
         res.redirect('/admin/certificados');
       } catch (error) {
+        console.error('Error al crear certificado:', error);
         req.flash('error', 'Error al crear certificado.');
         res.redirect('/admin/certificados');
       }
@@ -221,6 +252,7 @@ const {
         }
         res.render('admin/certificados_form', { certificado, usuario, error: req.flash('error'), success: req.flash('success') });
       } catch (error) {
+        console.error('Error al mostrar formulario editar:', error);
         req.flash('error', 'Error al mostrar formulario');
         res.redirect('/admin/certificados');
       }
@@ -257,6 +289,7 @@ const {
         req.flash('success', 'Certificado actualizado correctamente');
         res.redirect('/admin/certificados');
       } catch (error) {
+        console.error('Error al editar certificado:', error);
         req.flash('error', 'Error al editar certificado');
         res.redirect('/admin/certificados');
       }
@@ -278,8 +311,172 @@ const {
         req.flash('success', 'Certificado eliminado');
         res.redirect('/admin/certificados');
       } catch (error) {
+        console.error('Error al eliminar certificado:', error);
         req.flash('error', 'Error al eliminar certificado');
         res.redirect('/admin/certificados');
+      }
+    },
+
+    // API: Obtener certificados por cliente
+    obtenerPorCliente: async (req, res) => {
+      try {
+        const { clienteId } = req.params;
+        const certificados = await Certificado.findAll({
+          where: { cliente_id: clienteId },
+          order: [['fechaEmision', 'DESC']],
+          include: [
+            {
+              model: Cliente,
+              as: 'cliente',
+              attributes: ['nombre_empresa']
+            }
+          ]
+        });
+        
+        res.json({
+          success: true,
+          data: certificados
+        });
+      } catch (error) {
+        console.error('Error al obtener certificados por cliente:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Error al obtener certificados'
+        });
+      }
+    },
+
+    // API: Asignar certificado a visita
+    asignarAVisita: async (req, res) => {
+      try {
+        const { visitaId, certificadoId } = req.body;
+        
+        if (!visitaId || !certificadoId) {
+          return res.status(400).json({
+            success: false,
+            message: 'Se requiere ID de visita y certificado'
+          });
+        }
+
+        // Verificar que la visita existe
+        const visita = await VisitaRetiro.findByPk(visitaId);
+        if (!visita) {
+          return res.status(404).json({
+            success: false,
+            message: 'Visita no encontrada'
+          });
+        }
+
+        // Verificar que el certificado existe
+        const certificado = await Certificado.findByPk(certificadoId);
+        if (!certificado) {
+          return res.status(404).json({
+            success: false,
+            message: 'Certificado no encontrado'
+          });
+        }
+
+        // Actualizar el certificado con la visita
+        await certificado.update({ visita_retiro_id: visitaId });
+
+        res.json({
+          success: true,
+          message: 'Certificado asignado correctamente a la visita'
+        });
+      } catch (error) {
+        console.error('Error al asignar certificado a visita:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Error al asignar certificado'
+        });
+      }
+    },
+
+    // API: Crear certificado desde visita
+    crearDesdeVisita: async (req, res) => {
+      try {
+        const { visitaId, observaciones, fechaEmision } = req.body;
+        
+        if (!visitaId) {
+          return res.status(400).json({
+            success: false,
+            message: 'Se requiere ID de visita'
+          });
+        }
+
+        if (!req.file) {
+          return res.status(400).json({
+            success: false,
+            message: 'Se requiere archivo PDF'
+          });
+        }
+
+        // Verificar que la visita existe
+        const visita = await VisitaRetiro.findByPk(visitaId, {
+          include: [
+            {
+              model: Cliente,
+              as: 'cliente'
+            }
+          ]
+        });
+        
+        if (!visita) {
+          return res.status(404).json({
+            success: false,
+            message: 'Visita no encontrada'
+          });
+        }
+
+        const rutaPdf = `/uploads/certificados/${req.file.filename}`;
+        let fechaEmisionFinal = fechaEmision;
+        if (fechaEmisionFinal) {
+          fechaEmisionFinal = new Date(fechaEmisionFinal + 'T12:00:00');
+        }
+
+        // Crear el certificado
+        const certificado = await Certificado.create({
+          cliente_id: visita.clienteId,
+          visita_retiro_id: visitaId,
+          observaciones: observaciones || `Certificado generado desde visita ${visitaId}`,
+          rutaPdf,
+          fechaEmision: fechaEmisionFinal
+        });
+
+        // Enviar correo al cliente si tiene usuario asociado
+        if (visita.cliente && visita.cliente.usuario_id) {
+          const Usuario = require('../models/Usuario');
+          const usuarioCliente = await Usuario.findByPk(visita.cliente.usuario_id);
+          
+          if (usuarioCliente) {
+            const { sendMailWithRetry } = require('../config/email.config');
+            try {
+              await sendMailWithRetry({
+                from: {
+                  name: 'Felmart - Gestión de Residuos',
+                  address: process.env.EMAIL_USER
+                },
+                to: usuarioCliente.email,
+                subject: 'Nuevo certificado disponible',
+                html: `<p>Hola <b>${usuarioCliente.nombre}</b>,<br>Ya puedes descargar tu certificado desde la página de Felmart.</p>`
+              });
+            } catch (correoError) {
+              console.error('Error al enviar correo:', correoError);
+            }
+          }
+        }
+
+        res.json({
+          success: true,
+          message: 'Certificado creado correctamente',
+          data: certificado
+        });
+      } catch (error) {
+        console.error('Error al crear certificado desde visita:', error);
+        res.status(500).json({
+          success: false,
+          message: 'Error al crear certificado'
+        });
       }
     }
   };
@@ -318,111 +515,34 @@ const {
       const nombreArchivo = `certificado-${certificadoId}.pdf`;
       const rutaArchivoPDF = path.join(directorioDestino, nombreArchivo);
       
+      const doc = new PDFDocument();
+      const writeStream = fs.createWriteStream(rutaArchivoPDF);
+      doc.pipe(writeStream);
+      
+      // Contenido del PDF
+      doc.fontSize(20).text('CERTIFICADO DE GESTIÓN DE RESIDUOS', { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Certificado N°: ${certificadoId}`, { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(14).text('Felmart - Gestión de Residuos', { align: 'center' });
+      doc.moveDown(2);
+      
+      doc.fontSize(12).text(`Cliente: ${certificado.cliente_id}`);
+      doc.moveDown();
+      doc.fontSize(12).text(`Fecha de Emisión: ${certificado.fechaEmision ? new Date(certificado.fechaEmision).toLocaleDateString('es-ES') : 'No especificada'}`);
+      doc.moveDown();
+      if (certificado.observaciones) {
+        doc.fontSize(12).text(`Observaciones: ${certificado.observaciones}`);
+        doc.moveDown();
+      }
+      
+      doc.end();
+      
       return new Promise((resolve, reject) => {
-        try {
-          const doc = new PDFDocument({
-            size: 'A4',
-            margin: 50,
-            info: {
-              Title: `Certificado ${certificado.numeroCertificado}`,
-              Author: 'Felmart',
-              Subject: 'Certificado de Gestión de Residuos'
-            }
-          });
-
-          // Crear stream de escritura
-          const stream = fs.createWriteStream(rutaArchivoPDF);
-          doc.pipe(stream);
-
-          // Logo (si existe)
-          const logoPath = path.join(__dirname, '..', 'public', 'img', 'logo.png');
-          if (fs.existsSync(logoPath)) {
-            doc.image(logoPath, 50, 45, { width: 100 });
-          }
-
-          // Título
-          doc.fontSize(20)
-             .font('Helvetica-Bold')
-             .text('Certificado de Gestión de Residuos', { align: 'center' })
-             .moveDown();
-
-          // Número de certificado
-          doc.fontSize(14)
-             .font('Helvetica')
-             .text(`N° ${certificado.numeroCertificado}`, { align: 'center' })
-             .moveDown(2);
-
-          // Información del cliente
-          doc.fontSize(12)
-             .font('Helvetica-Bold')
-             .text('Información del Cliente')
-             .moveDown(0.5)
-             .font('Helvetica')
-             .text(`Empresa: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.nombre}`)
-             .text(`RUC: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.ruc}`)
-             .text(`Dirección: ${certificado.VisitaRetiro.SolicitudRetiro.Cliente.direccion}`)
-             .moveDown();
-
-          // Detalles del certificado
-          doc.font('Helvetica-Bold')
-             .text('Detalles del Certificado')
-             .moveDown(0.5)
-             .font('Helvetica')
-             .text(`Tipo de Tratamiento: ${certificado.tipoTratamiento}`)
-             .text(`Planta Destino: ${certificado.plantaDestino}`)
-             .text(`Fecha de Emisión: ${moment(certificado.fechaEmision).format('DD/MM/YYYY')}`)
-             .moveDown();
-
-          // Información de la visita
-          doc.font('Helvetica-Bold')
-             .text('Información de la Visita')
-             .moveDown(0.5)
-             .font('Helvetica')
-             .text(`Fecha de Retiro: ${moment(certificado.VisitaRetiro.fechaRetiro).format('DD/MM/YYYY')}`)
-             .text(`Hora de Retiro: ${certificado.VisitaRetiro.horaRetiro}`)
-             .moveDown();
-
-          // Observaciones (si existen)
-          if (certificado.observaciones) {
-            doc.font('Helvetica-Bold')
-               .text('Observaciones')
-               .moveDown(0.5)
-               .font('Helvetica')
-               .text(certificado.observaciones)
-               .moveDown();
-          }
-
-          // Pie de página
-          const footerY = 700;
-          doc.fontSize(10)
-             .font('Helvetica')
-             .text('Este documento es un certificado oficial de gestión de residuos.', 50, footerY, {
-               align: 'center',
-               width: 500
-             })
-             .text('Felmart - Gestión de Residuos', 50, footerY + 15, {
-               align: 'center',
-               width: 500
-             })
-             .text('Ruta 5 Sur km 1036, sector Trapen, Puerto Montt, Chile', 50, footerY + 30, {
-               align: 'center',
-               width: 500
-             });
-
-          // Finalizar PDF
-          doc.end();
-
-          // Manejar eventos del stream
-          stream.on('finish', () => {
-            resolve(rutaArchivoPDF);
-          });
-
-          stream.on('error', (error) => {
-            reject(error);
-          });
-        } catch (error) {
-          reject(error);
-        }
+        writeStream.on('finish', () => {
+          resolve(rutaArchivoPDF);
+        });
+        writeStream.on('error', reject);
       });
     } catch (error) {
       console.error('Error al generar PDF:', error);

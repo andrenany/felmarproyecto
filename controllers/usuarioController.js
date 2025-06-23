@@ -6,6 +6,7 @@ const { Op, Sequelize } = require('sequelize');
 const moment       = require('moment');
 const emailTemplates = require('../templates/emailTemplates');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 
 const usuarioController = {
   // 1) Registro / Login / Logout ----------------------------------
@@ -59,30 +60,50 @@ const usuarioController = {
         return res.redirect('/login');
       }
       const usuario = await Usuario.findOne({ where: { email } });
-      const valido  = usuario && await usuario.verificarPassword(password);
-      if (!valido || !usuario.activo) {
-        req.flash('error', 'Credenciales inválidas o usuario desactivado');
-        return res.redirect('/login');
+      if (!usuario) {
+        req.flash('error', 'El usuario no existe.');
+        return res.redirect('/usuarios/login');
       }
+      const passwordValido = await usuario.verificarPassword(password);
+      if (!passwordValido) {
+        req.flash('error', 'Contraseña incorrecta. Por favor, inténtelo de nuevo.');
+        return res.redirect('/usuarios/login');
+      }
+      if (!usuario.activo) {
+        req.flash('error', 'Tu cuenta está desactivada. Contacta con el administrador.');
+        return res.redirect('/usuarios/login');
+      }
+
+      // Si las credenciales son correctas, se crea la sesión
       req.session.usuario = {
         id: usuario.id,
         nombre: usuario.nombre,
         email: usuario.email,
         rol: usuario.rol
       };
-      if (usuario.rol === 'cliente') {
-        const cliente = await Cliente.findOne({ where: { usuario_id: usuario.id } });
-        if (cliente) req.session.clienteId = cliente.rut;
-      }
-      
-      // Redirigir a la URL original o al dashboard
-      const redirectUrl = req.session.returnTo || '/dashboard';
-      delete req.session.returnTo;
-      res.redirect(redirectUrl);
+
+      // Guardar la sesión antes de redirigir
+      req.session.save(err => {
+        if (err) {
+          console.error('Error al guardar la sesión:', err);
+          req.flash('error', 'Ocurrió un error al iniciar sesión.');
+          return res.redirect('/usuarios/login');
+        }
+
+        // Redireccionar según el rol
+        if (usuario.rol === 'administrador') {
+          return res.redirect('/admin');
+        } else if (usuario.rol === 'operador') {
+          return res.redirect('/operador/dashboard'); // O la ruta que corresponda
+        } else {
+          return res.redirect('/dashboard');
+        }
+      });
+
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      req.flash('error', 'Error al iniciar sesión');
-      res.redirect('/login');
+      console.error('Error en el login:', error);
+      req.flash('error', 'Ocurrió un error inesperado durante el inicio de sesión.');
+      res.redirect('/usuarios/login');
     }
   },
 
@@ -183,33 +204,46 @@ const usuarioController = {
   },
 
   resetPassword: async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
     try {
-      const { token } = req.params;
-      const { password, confirmarPassword } = req.body;
-      if (password !== confirmarPassword) {
-        req.flash('error', 'Las contraseñas no coinciden');
-        return res.redirect(`/usuarios/reset-password/${token}`);
-      }
-      const usuario = await Usuario.findOne({
-        where: {
-          resetPasswordToken: token,
-          resetPasswordExpires: { [Op.gt]: Date.now() }
+        if (password !== confirmPassword) {
+            req.flash('error', 'Las contraseñas no coinciden.');
+            return res.redirect(`/usuarios/reset-password/${token}`);
         }
-      });
-      if (!usuario) {
-        req.flash('error', 'Token inválido o expirado');
-        return res.redirect('/usuarios/olvide-password');
-      }
-      usuario.password             = password;
-      usuario.resetPasswordToken   = null;
-      usuario.resetPasswordExpires = null;
-      await usuario.save();
-      req.flash('success', 'Contraseña restablecida.');
-      res.redirect('/login');
+
+        const usuario = await Usuario.findOne({
+            where: {
+                resetPasswordToken: token,
+                resetPasswordExpires: { [Op.gt]: Date.now() }
+            }
+        });
+
+        if (!usuario) {
+            req.flash('error', 'El token no es válido o ha expirado. Por favor, solicita uno nuevo.');
+            return res.redirect('/usuarios/olvide-password');
+        }
+
+        // Forzar hasheo y guardado explícito para máxima seguridad.
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        await usuario.update({
+            password: hashedPassword,
+            resetPasswordToken: null,
+            resetPasswordExpires: null
+        }, {
+            hooks: false // Evita el doble hasheo
+        });
+
+        req.flash('success', 'Tu contraseña ha sido actualizada correctamente. Ya puedes iniciar sesión.');
+        res.redirect('/usuarios/login');
+
     } catch (error) {
-      console.error('Error al restablecer contraseña:', error);
-      req.flash('error', 'Error al procesar solicitud');
-      res.redirect(`/usuarios/reset-password/${req.params.token}`);
+        console.error('Error al resetear la contraseña:', error);
+        req.flash('error', 'Ocurrió un error al intentar cambiar tu contraseña.');
+        res.redirect(`/usuarios/reset-password/${token}`);
     }
   },
 

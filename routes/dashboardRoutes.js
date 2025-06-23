@@ -5,38 +5,28 @@ const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const pool = require('../config/database');
+const dashboardController = require('../controllers/dashboardController');
 
-// Ruta principal del dashboard
-router.get('/', isAuthenticated, async (req, res) => {
-    try {
-        let datos = {
-            title: 'Dashboard - Felmart',
-            usuario: req.session.usuario,
-            countSolicitudes: 0,
-            countPendientes: 0,
-            countVisitas: 0,
-            solicitudesRecientes: []
-        };
-
-        if (req.session.usuario.rol === 'administrador') {
-            // Obtener estadísticas para administrador
-            const totalClientes = await Cliente.count();
-            datos.countClientes = totalClientes;
-        } else {
-            // Obtener estadísticas para cliente normal
-            // Aquí puedes agregar la lógica específica para clientes
-        }
-
-        res.render('dashboard/index', datos);
-    } catch (error) {
-        console.error('Error al cargar dashboard:', error);
-        req.flash('error', 'Error al cargar el dashboard');
-        res.render('dashboard/index', {
-            title: 'Dashboard - Felmart',
-            usuario: req.session.usuario,
-            error: 'Error al cargar los datos'
-        });
+// Ruta principal del dashboard (redirige según el rol)
+router.get('/', isAuthenticated, (req, res) => {
+    if (req.session.usuario.rol === 'administrador') {
+        res.redirect('/dashboard/admin');
+    } else {
+        // Redirigir a otra vista si es cliente u otro rol
+        res.redirect('/dashboard/cliente'); 
     }
+});
+
+// RUTA PARA EL DASHBOARD DE ADMINISTRADOR
+router.get('/admin', isAuthenticated, isAdmin, dashboardController.mostrarDashboardAdmin);
+
+// Ejemplo de ruta para un dashboard de cliente (puedes crear su propio controlador)
+router.get('/cliente', isAuthenticated, (req, res) => {
+    // Aquí iría la lógica para el dashboard del cliente
+    res.render('dashboard/cliente', {
+         layout: 'layouts/main',
+         usuario: req.session.usuario 
+    });
 });
 
 // Rutas de gestión de clientes

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones | Panel Administrativo - Felmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --nav-primary-color: #00616e;
+            --nav-primary-dark: #004d57;
+            --nav-primary-light: #00818f;
+            --nav-secondary-color: #6c757d;
+            --nav-white: #ffffff;
+            --nav-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --nav-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --purple-color: #6f42c1;
+            --orange-color: #fd7e14;
+            --light-bg: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        /* Header Navigation */
+        .header-nav {
+            background: var(--nav-white);
+            box-shadow: var(--nav-shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 2px solid var(--nav-primary-color);
+            color: var(--nav-primary-color);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--nav-transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--nav-primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--nav-primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--nav-secondary-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Custom Cards */
+        .custom-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--nav-transition);
+            border: none;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .custom-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Filters */
+        .filter-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-custom {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--nav-transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-custom.primary {
+            background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light));
+            color: white;
+        }
+
+        .btn-custom.primary:hover {
+            background: linear-gradient(135deg, var(--nav-primary-dark), var(--nav-primary-color));
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-custom:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Notifications */
+        .notification-item {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            transition: var(--nav-transition);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-item:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-1px);
+        }
+
+        .notification-item.unread {
+            border-left: 4px solid var(--warning-color);
+            background: rgba(255, 193, 7, 0.02);
+        }
+
+        .notification-item.read {
+            border-left: 4px solid #e9ecef;
+        }
+
+        .notification-content {
+            padding: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .notification-icon.solicitud {
+            background: rgba(0, 97, 110, 0.1);
+            color: var(--nav-primary-color);
+        }
+
+        .notification-icon.cotizacion {
+            background: rgba(111, 66, 193, 0.1);
+            color: var(--purple-color);
+        }
+
+        .notification-icon.visita {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+
+        .notification-icon.sistema {
+            background: rgba(253, 126, 20, 0.1);
+            color: var(--orange-color);
+        }
+
+        .notification-icon.urgente {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+
+        .notification-body {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .notification-message {
+            color: var(--nav-secondary-color);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--nav-transition);
+        }
+
+        .btn-mark-read {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-mark-read:hover {
+            background: #138496;
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Statistics */
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--nav-transition);
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-number.primary { color: var(--nav-primary-color); }
+        .stats-number.warning { color: var(--warning-color); }
+        .stats-number.info { color: var(--info-color); }
+        .stats-number.success { color: var(--success-color); }
+
+        .stats-label {
+            color: var(--nav-secondary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        /* Settings */
+        .settings-section {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--nav-primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-check-custom {
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .form-check-custom:last-child {
+            border-bottom: none;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--nav-primary-color);
+            border-color: var(--nav-primary-color);
+        }
+
+        .form-check-input:focus {
+            border-color: var(--nav-primary-light);
+            box-shadow: 0 0 0 0.25rem rgba(0, 97, 110, 0.25);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--nav-secondary-color);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+            color: var(--nav-primary-color);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: var(--nav-primary-color);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--nav-secondary-color);
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 0.3rem solid rgba(0, 97, 110, 0.1);
+            border-top: 0.3rem solid var(--nav-primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .status-message.error {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .status-message.info {
+            background-color: rgba(23, 162, 184, 0.1);
+            border: 1px solid var(--info-color);
+            color: var(--info-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .notification-content {
+                padding: 1rem;
+            }
+            
+            .filter-section {
+                padding: 1rem;
+            }
+            
+            .notification-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        /* Pulse animation for unread notifications */
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 8px;
+            height: 8px;
+            background: var(--warning-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header-nav">
+        <div class="container">
+            <div class="nav-container">
+                <a href="/dashboard" class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <span class="logo-text">Felmart</span>
+                </a>
+                
+                <a href="/dashboard" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header fade-in-up">
+                <h1 class="page-title">
+                    <i class="fas fa-bell me-3"></i>Gestión de Notificaciones
+                </h1>
+                <p class="page-subtitle">
+                    Mantente al día con todas las alertas y eventos importantes del sistema
+                </p>
+            </div>
+
+            <!-- Status Messages -->
+            <div class="status-message" id="statusMessage"></div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Filters -->
+                    <div class="filter-section fade-in-up stagger-1">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 mb-2">
+                                <select class="form-select" id="filterType">
+                                    <option value="">Todos los tipos</option>
+                                    <option value="solicitud">Solicitudes</option>
+                                    <option value="cotizacion">Cotizaciones</option>
+                                    <option value="visita">Visitas</option>
+                                    <option value="sistema">Sistema</option>
+                                    <option value="urgente">Urgentes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <select class="form-select" id="filterStatus">
+                                    <option value="">Todos los estados</option>
+                                    <option value="unread">No leídas</option>
+                                    <option value="read">Leídas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-custom primary w-100" onclick="applyFilters()" id="filterBtn">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-outline-success w-100" onclick="markAllAsRead()" id="markAllBtn">
+                                    <i class="fas fa-check-double"></i> Marcar Todas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications List -->
+                    <div class="fade-in-up stagger-2">
+                        <div id="notificationsList">
+                            <!-- Loading state initially -->
+                            <div class="loading-state">
+                                <div class="loading-spinner"></div>
+                                <p>Cargando notificaciones...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Statistics -->
+                    <div class="fade-in-up stagger-3">
+                        <div class="stats-card">
+                            <div class="stats-number primary" id="totalNotifications">0</div>
+                            <div class="stats-label">Total Notificaciones</div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="stats-number warning" id="unreadNotifications">0</div>
+                            <div class="stats-label">No Leídas</div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="stats-number info" id="todayNotifications">0</div>
+                            <div class="stats-label">Hoy</div>
+                        </div>
+                        
+                        <div class="stats-card">
+                            <div class="stats-number success" id="weekNotifications">0</div>
+                            <div class="stats-label">Esta Semana</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Settings -->
+                    <div class="settings-section fade-in-up stagger-4">
+                        <h5 class="settings-title">
+                            <i class="fas fa-cog"></i>
+                            Configuración de Notificaciones
+                        </h5>
+                        
+                        <div class="form-check-custom">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                <label class="form-check-label" for="emailNotifications">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Notificaciones por email
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check-custom">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="pushNotifications" checked>
+                                <label class="form-check-label" for="pushNotifications">
+                                    <i class="fas fa-mobile-alt me-2"></i>
+                                    Notificaciones push
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check-custom">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="soundNotifications">
+                                <label class="form-check-label" for="soundNotifications">
+                                    <i class="fas fa-volume-up me-2"></i>
+                                    Sonidos de notificación
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check-custom">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="urgentNotifications" checked>
+                                <label class="form-check-label" for="urgentNotifications">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Alertas urgentes
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <button class="btn btn-custom primary w-100" onclick="saveSettings()" id="saveSettingsBtn">
+                            <i class="fas fa-save me-2"></i>Guardar Configuración
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let allNotifications = [];
+        let currentFilters = { type: '', status: '' };
+
+        // Load notifications from server
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/admin/notifications', {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar notificaciones');
+                }
+                
+                const data = await response.json();
+                allNotifications = data.notifications || [];
+                
+                displayNotifications(allNotifications);
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorState('Error al cargar las notificaciones. Inténtalo de nuevo.');
+            }
+        }
+
+        // Display notifications in the UI
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No hay notificaciones</h3>
+                        <p>No hay notificaciones que coincidan con los filtros seleccionados</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            notifications.forEach((notification) => {
+                const timeAgo = getTimeAgo(new Date(notification.created_at));
+                const iconMap = {
+                    'solicitud': 'fa-file-alt',
+                    'cotizacion': 'fa-file-invoice-dollar',
+                    'visita': 'fa-calendar-check',
+                    'sistema': 'fa-cog',
+                    'urgente': 'fa-exclamation-triangle'
+                };
+                
+                const notificationEl = document.createElement('div');
+                notificationEl.className = `notification-item ${notification.read_at ? 'read' : 'unread'}`;
+                notificationEl.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-icon ${notification.type}">
+                            <i class="fas ${iconMap[notification.type] || 'fa-bell'}"></i>
+                        </div>
+                        <div class="notification-body">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-message">${notification.message}</div>
+                            <div class="notification-meta">
+                                <div class="notification-time">
+                                    <i class="fas fa-clock"></i>
+                                    ${timeAgo}
+                                </div>
+                                <div class="notification-actions">
+                                    ${!notification.read_at ? `
+                                        <button class="btn-action btn-mark-read" onclick="markAsRead(${notification.id})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    ` : ''}
+                                    <button class="btn-action btn-delete" onclick="deleteNotification(${notification.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click handler to mark as read
+                notificationEl.addEventListener('click', function(e) {
+                    if (!e.target.closest('.notification-actions') && !notification.read_at) {
+                        markAsRead(notification.id);
+                    }
+                });
+                
+                container.appendChild(notificationEl);
+            });
+        }
+
+        // Show error state
+        function showErrorState(message) {
+            const container = document.getElementById('notificationsList');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error al cargar</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-custom primary mt-3" onclick="loadNotifications()">
+                        <i class="fas fa-redo"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 60) return `${minutes} min`;
+            if (hours < 24) return `${hours}h`;
+            if (days === 1) return '1 día';
+            return `${days} días`;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = allNotifications.length;
+            const unread = allNotifications.filter(n => !n.read_at).length;
+            
+            const today = allNotifications.filter(n => {
+                const today = new Date();
+                const notifDate = new Date(n.created_at);
+                return notifDate.toDateString() === today.toDateString();
+            }).length;
+            
+            const week = allNotifications.filter(n => {
+                const weekAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
+                return new Date(n.created_at) > weekAgo;
+            }).length;
+            
+            document.getElementById('totalNotifications').textContent = total;
+            document.getElementById('unreadNotifications').textContent = unread;
+            document.getElementById('todayNotifications').textContent = today;
+            document.getElementById('weekNotifications').textContent = week;
+        }
+
+        // Mark notification as read
+        async function markAsRead(id) {
+            try {
+                const response = await fetch(`/api/admin/notifications/${id}/read`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al marcar como leída');
+                }
+                
+                // Update local data
+                const notification = allNotifications.find(n => n.id === id);
+                if (notification) {
+                    notification.read_at = new Date().toISOString();
+                }
+                
+                // Refresh display
+                applyFilters();
+                showStatusMessage('Notificación marcada como leída', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatusMessage('Error al marcar como leída', 'error');
+            }
+        }
+
+        // Mark all as read
+        async function markAllAsRead() {
+            const markAllBtn = document.getElementById('markAllBtn');
+            
+            try {
+                markAllBtn.disabled = true;
+                markAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Marcando...';
+                
+                const response = await fetch('/api/admin/notifications/mark-all-read', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al marcar todas como leídas');
+                }
+                
+                // Update local data
+                allNotifications.forEach(n => {
+                    if (!n.read_at) {
+                        n.read_at = new Date().toISOString();
+                    }
+                });
+                
+                // Refresh display
+                applyFilters();
+                showStatusMessage('Todas las notificaciones marcadas como leídas', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatusMessage('Error al marcar todas como leídas', 'error');
+            } finally {
+                markAllBtn.disabled = false;
+                markAllBtn.innerHTML = '<i class="fas fa-check-double"></i> Marcar Todas';
+            }
+        }
+
+        // Delete notification
+        async function deleteNotification(id) {
+            if (!confirm('¿Estás seguro de que deseas eliminar esta notificación?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin/notifications/${id}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al eliminar la notificación');
+                }
+                
+                // Remove from local data
+                const index = allNotifications.findIndex(n => n.id === id);
+                if (index > -1) {
+                    allNotifications.splice(index, 1);
+                }
+                
+                // Refresh display
+                applyFilters();
+                showStatusMessage('Notificación eliminada', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatusMessage('Error al eliminar la notificación', 'error');
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const typeFilter = document.getElementById('filterType').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            
+            currentFilters.type = typeFilter;
+            currentFilters.status = statusFilter;
+            
+            let filtered = allNotifications;
+            
+            if (typeFilter) {
+                filtered = filtered.filter(n => n.type === typeFilter);
+            }
+            
+            if (statusFilter) {
+                filtered = filtered.filter(n => statusFilter === 'read' ? n.read_at : !n.read_at);
+            }
+            
+            displayNotifications(filtered);
+            updateStats();
+        }
+
+        // Save notification settings
+        async function saveSettings() {
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            
+            const settings = {
+                email: document.getElementById('emailNotifications').checked,
+                push: document.getElementById('pushNotifications').checked,
+                sound: document.getElementById('soundNotifications').checked,
+                urgent: document.getElementById('urgentNotifications').checked
+            };
+            
+            try {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                
+                const response = await fetch('/api/admin/notifications/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(settings),
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al guardar la configuración');
+                }
+                
+                showStatusMessage('Configuración guardada exitosamente', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatusMessage('Error al guardar la configuración', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Guardar Configuración';
+            }
+        }
+
+        // Load notification settings
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/admin/notifications/settings', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const settings = await response.json();
+                    
+                    // Apply loaded settings
+                    if (typeof settings.email === 'boolean') {
+                        document.getElementById('emailNotifications').checked = settings.email;
+                    }
+                    if (typeof settings.push === 'boolean') {
+                        document.getElementById('pushNotifications').checked = settings.push;
+                    }
+                    if (typeof settings.sound === 'boolean') {
+                        document.getElementById('soundNotifications').checked = settings.sound;
+                    }
+                    if (typeof settings.urgent === 'boolean') {
+                        document.getElementById('urgentNotifications').checked = settings.urgent;
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar configuración:', error);
+            }
+        }
+
+        // Show status message
+        function showStatusMessage(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.className = `status-message ${type}`;
+            statusEl.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                ${message}
+            `;
+            statusEl.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Auto-refresh notifications
+        function startAutoRefresh() {
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/api/admin/notifications/count', {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const currentUnread = allNotifications.filter(n => !n.read_at).length;
+                        
+                        // If there are new notifications, reload
+                        if (data.unread > currentUnread) {
+                            await loadNotifications();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking for new notifications:', error);
+                }
+            }, 30000); // Check every 30 seconds
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+            loadSettings();
+            startAutoRefresh();
+            
+            // Add event listeners for filters
+            document.getElementById('filterType').addEventListener('change', applyFilters);
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + A for mark all as read
+            if ((e.ctrlKey || e.metaKey) && e.key === 'a' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                markAllAsRead();
+            }
+            
+            // R key for refresh
+            if (e.key === 'r' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                loadNotifications();
+            }
+        });
+
+        // Handle visibility change to refresh when tab becomes active
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadNotifications();
+            }
+        });
+    </script>
+</body>
+</html>

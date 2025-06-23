@@ -5,9 +5,14 @@ async function cargarNotificaciones() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const notificaciones = await response.json();
-        actualizarIconoNotificaciones(notificaciones.length);
-        mostrarNotificaciones(notificaciones);
+        const data = await response.json();
+        
+        if (data.success) {
+            actualizarIconoNotificaciones(data.totalNoLeidas);
+            mostrarNotificaciones(data.notificaciones);
+        } else {
+            console.error('Error en la respuesta del servidor:', data.message);
+        }
     } catch (error) {
         console.error('Error al cargar notificaciones:', error);
     }
@@ -16,6 +21,15 @@ async function cargarNotificaciones() {
 // Función para actualizar el contador de notificaciones
 function actualizarIconoNotificaciones(cantidad) {
     const contador = document.getElementById('notificaciones-contador');
+    const contadorHeader = document.getElementById('contador-notificaciones');
+    
+    // Actualizar contador en el header
+    if (contadorHeader) {
+        contadorHeader.textContent = cantidad > 0 ? cantidad : '';
+        contadorHeader.style.display = cantidad > 0 ? 'block' : 'none';
+    }
+    
+    // Actualizar contador en otros lugares si existe
     if (contador) {
         contador.textContent = cantidad;
         contador.style.display = cantidad > 0 ? 'block' : 'none';
@@ -27,7 +41,7 @@ function mostrarNotificaciones(notificaciones) {
     const contenedor = document.getElementById('notificaciones-lista');
     if (!contenedor) return;
 
-    if (notificaciones.length === 0) {
+    if (!notificaciones || notificaciones.length === 0) {
         contenedor.innerHTML = '<div class="dropdown-item text-muted">No hay notificaciones nuevas</div>';
         return;
     }
@@ -70,7 +84,12 @@ async function marcarComoLeida(id) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        await cargarNotificaciones(); // Recargar notificaciones
+        const data = await response.json();
+        if (data.success) {
+            await cargarNotificaciones(); // Recargar notificaciones
+        } else {
+            console.error('Error al marcar notificación:', data.message);
+        }
     } catch (error) {
         console.error('Error al marcar notificación como leída:', error);
     }
@@ -88,7 +107,12 @@ async function marcarTodasComoLeidas() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        await cargarNotificaciones(); // Recargar notificaciones
+        const data = await response.json();
+        if (data.success) {
+            await cargarNotificaciones(); // Recargar notificaciones
+        } else {
+            console.error('Error al marcar todas las notificaciones:', data.message);
+        }
     } catch (error) {
         console.error('Error al marcar todas las notificaciones como leídas:', error);
     }

@@ -45,14 +45,13 @@ router.post('/solicitar-visita', async function(req, res) {
         // PASO 2: Crear visita automáticamente para el admin
         const [visitaResult] = await connection.execute(`
             INSERT INTO visitas_retiro (
-                solicitud_retiro_id, fecha_programada, hora_inicio, estado, 
-                observaciones, created_at, updated_at
-            ) VALUES (?, ?, ?, 'programada', ?, NOW(), NOW())
+                solicitud_retiro_id, fecha_programada, estado,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, NOW(), NOW())
         `, [
             solicitudId, 
             fecha_preferida, 
-            hora_preferida || '09:00:00',
-            `Solicitud automática del cliente: ${observaciones || 'Sin observaciones'}`
+            'pendiente'
         ]);
         
         const visitaId = visitaResult.insertId;
@@ -152,16 +151,14 @@ router.post('/migrar-visita-pendiente', async function(req, res) {
         // 2. Crear visita_retiro
         await connection.execute(`
             INSERT INTO visitas_retiro (
-                solicitud_retiro_id, operador_id, fecha_programada, hora_inicio, 
-                estado, observaciones, created_at, updated_at
+                solicitud_retiro_id, operador_id, fecha_programada, estado,
+                created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
         `, [
             solicitudId,
             visita.empleado_id,
             visita.fecha_visita,
-            visita.hora_visita,
-            visita.estado === 'pendiente' ? 'programada' : visita.estado,
-            `Migración: ${visita.observaciones || 'Solicitud de recolección'}`,
+            'pendiente',
             visita.fecha_creacion || NOW()
         ]);
         

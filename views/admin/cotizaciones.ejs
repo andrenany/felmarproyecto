@@ -128,6 +128,19 @@
             .table thead th, .table tbody td { padding: 1rem; font-size: 0.8rem; }
             .notification-dropdown { width: 280px; right: -50px; }
         }
+        .btn-pdf { 
+            border: 1px solid var(--success-color); 
+            color: var(--success-color); 
+            background: transparent; 
+            padding: 0.375rem 0.75rem; 
+            margin: 0 0.125rem; 
+            border-radius: 8px; 
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-pdf:hover { background: var(--success-color); color: white; border-color: var(--success-color); }
     </style>
 </head>
 <body>
@@ -208,13 +221,7 @@
                     <a href="/admin/notificaciones" class="dropdown-item">
                         <i class="fas fa-bell"></i> Notificaciones
                     </a>
-                    <a href="/admin/auditoria" class="dropdown-item">
-                        <i class="fas fa-shield-alt"></i> Registro de Actividad
-                    </a>
-                    <a href="/admin/backups" class="dropdown-item">
-                        <i class="fas fa-database"></i> Respaldo de Datos
-                    </a>
-                    <a href="/admin/ayuda" class="dropdown-item">
+                    <a href="/admin/ayuda-soporte" class="dropdown-item">
                         <i class="fas fa-question-circle"></i> Ayuda y Soporte
                     </a>
                     <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
@@ -570,13 +577,16 @@ function mostrarCotizaciones(lista) {
                 <td>${cotizacion.observaciones ? cotizacion.observaciones.substring(0, 50) + '...' : 'Sin observaciones'}</td>
                 <td>
                     <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-primary" onclick="verDetalle('${cotizacion.numeroCotizacion}')" title="Ver detalle">
+                        <button class="btn btn-outline-primary btn-ver" data-id="${cotizacion.numeroCotizacion}" title="Ver Detalles">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-outline-warning" onclick="modificarCotizacion('${cotizacion.numeroCotizacion}')" title="Modificar">
+                        <button class="btn btn-outline-warning btn-editar" data-id="${cotizacion.numeroCotizacion}" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-outline-danger" onclick="eliminarCotizacion('${cotizacion.numeroCotizacion}')" title="Eliminar">
+                        <a href="/cotizaciones/${cotizacion.numeroCotizacion}/descargar-pdf" class="btn btn-pdf" title="Descargar PDF" target="_blank">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
+                        <button class="btn btn-outline-danger btn-eliminar" data-id="${cotizacion.numeroCotizacion}" title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -1659,7 +1669,7 @@ function descargarPDFCotizacion(id) {
         alert('No se pudo obtener el ID de la cotización.');
         return;
     }
-    window.open(`/cotizaciones/${id}/pdf`, '_blank');
+    window.open(`/cotizaciones/${id}/descargar-pdf`, '_blank');
 }
 
 // Modal secundario para agregar/editar residuo

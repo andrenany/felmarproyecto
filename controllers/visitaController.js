@@ -208,20 +208,21 @@ const visitaController = {
         let connection;
         try {
             const {
-                clienteId,
-                tipoVisita,
+                cliente_id,
+                tipo_visita,
                 fecha,
                 hora,
-                cotizacionId,
-                solicitudId,
+                cotizacion_id,
+                solicitud_id,
+                estado,
                 observaciones
             } = req.body;
 
             console.log('\n--- INICIO crearVisita ---');
-            console.log('1. Recibido clienteId (RUT):', clienteId);
+            console.log('1. Recibido clienteId (RUT):', cliente_id);
 
             // Validaciones
-            if (!clienteId || !tipoVisita || !fecha || !hora || !observaciones) {
+            if (!cliente_id || !tipo_visita || !fecha || !hora || !observaciones) {
                 return res.status(400).json({
                     success: false,
                     message: 'Todos los campos obligatorios deben estar completos'
@@ -230,7 +231,7 @@ const visitaController = {
 
             console.log('2. Buscando cliente y usuario asociado...');
             const cliente = await Cliente.findOne({
-                where: { rut: clienteId },
+                where: { rut: cliente_id },
                 include: [{ model: Usuario }]
             });
             
@@ -241,7 +242,7 @@ const visitaController = {
                 console.log('Error: Cliente no encontrado.');
                 return res.status(404).json({
                     success: false,
-                    message: `Cliente con RUT ${clienteId} no encontrado`
+                    message: `Cliente con RUT ${cliente_id} no encontrado`
                 });
             }
 
@@ -250,7 +251,7 @@ const visitaController = {
 
             // Validar tipo de visita
             const tiposValidos = ['evaluacion', 'retiro'];
-            if (!tiposValidos.includes(tipoVisita)) {
+            if (!tiposValidos.includes(tipo_visita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido. Debe ser "evaluacion" o "retiro"'
@@ -281,30 +282,24 @@ const visitaController = {
             });
 
             // Crear la visita
-            const [result] = await connection.execute(`
-                INSERT INTO visitas_retiro (
-                    cliente_id, tipo_visita, fecha, hora, hora_inicio, hora_fin,
-                    cotizacion_id, solicitud_retiro_id, estado, observaciones,
-                    fecha_programada, fecha_hora_programada, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
-            `, [
-                clienteId, tipoVisita, fecha, hora, hora || '00:00:00', hora || '00:00:00',
-                cotizacionId || null, solicitudId || null, 'pendiente', observaciones,
-                fecha, `${fecha} ${hora}:00`
-            ]);
-
-            const [visitaCreada] = await connection.execute(
-                'SELECT * FROM visitas_retiro WHERE id = ?',
-                [result.insertId]
-            );
+            const nuevaVisita = await VisitaRetiro.create({
+                clienteId: cliente_id,
+                tipoVisita: tipo_visita,
+                fecha,
+                hora,
+                cotizacionId: cotizacion_id,
+                solicitudId: solicitud_id,
+                estado,
+                observaciones
+            });
 
             console.log('5. Intentando enviar correo...');
-            const emailEnviado = await enviarCorreoVisita(visitaCreada[0], cliente, emailCliente);
+            const emailEnviado = await enviarCorreoVisita(nuevaVisita, cliente, emailCliente);
 
             res.status(201).json({
                 success: true,
                 message: 'Visita creada exitosamente' + (emailEnviado ? ' y notificación enviada.' : ' pero no se pudo enviar la notificación.'),
-                data: visitaCreada[0]
+                data: nuevaVisita
             });
 
             console.log('--- FIN crearVisita ---\n');
@@ -382,7 +377,7 @@ const visitaController = {
         try {
             const { id } = req.params;
             const {
-                tipoVisita,
+                tipo_visita,
                 fecha,
                 hora,
                 estado,
@@ -426,7 +421,7 @@ const visitaController = {
             await connection.execute(`
                 UPDATE visitas_retiro SET tipo_visita = ?, fecha = ?, hora = ?, estado = ?, observaciones = ?,
                 fecha_programada = ?, fecha_hora_programada = ?, updated_at = NOW() WHERE id = ?
-            `, [tipoVisita, fecha, hora, estado, observaciones, fecha, `${fecha} ${hora}:00`, id]);
+            `, [tipo_visita, fecha, hora, estado, observaciones, fecha, `${fecha} ${hora}:00`, id]);
 
             const [visitaActualizada] = await connection.execute('SELECT * FROM visitas_retiro WHERE id = ?', [id]);
 
