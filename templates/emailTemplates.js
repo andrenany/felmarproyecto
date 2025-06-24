@@ -113,7 +113,7 @@ const emailTemplates = {
   }),
 
   // Plantilla para recuperación de contraseña
-  resetPassword: (data) => ({
+  resetPassword: (nombre, resetUrl) => ({
     subject: 'Recuperación de Contraseña - Felmart',
     html: `
       <div style="${emailTemplates.styles.container}">
@@ -124,10 +124,10 @@ const emailTemplates = {
           
           <div style="padding: 30px;">
             <div style="${emailTemplates.styles.section}">
-              <p>Hola ${data.nombre},</p>
+              <p>Hola ${nombre},</p>
               <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente botón:</p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${data.resetUrl}" 
+                <a href="${resetUrl}" 
                    style="${emailTemplates.styles.button}">
                   Restablecer Contraseña
                 </a>

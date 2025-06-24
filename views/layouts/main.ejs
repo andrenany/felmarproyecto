@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="/css/styles.css">
+  <!-- Estilos de notificaciones -->
+  <link rel="stylesheet" href="/css/notificaciones.css">
   <!-- Estilos adicionales específicos de la página -->
   <% if (typeof styles !== 'undefined') { %>
     <%- styles %>
@@ -27,7 +29,9 @@
       <%- include('../partials/sidebar') %>
     <% } %>
 
-
+    <div class="content-wrapper">
+      <!-- Header -->
+      <%- include('../partials/header') %>
 
       <!-- Mensajes de alerta -->
       <% if (typeof error !== 'undefined' && error.length > 0) { %>

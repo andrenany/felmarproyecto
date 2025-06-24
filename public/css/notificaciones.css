@@ -1,3 +1,12 @@
+/* Estilos para el sistema de notificaciones */
+
+/* Contenedor de notificaciones */
+.notificaciones-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Elemento individual de notificación */
 .notification-item {
     padding: 10px 15px;
     border-bottom: 1px solid #eee;
@@ -13,6 +22,7 @@
     opacity: 0.7;
 }
 
+/* Icono de notificación */
 .notification-icon {
     margin-right: 15px;
     width: 30px;
@@ -43,6 +53,7 @@
     color: #721c24;
 }
 
+/* Contenido de la notificación */
 .notification-content {
     flex: 1;
 }
@@ -63,6 +74,7 @@
     color: #adb5bd;
 }
 
+/* Contador de notificaciones integrado en el header */
 #notificaciones-contador {
     position: absolute;
     top: -5px;
@@ -75,6 +87,34 @@
     display: none;
 }
 
+/* Estilos específicos para el icono de notificaciones en el header */
+.user-menu .btn-sm[data-bs-toggle="modal"] {
+    transition: all 0.3s ease;
+}
+
+.user-menu .btn-sm[data-bs-toggle="modal"]:hover {
+    transform: scale(1.1);
+}
+
+.user-menu .btn-sm[data-bs-toggle="modal"] .fas.fa-bell {
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.user-menu .btn-sm[data-bs-toggle="modal"]:hover .fas.fa-bell {
+    color: #007bff !important;
+}
+
+/* Contador más pequeño para el header integrado */
+.user-menu #contador-notificaciones {
+    font-size: 0.6rem;
+    min-width: 16px;
+    height: 16px;
+    top: -3px;
+    right: -3px;
+}
+
+/* Dropdown de notificaciones */
 .dropdown-menu-notificaciones {
     width: 300px;
     max-height: 400px;
@@ -97,4 +137,141 @@
 
 .marcar-todas-leidas:hover {
     text-decoration: underline;
+}
+
+/* Modal de notificaciones */
+#notificacionesModal .modal-dialog {
+    max-width: 500px;
+}
+
+#notificacionesModal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#notificacionesModal .modal-title {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Elementos de notificación en el modal */
+.notificacion-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.notificacion-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notificacion-item:last-child {
+    border-bottom: none;
+}
+
+/* Iconos según tipo de notificación */
+.notificacion-item .fa-info-circle {
+    color: #17a2b8;
+}
+
+.notificacion-item .fa-exclamation-triangle {
+    color: #ffc107;
+}
+
+.notificacion-item .fa-check-circle {
+    color: #28a745;
+}
+
+.notificacion-item .fa-times-circle {
+    color: #dc3545;
+}
+
+.notificacion-item .fa-file-alt {
+    color: #6f42c1;
+}
+
+.notificacion-item .fa-file-invoice-dollar {
+    color: #fd7e14;
+}
+
+.notificacion-item .fa-calendar-check {
+    color: #20c997;
+}
+
+.notificacion-item .fa-certificate {
+    color: #e83e8c;
+}
+
+.notificacion-item .fa-cog {
+    color: #6c757d;
+}
+
+/* Estados de notificación */
+.notificacion-item.no-leida {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+}
+
+.notificacion-item.leida {
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dropdown-menu-notificaciones {
+        width: 280px;
+    }
+    
+    #notificacionesModal .modal-dialog {
+        max-width: 95%;
+        margin: 10px auto;
+    }
+    
+    .notification-content {
+        font-size: 0.9em;
+    }
+    
+    /* Ocultar nombre de usuario en móviles pero mantener notificaciones */
+    .user-menu .d-none.d-md-block {
+        display: none !important;
+    }
+    
+    .user-menu .btn-sm[data-bs-toggle="modal"] {
+        margin-right: 0.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-item {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Scrollbar personalizado */
+.notificaciones-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notificaciones-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.notificaciones-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.notificaciones-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 } 

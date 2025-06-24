@@ -85,10 +85,63 @@ exports.mostrarDashboard = async (req, res) => {
         const actividades = await obtenerActividadesRecientes(req.usuario);
         
         if (req.usuario.rol === 'administrador') {
+            // Datos para las tablas del dashboard de admin
+            const solicitudesUrgentes = await SolicitudRetiro.findAll({
+                where: { estado: 'pendiente' },
+                order: [['fechaSolicitud', 'ASC']],
+                limit: 5,
+                include: [{ model: Cliente, attributes: ['nombreEmpresa'] }]
+            });
+
+            const proximasVisitas = await VisitaRetiro.findAll({
+                where: { fecha: { [Op.gte]: new Date() } },
+                order: [['fecha', 'ASC']],
+                limit: 5,
+                include: [{ model: Cliente, attributes: ['nombreEmpresa'] }, { model: Usuario, as: 'operador', attributes: ['nombre'] }]
+            });
+
+            const clientesRecientes = await Cliente.findAll({
+                order: [['createdAt', 'DESC']],
+                limit: 5,
+            });
+
             return res.render('dashboard/admin', {
-                usuario: req.usuario
+                usuario: req.usuario,
+                solicitudesUrgentes,
+                proximasVisitas,
+                clientesRecientes
             });
         } else if (req.usuario.rol === 'cliente') {
+            // Buscar información del cliente para determinar si mostrar notificación
+            const cliente = await Cliente.findOne({ 
+                where: { usuario_id: req.usuario.id } 
+            });
+            
+            // Obtener estadísticas específicas del cliente
+            const [solicitudes, visitas] = await Promise.all([
+                SolicitudRetiro.findAll({
+                    where: { clienteRut: cliente ? cliente.rut : null },
+                    order: [['createdAt', 'DESC']]
+                }),
+                VisitaRetiro.findAll({
+                    where: { clienteId: cliente ? cliente.rut : null }
+                })
+            ]);
+
+            const misSolicitudes = solicitudes.length;
+            const solicitudesPendientes = solicitudes.filter(s => s.estado.toLowerCase() === 'pendiente').length;
+            const proximasVisitas = visitas.filter(v => 
+                new Date(v.fecha) >= new Date() && 
+                ['pendiente', 'confirmada'].includes(v.estado.toLowerCase())
+            ).length;
+
+            const ultimasSolicitudes = solicitudes.slice(0, 5).map(s => ({
+                id: s.id,
+                fechaSolicitud: s.createdAt,
+                direccionRetiro: s.direccion_especifica,
+                estado: s.estado
+            }));
+            
             return res.render('dashboard/cliente', {
                 currentPage: 'dashboard',
                 stats,
@@ -97,7 +150,12 @@ exports.mostrarDashboard = async (req, res) => {
                     nombre: req.usuario.nombre,
                     rol: req.usuario.rol,
                     clienteId: req.usuario.clienteId
-                }
+                },
+                mostrarNotificacion: !cliente,
+                misSolicitudes,
+                solicitudesPendientes,
+                proximasVisitas,
+                ultimasSolicitudes
             });
         }
         
@@ -249,6 +307,67 @@ function formatDate(date) {
 }
 
 const dashboardController = {
+    mostrarDashboardAdmin: async (req, res) => {
+        try {
+            // Datos para las tablas del dashboard de admin
+            const solicitudesUrgentes = await SolicitudRetiro.findAll({
+                where: { estado: 'pendiente' },
+                order: [['fechaSolicitud', 'ASC']],
+                limit: 5,
+                include: [{ model: Cliente, attributes: ['nombreEmpresa'], required: false }]
+            });
+
+            const proximasVisitas = await VisitaRetiro.findAll({
+                where: { fecha: { [Op.gte]: new Date() } },
+                order: [['fecha', 'ASC']],
+                limit: 5,
+                include: [
+                    { model: Cliente, attributes: ['nombreEmpresa'], required: false },
+                    { model: Usuario, as: 'operador', attributes: ['nombre'], required: false }
+                ]
+            });
+
+            const clientesRecientes = await Cliente.findAll({
+                order: [['createdAt', 'DESC']],
+                limit: 5,
+            });
+            
+             // Obtener datos para los gráficos
+            const clientesPorComuna = await Cliente.findAll({
+                attributes: ['comuna', [sequelize.fn('COUNT', sequelize.col('comuna')), 'total']],
+                group: ['comuna'],
+                order: [[sequelize.col('total'), 'DESC']],
+                limit: 10
+            });
+            
+            const cotizacionesPorEstado = await Cotizacion.findAll({
+                attributes: ['estado', [sequelize.fn('COUNT', sequelize.col('estado')), 'total']],
+                group: ['estado']
+            });
+
+            const clientesComunaLabels = clientesPorComuna.map(c => c.comuna);
+            const clientesComunaData = clientesPorComuna.map(c => c.get('total'));
+
+            const cotizacionesEstadoLabels = cotizacionesPorEstado.map(c => c.estado);
+            const cotizacionesEstadoData = cotizacionesPorEstado.map(c => c.get('total'));
+
+            return res.render('dashboard/admin', {
+                layout: 'layouts/admin',
+                usuario: req.session.usuario,
+                solicitudesUrgentes,
+                proximasVisitas,
+                clientesRecientes,
+                // Datos para los gráficos
+                clientesComunaLabels,
+                clientesComunaData,
+                cotizacionesEstadoLabels,
+                cotizacionesEstadoData
+            });
+        } catch (error) {
+            console.error('Error al mostrar el dashboard de administrador:', error);
+            res.status(500).send('Error al cargar el dashboard');
+        }
+    },
     // Obtener estadísticas para el dashboard administrativo
     getAdminStats: async () => {
         try {
@@ -268,16 +387,11 @@ const dashboardController = {
 
             // Total de visitas programadas para hoy
             const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            const manana = new Date(hoy);
-            manana.setDate(manana.getDate() + 1);
+            const fechaHoy = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
             const visitasHoy = await VisitaRetiro.count({
                 where: {
-                    fecha: {
-                        [Op.gte]: hoy,
-                        [Op.lt]: manana
-                    }
+                    fecha: fechaHoy
                 }
             });
 

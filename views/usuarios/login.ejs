@@ -8,10 +8,10 @@
   <link rel="stylesheet" href="/css/auth.css">
 </head>
 <body>
-  <% if (locals.messages && messages.error) { %>
+  <% if (error && error.length > 0) { %>
   <div class="alert-message">
     <i class="fas fa-exclamation-circle"></i>
-    <span><%= messages.error %></span>
+    <span><%= error %></span>
     <span class="close-btn">&times;</span>
   </div>
   <% } %>
@@ -54,7 +54,7 @@
       <div class="form-panel">
         <h1 class="form-title">Iniciar sesión</h1>
         
-        <form action="/login" method="POST">
+        <form action="/usuarios/login" method="POST">
           <div class="form-group">
             <label for="email" class="form-label">Correo electrónico*</label>
             <input type="email" id="email" name="email" class="form-control" required>

@@ -407,19 +407,15 @@ const {
           {
             nombre: 'Visitas',
             encabezados: [
-              'ID', 'Cliente', 'Operador', 'Fecha Programada', 'Hora Inicio',
-              'Hora Fin', 'Estado', 'Dirección', 'Observaciones'
+              'ID', 'Cliente', 'Operador', 'Fecha Programada', 'Estado', 'Observaciones'
             ],
             datos: datos.map(v => [
               v.id,
-              v.SolicitudRetiro && v.SolicitudRetiro.Cliente ? v.SolicitudRetiro.Cliente.nombreEmpresa : 'N/A',
+              v.Cliente ? v.Cliente.nombreEmpresa : 'N/A',
               v.Operador ? v.Operador.nombre : 'Sin asignar',
               moment(v.fechaProgramada).format('DD/MM/YYYY'),
-              moment(v.horaInicio, 'HH:mm:ss').format('HH:mm'),
-              moment(v.horaFin, 'HH:mm:ss').format('HH:mm'),
               v.estado,
-              v.SolicitudRetiro ? v.SolicitudRetiro.direccionRetiro : 'N/A',
-              v.observaciones || ''
+              v.observaciones || 'Sin observaciones'
             ])
           }
         ];

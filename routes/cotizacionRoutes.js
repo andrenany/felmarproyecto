@@ -7,6 +7,7 @@ const auth = require('../middlewares/auth');
 // Rutas administrativas (requieren autenticación)
 router.get('/', auth.isAuthenticated, cotizacionController.listar);
 router.get('/detalles/:id', auth.isAuthenticated, cotizacionController.detalles);
+router.get('/:id/descargar-pdf', auth.isAuthenticated, cotizacionController.descargarPdf);
 router.get('/crear', auth.isAuthenticated, cotizacionController.mostrarCrear);
 router.post('/crear', auth.isAuthenticated, cotizacionController.crear);
 router.post('/aceptar/:id', auth.isAuthenticated, cotizacionController.aceptar);

@@ -10,10 +10,13 @@ const rutasPublicas = [
 const auth = {
   // Verificar si el usuario está autenticado
   isAuthenticated: (req, res, next) => {
-    // Permitir acceso a rutas públicas de notificaciones
-    if (rutasPublicas.some(ruta => req.path.startsWith(ruta))) {
+    // Usar req.originalUrl para obtener la ruta completa, no solo req.path
+    const esRutaPublica = rutasPublicas.some(ruta => req.originalUrl.startsWith(ruta));
+    
+    if (esRutaPublica) {
       return next();
     }
+    
     if (req.session && req.session.usuario) {
       return next();
     }

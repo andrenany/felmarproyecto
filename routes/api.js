@@ -3,6 +3,8 @@ const router = express.Router();
 const cotizacionController = require('../controllers/cotizacionController');
 const clienteController = require('../controllers/clienteController');
 const regionController = require('../controllers/regionController');
+const perfilController = require('../controllers/perfilController');
+const notificacionController = require('../controllers/notificacionController');
 const { Cotizacion, Usuario, SolicitudRetiro, VisitaRetiro, Cliente, Notificacion } = require('../models');
 const { Op } = require('sequelize');
 const auth = require('../middlewares/auth');
@@ -31,6 +33,20 @@ router.put('/clientes/:id', auth.isAuthenticatedApi, clienteController.actualiza
 
 // Eliminar cliente (solo admin)
 router.delete('/clientes/:id', auth.isAuthenticatedApi, auth.requireAdmin, clienteController.eliminarCliente);
+
+// === RUTAS API PARA ADMIN ===
+router.get('/admin/perfil', auth.isAuthenticatedApi, auth.requireAdmin, perfilController.getAdminProfileApi);
+router.post('/admin/perfil', auth.isAuthenticatedApi, auth.requireAdmin, perfilController.updateAdminProfileApi);
+router.post('/admin/cambiar-password', auth.isAuthenticatedApi, auth.requireAdmin, perfilController.changeAdminPasswordApi);
+
+// === RUTAS API PARA NOTIFICACIONES DE ADMIN ===
+router.get('/admin/notifications', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.getAdminNotificaciones);
+router.post('/admin/notifications/:id/read', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.markAsReadAdmin);
+router.post('/admin/notifications/mark-all-read', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.markAllAsReadAdmin);
+router.delete('/admin/notifications/:id', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.deleteNotificationAdmin);
+router.get('/admin/notifications/count', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.getUnreadCountAdmin);
+router.post('/admin/notifications/settings', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.saveSettingsAdmin);
+router.get('/admin/notifications/settings', auth.isAuthenticatedApi, auth.requireAdmin, notificacionController.getSettingsAdmin);
 
 // Ruta para obtener precios de residuos
 router.get('/precios-residuos', cotizacionController.listarPreciosResiduos);

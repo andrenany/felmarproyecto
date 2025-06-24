@@ -4,11 +4,17 @@ const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 const Cliente = require('../models/Cliente');
 const Usuario = require('../models/Usuario');
 const SolicitudRetiro = require('../models/SolicitudRetiro');
-const PrecioResiduo = require('../models/PrecioResiduo');
+const notificacionController = require('../controllers/notificacionController');
+const perfilController = require('../controllers/perfilController');
 
-// Middleware para verificar si es administrador
+// Middleware para verificar si es administrador en todas las rutas de /admin
 router.use(isAuthenticated);
 router.use(isAdmin);
+
+// Panel de administración principal (redirige a clientes)
+router.get('/', (req, res) => {
+    res.redirect('/admin/clientes');
+});
 
 // Ruta para la vista de solicitudes
 router.get('/solicitud', async (req, res) => {
@@ -43,84 +49,21 @@ router.get('/solicitud', async (req, res) => {
     }
 });
 
-// Panel de administración principal
-router.get('/', async (req, res) => {
-    try {
-        const clientes = await Cliente.findAll({
-            include: [{
-                model: Usuario,
-                attributes: ['email', 'activo']
-            }],
-            order: [['createdAt', 'DESC']]
-        });
-
-        res.render('admin/clientes', {
-            titulo: 'Panel de Administración',
-            clientes,
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
-        });
-    } catch (error) {
-        console.error('Error al cargar el panel de administración:', error);
-        req.flash('error', 'Error al cargar el panel de administración');
-        res.redirect('/dashboard');
-    }
+// Ruta para la vista de cotizaciones
+router.get('/cotizaciones', (req, res) => {
+    res.render('admin/cotizaciones', {
+        titulo: 'Gestión de Cotizaciones'
+    });
 });
 
-// Ruta para cotizaciones
-router.get('/cotizaciones', async (req, res) => {
-    try {
-        res.render('admin/cotizaciones', {
-            titulo: 'Gestión de Cotizaciones',
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
-        });
-    } catch (error) {
-        console.error('Error al cargar cotizaciones:', error);
-        req.flash('error', 'Error al cargar las cotizaciones');
-        res.redirect('/admin');
-    }
+// Ruta para la vista de visitas
+router.get('/visitas', (req, res) => {
+    res.render('admin/visitas', {
+        titulo: 'Gestión de Visitas'
+    });
 });
 
-// Ruta para certificados
-// router.get('/certificados', async (req, res) => {
-//     try {
-//         res.render('admin/certificados', {
-//             certificados: [],
-//             messages: {
-//                 error: req.flash('error'),
-//                 success: req.flash('success')
-//             }
-//         });
-//     } catch (error) {
-//         console.error('Error al cargar certificados:', error);
-//         req.flash('error', 'Error al cargar los certificados');
-//         res.redirect('/admin');
-//     }
-// });
-
-// Ruta para visitas
-router.get('/visitas', async (req, res) => {
-    try {
-        res.render('admin/visitas', {
-            titulo: 'Gestión de Visitas',
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
-        });
-    } catch (error) {
-        console.error('Error al cargar visitas:', error);
-        req.flash('error', 'Error al cargar las visitas');
-        res.redirect('/admin');
-    }
-});
-
-// Listar clientes
+// === GESTIÓN DE CLIENTES ===
 router.get('/clientes', async (req, res) => {
     try {
         const clientes = await Cliente.findAll({
@@ -130,7 +73,6 @@ router.get('/clientes', async (req, res) => {
             }],
             order: [['createdAt', 'DESC']]
         });
-
         res.render('admin/clientes', {
             titulo: 'Gestión de Clientes',
             clientes,
@@ -142,62 +84,27 @@ router.get('/clientes', async (req, res) => {
     } catch (error) {
         console.error('Error al listar clientes:', error);
         req.flash('error', 'Error al cargar la lista de clientes');
-        res.redirect('/admin');
+        res.redirect('/dashboard');
     }
 });
 
-// Ver detalles de cliente
+// Ver detalles de cliente y formulario de edición
 router.get('/clientes/detalles/:id', async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id, {
             include: [{ model: Usuario }]
         });
-
         if (!cliente) {
             req.flash('error', 'Cliente no encontrado');
             return res.redirect('/admin/clientes');
         }
-
         res.render('admin/cliente-detalles', {
             titulo: 'Detalles del Cliente',
-            cliente,
-            editar: false,
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
+            cliente
         });
     } catch (error) {
         console.error('Error al mostrar detalles del cliente:', error);
         req.flash('error', 'Error al cargar los detalles del cliente');
-        res.redirect('/admin/clientes');
-    }
-});
-
-// Mostrar formulario de edición
-router.get('/clientes/editar/:id', async (req, res) => {
-    try {
-        const cliente = await Cliente.findByPk(req.params.id, {
-            include: [{ model: Usuario }]
-        });
-
-        if (!cliente) {
-            req.flash('error', 'Cliente no encontrado');
-            return res.redirect('/admin/clientes');
-        }
-
-        res.render('admin/cliente-detalles', {
-            titulo: 'Editar Cliente',
-            cliente,
-            editar: true,
-            messages: {
-                error: req.flash('error'),
-                success: req.flash('success')
-            }
-        });
-    } catch (error) {
-        console.error('Error al cargar formulario de edición:', error);
-        req.flash('error', 'Error al cargar el formulario de edición');
         res.redirect('/admin/clientes');
     }
 });
@@ -210,51 +117,21 @@ router.post('/clientes/editar/:id', async (req, res) => {
             req.flash('error', 'Cliente no encontrado');
             return res.redirect('/admin/clientes');
         }
-
-        const {
-            rut,
-            nombreEmpresa,
-            email,
-            telefono,
-            contactoPrincipal,
-            direccion,
-            comuna,
-            ciudad,
-            region,
-            estado
-        } = req.body;
-
-        await cliente.update({
-            rut,
-            nombreEmpresa,
-            email,
-            telefono,
-            contactoPrincipal,
-            direccion,
-            comuna,
-            ciudad,
-            region,
-            estado: estado === '1'
-        });
-
-        if (email !== cliente.email) {
-            await Usuario.update(
-                { email },
-                { where: { id: cliente.usuarioId } }
-            );
+        await cliente.update(req.body);
+        if (req.body.email) {
+            await Usuario.update({ email: req.body.email }, { where: { id: cliente.usuarioId } });
         }
-
         req.flash('success', 'Cliente actualizado exitosamente');
         res.redirect('/admin/clientes');
     } catch (error) {
         console.error('Error al actualizar cliente:', error);
         req.flash('error', 'Error al actualizar el cliente');
-        res.redirect(`/admin/clientes/editar/${req.params.id}`);
+        res.redirect(`/admin/clientes/detalles/${req.params.id}`);
     }
 });
 
 // Eliminar cliente
-router.get('/clientes/eliminar/:id', async (req, res) => {
+router.post('/clientes/eliminar/:id', async (req, res) => {
     try {
         const cliente = await Cliente.findByPk(req.params.id);
         if (!cliente) {
@@ -274,26 +151,55 @@ router.get('/clientes/eliminar/:id', async (req, res) => {
     }
 });
 
-// Ruta para cambiar estado de solicitud
-router.post('/solicitud/cambiar-estado/:id', async (req, res) => {
+// === GESTIÓN DE SOLICITUDES ===
+router.get('/solicitudes', async (req, res) => {
     try {
-        const { id } = req.params;
-        const { estado } = req.body;
+        const solicitudes = await SolicitudRetiro.findAll({
+            include: [{ model: Cliente }],
+            order: [['created_at', 'DESC']]
+        });
+        res.render('admin/solicitud', {
+            titulo: 'Gestión de Solicitudes',
+            solicitudes
+        });
+    } catch (error) {
+        console.error('Error al cargar solicitudes:', error);
+        req.flash('error', 'Error al cargar las solicitudes');
+        res.redirect('/admin');
+    }
+});
 
-        const solicitud = await SolicitudRetiro.findByPk(id);
+// Cambiar estado de solicitud
+router.post('/solicitudes/cambiar-estado/:id', async (req, res) => {
+    try {
+        const solicitud = await SolicitudRetiro.findByPk(req.params.id);
         if (!solicitud) {
             req.flash('error', 'Solicitud no encontrada');
-            return res.redirect('/admin/solicitud');
+            return res.redirect('/admin/solicitudes');
         }
-
-        await solicitud.update({ estado });
+        await solicitud.update({ estado: req.body.estado });
         req.flash('success', 'Estado de solicitud actualizado correctamente');
-        res.redirect('/admin/solicitud');
+        res.redirect('/admin/solicitudes');
     } catch (error) {
         console.error('Error al cambiar estado de solicitud:', error);
         req.flash('error', 'Error al actualizar el estado de la solicitud');
-        res.redirect('/admin/solicitud');
+        res.redirect('/admin/solicitudes');
     }
+});
+
+// === VISTAS ADICIONALES ===
+
+// Perfil del Administrador (Renderiza la vista)
+router.get('/perfil', perfilController.getAdminProfile);
+
+// Notificaciones del Administrador (Renderiza la vista)
+router.get('/notificaciones', notificacionController.adminNotificacionesView);
+
+// Ayuda y Soporte (Renderiza la vista)
+router.get('/ayuda-soporte', (req, res) => {
+    res.render('admin/ayuda-soporte', {
+        titulo: 'Ayuda y Soporte'
+    });
 });
 
 module.exports = router; 

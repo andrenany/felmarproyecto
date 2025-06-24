@@ -2,13 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
+const { isAuthenticated } = require('../middlewares/auth');
+const { loginLimiter } = require('../middlewares/rateLimiter');
 // const auth = require('../middlewares/auth'); // Comentado para quitar protección
 
 // Rutas públicas
 router.get('/registro', usuarioController.mostrarRegistro);
 router.post('/registro', usuarioController.registrar);
 router.get('/login', usuarioController.mostrarLogin);
-router.post('/login', usuarioController.login);
+router.post('/login', loginLimiter, usuarioController.login);
 router.get('/logout', usuarioController.logout);
 
 // Recuperación de contraseña

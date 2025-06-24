@@ -804,13 +804,7 @@
                         <a href="/admin/notificaciones" class="dropdown-item">
                             <i class="fas fa-bell"></i> Notificaciones
                         </a>
-                        <a href="/admin/auditoria" class="dropdown-item">
-                            <i class="fas fa-shield-alt"></i> Registro de Actividad
-                        </a>
-                        <a href="/admin/backups" class="dropdown-item">
-                            <i class="fas fa-database"></i> Respaldo de Datos
-                        </a>
-                        <a href="/admin/ayuda" class="dropdown-item">
+                        <a href="/admin/ayuda-soporte" class="dropdown-item">
                             <i class="fas fa-question-circle"></i> Ayuda y Soporte
                         </a>
                         <div style="border-top: 1px solid #e9ecef; margin: 0.5rem 0;"></div>
@@ -1040,6 +1034,10 @@
                         <i class="fas fa-times me-2"></i>
                         Cerrar
                     </button>
+                    <button type="button" class="btn btn-custom-primary" onclick="gestionarCertificados()" id="btnGestionarCertificados">
+                        <i class="fas fa-certificate me-2"></i>
+                        Gestionar Certificados
+                    </button>
                 </div>
             </div>
         </div>
@@ -1162,12 +1160,103 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
+                    <button type="button" class="btn btn-custom-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
                     </button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
                         <i class="fas fa-trash-alt me-2"></i>
-                        Sí, Eliminar
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gestionar Certificados -->
+    <div class="modal fade" id="gestionarCertificadosModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--nav-primary-color), var(--nav-primary-light)); color: white;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-certificate"></i>
+                        Gestionar Certificados
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <ul class="nav nav-tabs" id="certificadosTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="asignar-tab" data-bs-toggle="tab" data-bs-target="#asignar" type="button" role="tab">
+                                        <i class="fas fa-link me-2"></i>Asignar Existente
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="crear-tab" data-bs-toggle="tab" data-bs-target="#crear" type="button" role="tab">
+                                        <i class="fas fa-plus me-2"></i>Crear Nuevo
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="certificadosTabsContent">
+                        <!-- Tab Asignar Certificado Existente -->
+                        <div class="tab-pane fade show active" id="asignar" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="certificadoExistente" class="form-label">
+                                    <i class="fas fa-certificate me-2"></i>Seleccionar Certificado
+                                </label>
+                                <select class="form-select" id="certificadoExistente">
+                                    <option value="">Cargando certificados...</option>
+                                </select>
+                            </div>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Selecciona un certificado existente para asignarlo a esta visita.
+                            </div>
+                        </div>
+
+                        <!-- Tab Crear Nuevo Certificado -->
+                        <div class="tab-pane fade" id="crear" role="tabpanel">
+                            <form id="formNuevoCertificado" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="archivoCertificado" class="form-label">
+                                        <i class="fas fa-file-pdf me-2"></i>Archivo PDF (obligatorio)
+                                    </label>
+                                    <input type="file" class="form-control" id="archivoCertificado" name="archivoPdf" accept="application/pdf" required>
+                                    <div class="form-text">Máximo 10MB. Solo archivos PDF.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="observacionesCertificado" class="form-label">
+                                        <i class="fas fa-comment me-2"></i>Observaciones
+                                    </label>
+                                    <textarea class="form-control" id="observacionesCertificado" name="observaciones" rows="3" placeholder="Observaciones del certificado..."></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fechaEmisionCertificado" class="form-label">
+                                        <i class="fas fa-calendar me-2"></i>Fecha de Emisión
+                                    </label>
+                                    <input type="date" class="form-control" id="fechaEmisionCertificado" name="fechaEmision">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-custom-primary" onclick="asignarCertificado()" id="btnAsignarCertificado">
+                        <i class="fas fa-link me-2"></i>
+                        Asignar Certificado
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="crearCertificado()" id="btnCrearCertificado" style="display: none;">
+                        <i class="fas fa-plus me-2"></i>
+                        Crear Certificado
                     </button>
                 </div>
             </div>
@@ -1692,6 +1781,9 @@
                 const result = await response.json();
                 const visita = result.data;
                 
+                // Guardar visita actual para gestión de certificados
+                visitaActual = visita;
+                
                 // Actualizar contenido del modal
                 document.getElementById('detallesCliente').textContent = visita.cliente_nombre || 'Cliente no encontrado';
                 document.getElementById('detallesDireccion').textContent = visita.cliente_direccion || 'Dirección no especificada';
@@ -1816,6 +1908,177 @@
             } catch (error) {
                 console.error('Error al eliminar visita:', error);
                 showAlert('Error al eliminar la visita: ' + error.message, 'error');
+            }
+        }
+
+        // Variables globales para gestión de certificados
+        let visitaActual = null;
+        let certificadosDisponibles = [];
+
+        // Función para gestionar certificados
+        async function gestionarCertificados() {
+            if (!visitaActual) {
+                showAlert('No hay visita seleccionada', 'error');
+                return;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('gestionarCertificadosModal'));
+            modal.show();
+
+            // Cargar certificados del cliente
+            await cargarCertificadosCliente();
+            
+            // Configurar tabs
+            configurarTabsCertificados();
+        }
+
+        // Función para cargar certificados del cliente
+        async function cargarCertificadosCliente() {
+            try {
+                const response = await fetch(`/api/certificados/cliente/${visitaActual.clienteId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                certificadosDisponibles = result.data || [];
+                
+                const select = document.getElementById('certificadoExistente');
+                select.innerHTML = '<option value="">Selecciona un certificado</option>';
+                
+                certificadosDisponibles.forEach(cert => {
+                    const option = document.createElement('option');
+                    option.value = cert.id;
+                    option.textContent = `Certificado ${cert.id} - ${cert.fechaEmision ? new Date(cert.fechaEmision).toLocaleDateString('es-ES') : 'Sin fecha'} - ${cert.observaciones || 'Sin observaciones'}`;
+                    select.appendChild(option);
+                });
+                
+                if (certificadosDisponibles.length === 0) {
+                    select.innerHTML = '<option value="">No hay certificados disponibles para este cliente</option>';
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar certificados:', error);
+                showAlert('Error al cargar certificados del cliente: ' + error.message, 'error');
+            }
+        }
+
+        // Función para configurar tabs de certificados
+        function configurarTabsCertificados() {
+            const tabs = document.querySelectorAll('#certificadosTabs .nav-link');
+            const btnAsignar = document.getElementById('btnAsignarCertificado');
+            const btnCrear = document.getElementById('btnCrearCertificado');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.getAttribute('data-bs-target');
+                    
+                    if (target === '#asignar') {
+                        btnAsignar.style.display = 'inline-block';
+                        btnCrear.style.display = 'none';
+                    } else if (target === '#crear') {
+                        btnAsignar.style.display = 'none';
+                        btnCrear.style.display = 'inline-block';
+                    }
+                });
+            });
+        }
+
+        // Función para asignar certificado existente
+        async function asignarCertificado() {
+            const certificadoId = document.getElementById('certificadoExistente').value;
+            
+            if (!certificadoId) {
+                showAlert('Por favor selecciona un certificado', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/certificados/asignar-visita', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        visitaId: visitaActual.id,
+                        certificadoId: certificadoId
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                showAlert('Certificado asignado correctamente a la visita', 'success');
+                
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('gestionarCertificadosModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+            } catch (error) {
+                console.error('Error al asignar certificado:', error);
+                showAlert('Error al asignar certificado: ' + error.message, 'error');
+            }
+        }
+
+        // Función para crear nuevo certificado
+        async function crearCertificado() {
+            const form = document.getElementById('formNuevoCertificado');
+            const formData = new FormData(form);
+            
+            // Validar archivo
+            const archivo = document.getElementById('archivoCertificado').files[0];
+            if (!archivo) {
+                showAlert('Por favor selecciona un archivo PDF', 'warning');
+                return;
+            }
+            
+            if (archivo.type !== 'application/pdf') {
+                showAlert('El archivo debe ser un PDF', 'warning');
+                return;
+            }
+            
+            if (archivo.size > 10 * 1024 * 1024) {
+                showAlert('El archivo es demasiado grande. Máximo 10MB', 'warning');
+                return;
+            }
+
+            // Agregar datos de la visita
+            formData.append('visitaId', visitaActual.id);
+            formData.append('observaciones', document.getElementById('observacionesCertificado').value);
+            formData.append('fechaEmision', document.getElementById('fechaEmisionCertificado').value);
+
+            try {
+                const response = await fetch('/api/certificados/crear-desde-visita', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                showAlert('Certificado creado y asignado correctamente', 'success');
+                
+                // Cerrar modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('gestionarCertificadosModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Limpiar formulario
+                form.reset();
+                
+            } catch (error) {
+                console.error('Error al crear certificado:', error);
+                showAlert('Error al crear certificado: ' + error.message, 'error');
             }
         }
     </script>

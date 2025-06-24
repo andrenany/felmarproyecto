@@ -48,6 +48,8 @@
             
             // Actualizar lista
             actualizarListaNotificaciones(data.notificaciones);
+          } else {
+            console.error('Error en la respuesta del servidor:', data.message);
           }
         })
         .catch(error => console.error('Error al cargar notificaciones:', error));
@@ -63,7 +65,7 @@
       }
       
       notificaciones.forEach(notif => {
-        const fecha = new Date(notif.createdAt);
+        const fecha = new Date(notif.fechaCreacion || notif.createdAt);
         const fechaFormateada = fecha.toLocaleDateString('es-ES') + ' ' + 
                                 fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
         
@@ -74,6 +76,10 @@
           case 'visita': icono = 'calendar-check'; break;
           case 'certificado': icono = 'certificate'; break;
           case 'sistema': icono = 'cog'; break;
+          case 'info': icono = 'info-circle'; break;
+          case 'warning': icono = 'exclamation-triangle'; break;
+          case 'success': icono = 'check-circle'; break;
+          case 'error': icono = 'times-circle'; break;
         }
         
         const item = document.createElement('div');
@@ -121,7 +127,14 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          window.location.href = redirectUrl;
+          // Si hay una URL de redirección, ir a ella, sino solo recargar
+          if (redirectUrl && redirectUrl !== '/notificaciones') {
+            window.location.href = redirectUrl;
+          } else {
+            cargarNotificaciones();
+          }
+        } else {
+          console.error('Error al marcar notificación:', data.message);
         }
       })
       .catch(error => console.error('Error al marcar notificación:', error));
@@ -140,6 +153,8 @@
         .then(data => {
           if (data.success) {
             cargarNotificaciones();
+          } else {
+            console.error('Error al marcar todas las notificaciones:', data.message);
           }
         })
         .catch(error => console.error('Error al marcar notificaciones:', error));

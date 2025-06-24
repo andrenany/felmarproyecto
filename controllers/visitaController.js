@@ -170,37 +170,41 @@ const visitaController = {
     async crearVisita(req, res) {
         try {
             const {
-                clienteId,
-                tipoVisita,
+                cliente_id,
+                tipo_visita,
                 fecha,
                 hora,
-                cotizacionId,
-                solicitudId,
+                cotizacion_id,
+                solicitud_id,
+                estado,
                 observaciones
             } = req.body;
 
+            console.log('\n--- INICIO crearVisita ---');
+            console.log('1. Recibido clienteId (RUT):', cliente_id);
+
             // Validaciones de campos obligatorios
-            if (!clienteId || !tipoVisita || !fecha || !hora) {
+            if (!cliente_id || !tipo_visita || !fecha || !hora) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Los campos clienteId, tipoVisita, fecha y hora son obligatorios'
+                    message: 'Los campos cliente_id, tipo_visita, fecha y hora son obligatorios'
                 });
             }
 
             const cliente = await Cliente.findOne({
-                where: { rut: clienteId },
+                where: { rut: cliente_id },
                 include: [{ model: Usuario }]
             });
 
             if (!cliente) {
                 return res.status(404).json({
                     success: false,
-                    message: `Cliente con RUT ${clienteId} no encontrado`
+                    message: `Cliente con RUT ${cliente_id} no encontrado`
                 });
             }
 
             // Validar tipo de visita
-            if (!['evaluacion', 'retiro'].includes(tipoVisita)) {
+            if (!['evaluacion', 'retiro'].includes(tipo_visita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido. Debe ser "evaluacion" o "retiro"'
@@ -218,26 +222,26 @@ const visitaController = {
                 });
             }
 
-            const visita = await VisitaRetiro.create({
-                clienteId,
-                tipoVisita,
+            // Crear la visita
+            const nuevaVisita = await VisitaRetiro.create({
+                clienteId: cliente_id,
+                tipoVisita: tipo_visita,
                 fecha,
                 hora,
-                estado: 'pendiente',
-                observaciones: observaciones || null,
-                cotizacionId: cotizacionId || null,
-                solicitudId: solicitudId || null
+                cotizacionId: cotizacion_id,
+                solicitudId: solicitud_id,
+                estado: estado || 'pendiente',
+                observaciones
             });
 
+            console.log('5. Intentando enviar correo...');
             const emailCliente = cliente.Usuario?.email;
-            if (emailCliente) {
-                await enviarCorreoVisita(visita, cliente, emailCliente);
-            }
+            const emailEnviado = await enviarCorreoVisita(nuevaVisita, cliente, emailCliente);
 
             res.status(201).json({
                 success: true,
-                message: 'Visita creada exitosamente',
-                data: visita
+                message: 'Visita creada exitosamente' + (emailEnviado ? ' y notificación enviada.' : ' pero no se pudo enviar la notificación.'),
+                data: nuevaVisita
             });
 
         } catch (error) {
@@ -300,7 +304,7 @@ const visitaController = {
         try {
             const { id } = req.params;
             const {
-                tipoVisita,
+                tipo_visita,
                 fecha,
                 hora,
                 estado,
@@ -316,7 +320,7 @@ const visitaController = {
             }
 
             // Validar campos obligatorios si se proporcionan
-            if (tipoVisita && !['evaluacion', 'retiro'].includes(tipoVisita)) {
+            if (tipo_visita && !['evaluacion', 'retiro'].includes(tipo_visita)) {
                 return res.status(400).json({
                     success: false,
                     message: 'Tipo de visita inválido'
@@ -331,7 +335,7 @@ const visitaController = {
             }
 
             await visita.update({
-                tipoVisita: tipoVisita || visita.tipoVisita,
+                tipoVisita: tipo_visita || visita.tipoVisita,
                 fecha: fecha || visita.fecha,
                 hora: hora || visita.hora,
                 estado: estado || visita.estado,
